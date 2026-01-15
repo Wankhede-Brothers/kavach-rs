@@ -1,0 +1,135 @@
+# CLOUD-INFRASTRUCTURE References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:cloud-infrastructure-mastery
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[4]
+  docs.aws.amazon.com/
+  cloud.google.com/docs/
+  docs.microsoft.com/azure/
+  kubernetes.io/docs/
+
+[RESEARCH:TOPICS]
+
+KUBERNETES
+  queries[4]
+    "kubernetes {YEAR} best practices"
+    "k8s security {YEAR} hardening"
+    "kubernetes networking {YEAR}"
+    "helm vs kustomize {YEAR}"
+  fetch[3]
+    kubernetes.io/docs/concepts/
+    kubernetes.io/docs/setup/best-practices/
+    learnk8s.io/
+  verify: kubectl apply --dry-run
+
+TERRAFORM
+  queries[3]
+    "terraform {YEAR} best practices"
+    "terraform modules {YEAR}"
+    "terraform state management {YEAR}"
+  fetch[2]
+    terraform.io/docs/
+    developer.hashicorp.com/terraform/tutorials
+  verify: terraform validate && terraform plan
+
+AWS
+  queries[4]
+    "AWS {YEAR} well-architected"
+    "AWS security {YEAR} best practices"
+    "AWS cost optimization {YEAR}"
+    "AWS networking VPC {YEAR}"
+  fetch[2]
+    docs.aws.amazon.com/wellarchitected/
+    aws.amazon.com/architecture/
+  verify: AWS Config rules
+
+GCP
+  queries[3]
+    "GCP {YEAR} best practices"
+    "GCP security {YEAR}"
+    "GCP networking {YEAR}"
+  fetch[2]
+    cloud.google.com/docs/enterprise/best-practices-for-enterprise-organizations
+    cloud.google.com/architecture
+  verify: Security Command Center
+
+NETWORKING
+  queries[4]
+    "zero trust networking {YEAR}"
+    "service mesh {YEAR} comparison"
+    "DNS best practices {YEAR}"
+    "CDN configuration {YEAR}"
+  fetch[2]
+    cloudflare.com/learning/
+    istio.io/latest/docs/
+  verify: Network policy audit
+
+SECURITY
+  queries[4]
+    "cloud security {YEAR} CIS benchmarks"
+    "container security {YEAR}"
+    "secrets management {YEAR}"
+    "DDoS protection {YEAR}"
+  fetch[3]
+    cisecurity.org/benchmark/
+    docs.aws.amazon.com/security/
+    cloud.google.com/security/
+  verify: Security scanner
+
+[DDOS:DYNAMIC]
+queries[3]
+  "DDoS mitigation {YEAR}"
+  "cloudflare vs AWS Shield vs GCP Armor"
+  "rate limiting at edge {YEAR}"
+fetch[2]
+  cloudflare.com/ddos/
+  aws.amazon.com/shield/
+research_before_implementing: true
+
+[OBSERVABILITY:DYNAMIC]
+queries[3]
+  "observability {YEAR} best practices"
+  "OpenTelemetry {YEAR}"
+  "Prometheus vs Datadog vs New Relic {YEAR}"
+fetch[2]
+  opentelemetry.io/docs/
+  prometheus.io/docs/
+research_before_implementing: true
+
+[CICD:DYNAMIC]
+queries[3]
+  "GitOps {YEAR} best practices"
+  "ArgoCD vs Flux {YEAR}"
+  "CI/CD security {YEAR}"
+fetch[2]
+  argoproj.github.io/argo-cd/
+  fluxcd.io/docs/
+research_before_implementing: true
+
+[COMMANDS:VALIDATION]
+k8s: kubectl apply --dry-run=client -f
+terraform: terraform validate && terraform plan
+aws: aws cloudformation validate-template
+gcp: gcloud deployment-manager deployments describe
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch cloud patterns BEFORE implementing
+  WebFetch official docs for current syntax
+  Replace {YEAR} with current year
+  Verify pricing is current
+forbidden[3]
+  Hardcoded cloud configurations
+  Outdated security practices
+  Trust stale pricing/limits
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: NO_HARDCODED_CONTENT

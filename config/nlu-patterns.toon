@@ -1,0 +1,207 @@
+# NLU Patterns - Dynamic Configuration
+# Loaded at runtime by kavach gates intent
+# NO HARDCODING - Edit this file to update patterns
+
+[META]
+version: 1.0
+updated: ${DATE}
+loader: kavach gates intent --hook
+
+[DEBUG:PATTERNS]
+# Vague language indicating debug/fix intent
+broken
+not working
+doesnt work
+wont work
+stopped working
+error
+bug
+issue
+problem
+crash
+failing
+failed
+something wrong
+acting weird
+help me fix
+can you fix
+please fix
+whats wrong
+why isnt
+why wont
+
+[PERFORMANCE:PATTERNS]
+# Vague language indicating optimization
+faster
+speed up
+slow
+performance
+optimize
+efficient
+too slow
+takes forever
+make it faster
+laggy
+sluggish
+bottleneck
+
+[IMPLEMENT:PATTERNS]
+# Vague language indicating implementation
+implement
+create
+build
+make
+add
+develop
+write
+i want
+i need
+can you make
+set up
+configure
+new feature
+
+[RESEARCH:PATTERNS]
+# Vague language indicating research/explain
+explain
+how does
+how do
+what is
+what are
+why does
+research
+tell me about
+help me understand
+best practice
+recommend
+
+[REFACTOR:PATTERNS]
+# Vague language indicating refactoring
+refactor
+restructure
+clean up
+messy code
+improve code
+technical debt
+
+[DOCS:PATTERNS]
+# BUG-002 FIX: Documentation intent patterns
+document
+documentation
+readme
+api docs
+jsdoc
+rustdoc
+docstring
+comment
+explain code
+write docs
+update docs
+add comments
+
+[AUDIT:PATTERNS]
+# BUG-002 FIX: Audit/review intent patterns
+audit
+security audit
+code review
+vulnerability scan
+compliance
+penetration test
+security check
+review code
+inspect
+
+[SECURITY:DOMAIN]
+# Domain keywords for security
+login
+sign in
+password
+secure
+protect
+permission
+access
+user account
+authentication
+
+[FRONTEND:DOMAIN]
+# Domain keywords for frontend/UI
+look better
+looks bad
+ugly
+design
+button
+form
+page
+screen
+display
+mobile
+responsive
+dark mode
+theme
+
+[DATABASE:DOMAIN]
+# Domain keywords for database
+save
+store
+persist
+retrieve
+fetch
+data
+record
+database
+search
+filter
+
+[INFRA:DOMAIN]
+# Domain keywords for infrastructure
+deploy
+server
+hosting
+cloud
+production
+go live
+launch
+domain
+ssl
+monitoring
+
+[API:DOMAIN]
+# Domain keywords for API
+api
+endpoint
+request
+response
+integration
+connect to
+webhook
+
+[DEVOPS:DOMAIN]
+# Domain keywords for DevOps/Infrastructure
+docker
+kubernetes
+k8s
+ci/cd
+pipeline
+deployment
+container
+orchestration
+terraform
+ansible
+helm
+scaling
+load balancer
+nginx
+reverse proxy
+
+[TESTING:DOMAIN]
+# Domain keywords for testing/QA
+test
+testing
+unit test
+integration test
+e2e
+coverage
+mock
+stub
+assertion
+spec

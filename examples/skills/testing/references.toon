@@ -1,0 +1,144 @@
+# TESTING References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:testing
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  martinfowler.com/testing/
+  testing-library.com/
+  docs.pytest.org/
+
+[RESEARCH:TOPICS]
+
+TEST_PYRAMID
+  queries[3]
+    "test pyramid {YEAR}"
+    "unit vs integration vs e2e {YEAR}"
+    "testing strategy {YEAR}"
+  fetch[2]
+    martinfowler.com/articles/practical-test-pyramid.html
+    testing.googleblog.com/
+  verify: Coverage meets targets
+
+UNIT_TESTING
+  queries[4]
+    "unit testing best practices {YEAR}"
+    "unit testing {LANGUAGE} {YEAR}"
+    "mocking best practices {YEAR}"
+    "test doubles patterns"
+  fetch[2]
+    martinfowler.com/bliki/UnitTest.html
+    docs.pytest.org/ (Python)
+  verify: Unit tests pass
+
+INTEGRATION_TESTING
+  queries[3]
+    "integration testing {YEAR}"
+    "testcontainers {YEAR}"
+    "database testing {YEAR}"
+  fetch[2]
+    testcontainers.com/
+    martinfowler.com/bliki/IntegrationTest.html
+  verify: Integration tests pass
+
+E2E_TESTING
+  queries[3]
+    "e2e testing {YEAR}"
+    "playwright vs cypress {YEAR}"
+    "browser testing {YEAR}"
+  fetch[2]
+    playwright.dev/docs/
+    cypress.io/docs/
+  verify: E2E tests pass
+
+PROPERTY_TESTING
+  queries[3]
+    "property based testing {YEAR}"
+    "hypothesis python {YEAR}"
+    "proptest rust {YEAR}"
+  fetch[2]
+    hypothesis.readthedocs.io/
+    docs.rs/proptest/
+  verify: Properties hold
+
+TDD_BDD
+  queries[3]
+    "TDD {YEAR} best practices"
+    "BDD cucumber {YEAR}"
+    "test first development"
+  fetch[2]
+    cucumber.io/docs/
+    martinfowler.com/bliki/TestDrivenDevelopment.html
+  verify: Tests written before code
+
+[FRAMEWORK:DYNAMIC]
+# Research testing frameworks per language
+
+RUST
+  queries[2]
+    "rust testing {YEAR}"
+    "rust integration tests"
+  tools: cargo test, proptest
+  research_before_implementing: true
+
+TYPESCRIPT
+  queries[2]
+    "typescript testing {YEAR}"
+    "vitest vs jest {YEAR}"
+  tools: vitest, jest, playwright
+  research_before_implementing: true
+
+PYTHON
+  queries[2]
+    "python testing {YEAR}"
+    "pytest best practices {YEAR}"
+  tools: pytest, hypothesis
+  research_before_implementing: true
+
+GO
+  queries[2]
+    "go testing {YEAR}"
+    "table driven tests go"
+  tools: go test, testify
+  research_before_implementing: true
+
+[MOCKING:DYNAMIC]
+queries[3]
+  "mocking best practices {YEAR}"
+  "when to mock vs real"
+  "test doubles patterns"
+research_before_implementing: true
+
+[COVERAGE:DYNAMIC]
+queries[2]
+  "code coverage {YEAR} best practices"
+  "mutation testing {YEAR}"
+research_before_implementing: true
+
+[PRINCIPLE:CORE]
+rule: "Research patterns first, test second"
+pyramid[3]
+  1. Many unit tests (fast, isolated)
+  2. Some integration tests (components)
+  3. Few e2e tests (critical paths)
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch framework patterns BEFORE testing
+  WebFetch official docs for API
+  Replace {YEAR} with current year
+  Match testing strategy to project
+forbidden[3]
+  Hardcoded test examples
+  Outdated testing patterns
+  Trust without running tests
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: RESEARCH_PATTERNS_FIRST

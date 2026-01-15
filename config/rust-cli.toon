@@ -1,0 +1,60 @@
+# Rust CLI Enforcement - Dynamic Configuration
+# Blocks legacy commands, suggests Rust alternatives
+# NO HARDCODING - Edit this file to update mappings
+
+[META]
+version: 1.0
+updated: ${DATE}
+loader: kavach gates bash --hook
+
+[LEGACY:BLOCKED]
+# Format: legacy_command:rust_replacement:reason
+cat:bat:syntax highlighting + paging
+ls:eza:icons + git status + tree
+find:fd:10x faster + better syntax
+grep:rg:ripgrep (fastest grep)
+sed:sd:simpler syntax
+ps:procs:colorful + tree view
+du:dust:visual disk usage
+top:btm:bottom (GPU + graphs)
+diff:delta:git-aware + syntax highlighting
+head:bat -r :1-10:use bat with range
+tail:bat -r -10::use bat with range
+
+[RUST:TOOLS]
+bat
+eza
+fd
+rg
+sd
+procs
+dust
+btm
+delta
+hyperfine
+tokei
+bandwhich
+grex
+
+[ZIG:TOOLS]
+bun
+ghostty
+
+[ALLOWED:LEGACY]
+# Legacy commands allowed (no Rust alternative or special case)
+echo
+printf
+cd
+pwd
+mkdir
+rm
+cp
+mv
+chmod
+chown
+touch
+which
+whereis
+env
+export
+source

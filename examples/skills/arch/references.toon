@@ -1,0 +1,128 @@
+# ARCH References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:arch
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  martinfowler.com/architecture/
+  microservices.io/patterns/
+  12factor.net/
+
+[RESEARCH:TOPICS]
+
+SYSTEM_DESIGN
+  queries[4]
+    "system design {YEAR} interview"
+    "distributed systems {YEAR} patterns"
+    "scalability patterns {YEAR}"
+    "CAP theorem practical {YEAR}"
+  fetch[2]
+    martinfowler.com/articles/patterns-of-distributed-systems/
+    aws.amazon.com/architecture/
+  verify: Architecture Decision Record (ADR)
+
+MICROSERVICES
+  queries[4]
+    "microservices patterns {YEAR}"
+    "service mesh {YEAR} comparison"
+    "event-driven architecture {YEAR}"
+    "saga pattern {YEAR}"
+  fetch[2]
+    microservices.io/patterns/
+    docs.microsoft.com/azure/architecture/microservices/
+  verify: Service boundaries validated
+
+DATABASE_DESIGN
+  queries[3]
+    "database scaling {YEAR} patterns"
+    "sharding strategies {YEAR}"
+    "CQRS event sourcing {YEAR}"
+  fetch[2]
+    martinfowler.com/bliki/CQRS.html
+    docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/
+  verify: Data model review
+
+CACHING
+  queries[3]
+    "caching strategies {YEAR}"
+    "cache invalidation patterns"
+    "Redis vs Memcached {YEAR}"
+  fetch[1]
+    aws.amazon.com/caching/best-practices/
+  verify: Cache hit ratio metrics
+
+MESSAGING
+  queries[3]
+    "message queue {YEAR} comparison"
+    "Kafka vs RabbitMQ vs SQS {YEAR}"
+    "event streaming {YEAR}"
+  fetch[2]
+    kafka.apache.org/documentation/
+    rabbitmq.com/documentation.html
+  verify: Message delivery guarantees
+
+LOAD_BALANCING
+  queries[2]
+    "load balancing algorithms {YEAR}"
+    "reverse proxy patterns"
+  fetch[1]
+    nginx.com/resources/glossary/load-balancing/
+  verify: Health check configuration
+
+[NUMBERS:DYNAMIC]
+# Research current numbers, don't trust stale values
+queries[3]
+  "system design numbers {YEAR}"
+  "latency numbers every programmer should know {YEAR}"
+  "back of envelope calculations {YEAR}"
+fetch[1]
+  highscalability.com/
+research_rule: Numbers change - ALWAYS verify current benchmarks
+
+[PATTERNS:DYNAMIC]
+
+CIRCUIT_BREAKER
+  queries[2]
+    "circuit breaker pattern {YEAR}"
+    "resilience4j vs polly {YEAR}"
+  research_before_implementing: true
+
+RATE_LIMITING
+  queries[2]
+    "distributed rate limiting {YEAR}"
+    "token bucket sliding window"
+  research_before_implementing: true
+
+SERVICE_DISCOVERY
+  queries[2]
+    "service discovery {YEAR} patterns"
+    "consul vs etcd vs kubernetes"
+  research_before_implementing: true
+
+[TRADE_OFFS]
+# Always research trade-offs dynamically
+queries[2]
+  "CAP theorem {YEAR} practical"
+  "consistency vs availability trade-offs"
+rule: Numbers not adjectives - quantify everything
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch architecture patterns BEFORE designing
+  Quantify with numbers not adjectives
+  Replace {YEAR} with current year
+  Verify benchmarks are current
+forbidden[3]
+  Hardcoded latency numbers
+  Outdated architecture patterns
+  Trust without benchmarking
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: NUMBERS_NOT_ADJECTIVES

@@ -1,0 +1,132 @@
+# DEBUG-LIKE-EXPERT References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:debug-like-expert
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  en.wikipedia.org/wiki/Debugging
+  microsoft.com/en-us/debugging
+  lldb.llvm.org/
+
+[RESEARCH:TOPICS]
+
+SYSTEMATIC_DEBUGGING
+  queries[4]
+    "debugging methodology {YEAR}"
+    "scientific debugging method"
+    "rubber duck debugging technique"
+    "bisect debugging {YEAR}"
+  fetch[2]
+    microsoft.com/en-us/debugging
+    jvns.ca/debugging-zine/
+  verify: Bug reproduced and isolated
+
+ERROR_ANALYSIS
+  queries[3]
+    "stack trace analysis {YEAR}"
+    "error message debugging"
+    "root cause analysis techniques"
+  fetch[1]
+    sentry.io/answers/
+  verify: Root cause identified
+
+LOGGING_DEBUGGING
+  queries[3]
+    "debug logging best practices {YEAR}"
+    "structured logging debugging"
+    "log levels when to use"
+  fetch[1]
+    opentelemetry.io/docs/concepts/signals/logs/
+  verify: Logs reveal issue
+
+PROFILING
+  queries[3]
+    "performance profiling {YEAR}"
+    "memory profiling techniques"
+    "CPU profiling tools {YEAR}"
+  fetch[2]
+    docs.python.org/3/library/profile.html
+    pprof.dev/
+  verify: Bottleneck identified
+
+DEBUGGER_TOOLS
+  queries[4]
+    "debugger {LANGUAGE} {YEAR}"
+    "breakpoint debugging techniques"
+    "conditional breakpoints"
+    "watch expressions debugging"
+  fetch[2]
+    code.visualstudio.com/docs/editor/debugging
+    lldb.llvm.org/use/tutorial.html
+  verify: Debugger attached and working
+
+[TECHNIQUES:DYNAMIC]
+
+BINARY_SEARCH_DEBUG
+  queries[2]
+    "git bisect debugging {YEAR}"
+    "binary search debugging technique"
+  research_before_applying: true
+
+PRINT_DEBUGGING
+  queries[2]
+    "strategic print debugging"
+    "printf debugging vs debugger"
+  research_before_applying: true
+
+DELTA_DEBUGGING
+  queries[2]
+    "delta debugging {YEAR}"
+    "minimal reproducible example"
+  research_before_applying: true
+
+HYPOTHESIS_TESTING
+  queries[2]
+    "hypothesis-driven debugging"
+    "scientific method debugging"
+  research_before_applying: true
+
+[LANGUAGE_SPECIFIC:DYNAMIC]
+# Research debuggers per language
+rust: "rust debugging {YEAR} lldb vs gdb"
+python: "python debugging {YEAR} pdb vs ipdb"
+javascript: "node debugging {YEAR} chrome devtools"
+go: "go debugging {YEAR} delve"
+typescript: "typescript debugging {YEAR} vscode"
+
+[ANTI_PATTERNS:DYNAMIC]
+queries[3]
+  "debugging anti-patterns {YEAR}"
+  "debugging mistakes to avoid"
+  "shotgun debugging problems"
+rule: Verify don't assume - always reproduce first
+
+[PRINCIPLE:CORE]
+rule: "Verify, don't assume"
+steps[5]
+  1. Reproduce the bug
+  2. Form hypothesis
+  3. Test hypothesis
+  4. Narrow down
+  5. Verify fix
+
+[DACE:RULES]
+mandatory[4]
+  Reproduce bug BEFORE hypothesizing
+  WebSearch error messages
+  Replace {YEAR} with current year
+  Document debugging steps
+forbidden[3]
+  Assume cause without verification
+  Hardcoded debugging commands
+  Skip reproduction step
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: VERIFY_DONT_ASSUME

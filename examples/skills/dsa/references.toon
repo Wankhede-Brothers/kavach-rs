@@ -1,0 +1,132 @@
+# DSA References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:dsa
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  en.wikipedia.org/wiki/Data_structure
+  visualgo.net/
+  bigocheatsheet.com/
+
+[RESEARCH:TOPICS]
+
+DATA_STRUCTURES
+  queries[4]
+    "data structures {YEAR} comparison"
+    "when to use HashMap vs BTreeMap"
+    "array vs linked list trade-offs"
+    "tree data structures {YEAR}"
+  fetch[2]
+    bigocheatsheet.com/
+    visualgo.net/en
+  verify: Complexity matches use case
+
+ALGORITHMS
+  queries[4]
+    "sorting algorithms {YEAR} comparison"
+    "searching algorithms complexity"
+    "graph algorithms {YEAR}"
+    "dynamic programming patterns"
+  fetch[2]
+    en.wikipedia.org/wiki/Sorting_algorithm
+    cp-algorithms.com/
+  verify: Algorithm correctness proven
+
+COMPLEXITY_ANALYSIS
+  queries[3]
+    "big O notation {YEAR}"
+    "time complexity analysis"
+    "space complexity trade-offs"
+  fetch[1]
+    bigocheatsheet.com/
+  verify: Complexity calculated correctly
+
+[STRUCTURES:DYNAMIC]
+# Research current implementations per structure
+
+ARRAYS_VECTORS
+  queries[2]
+    "{LANGUAGE} array vs vector {YEAR}"
+    "dynamic array amortized analysis"
+  complexity: Access O(1), Insert O(n), Append O(1)*
+  research_before_implementing: true
+
+HASH_MAPS
+  queries[2]
+    "{LANGUAGE} HashMap implementation {YEAR}"
+    "hash collision resolution strategies"
+  complexity: Average O(1), Worst O(n)
+  research_before_implementing: true
+
+TREES
+  queries[3]
+    "balanced tree {YEAR} comparison"
+    "red-black vs AVL tree"
+    "B-tree database use {YEAR}"
+  complexity: Search O(log n), Insert O(log n)
+  research_before_implementing: true
+
+GRAPHS
+  queries[3]
+    "graph representation {YEAR}"
+    "adjacency list vs matrix"
+    "graph traversal BFS DFS"
+  complexity: BFS O(V+E), DFS O(V+E)
+  research_before_implementing: true
+
+HEAPS
+  queries[2]
+    "heap data structure {YEAR}"
+    "priority queue implementation"
+  complexity: Insert O(log n), Extract O(log n)
+  research_before_implementing: true
+
+[ALGORITHMS:DYNAMIC]
+
+SORTING
+  queries[3]
+    "sorting algorithms {YEAR} when to use"
+    "quicksort vs mergesort {YEAR}"
+    "stable sort algorithms"
+  research_before_implementing: true
+
+SEARCHING
+  queries[2]
+    "binary search variations {YEAR}"
+    "search algorithms comparison"
+  research_before_implementing: true
+
+GRAPH_ALGORITHMS
+  queries[3]
+    "shortest path algorithms {YEAR}"
+    "Dijkstra vs Bellman-Ford vs A*"
+    "minimum spanning tree algorithms"
+  research_before_implementing: true
+
+[PRINCIPLE:CORE]
+rule: "O(1) over O(n), O(n) over O(n^2)"
+steps[3]
+  1. Analyze problem constraints
+  2. Choose structure matching access pattern
+  3. Verify complexity meets requirements
+
+[DACE:RULES]
+mandatory[4]
+  Calculate complexity BEFORE implementing
+  WebSearch for optimal algorithm
+  Replace {YEAR} with current year
+  Benchmark with realistic data
+forbidden[3]
+  Hardcoded complexity tables
+  Trust without benchmarking
+  Premature optimization
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: COMPLEXITY_FIRST

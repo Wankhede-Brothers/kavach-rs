@@ -1,0 +1,40 @@
+# Valid Skills - Dynamic Configuration
+# Loaded at runtime by kavach gates skill
+# NO HARDCODING - Edit this file to update valid skills
+
+[META]
+version: 1.0
+updated: ${DATE}
+loader: kavach gates skill --hook
+
+[VALID_SKILLS]
+# Git operations
+commit
+review-pr
+create-pr
+
+# Session management
+init
+status
+memory
+resume
+
+# Research & planning
+research
+plan
+
+# Development skills
+debug-like-expert
+security
+frontend
+testing
+arch
+dsa
+sql
+api-design
+rust
+cloud-infrastructure-mastery
+high-performance-data-processing
+heal
+sutra-protocol
+create-claude-components

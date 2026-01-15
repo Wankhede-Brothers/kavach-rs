@@ -1,0 +1,159 @@
+// Package gates provides hook gates for Claude Code.
+// enforcer.go: Main enforcer gate - DACE silent-pass mode.
+// DACE: Uses shared/pkg/patterns for dynamic patterns.
+// DACE: Uses shared/pkg/agentic for research gate enforcement.
+package gates
+
+import (
+	"github.com/claude/shared/pkg/agentic"
+	"github.com/claude/shared/pkg/enforce"
+	"github.com/claude/shared/pkg/hook"
+	"github.com/claude/shared/pkg/patterns"
+	"github.com/spf13/cobra"
+)
+
+// Global research gate instance (DACE: lazy-loaded once)
+var researchGate *agentic.ResearchGate
+
+var enforcerHookMode bool
+
+var enforcerCmd = &cobra.Command{
+	Use:   "enforcer",
+	Short: "Full pipeline enforcer gate - DACE silent-pass",
+	Run:   runEnforcerGate,
+}
+
+func init() {
+	enforcerCmd.Flags().BoolVar(&enforcerHookMode, "hook", false, "Hook mode")
+}
+
+func runEnforcerGate(cmd *cobra.Command, args []string) {
+	if !enforcerHookMode {
+		cmd.Help()
+		return
+	}
+
+	// DACE: Lazy-load research gate once
+	if researchGate == nil {
+		researchGate = agentic.NewResearchGate()
+	}
+
+	input := hook.MustReadHookInput()
+	session := enforce.GetOrCreateSession()
+
+	switch input.ToolName {
+	case "Task":
+		handleTask(input, session)
+	case "WebSearch":
+		session.MarkResearchDone()
+		hook.ExitSilent()
+	case "Write", "Edit":
+		handleWrite(input, session)
+	case "Bash":
+		handleBash(input)
+	case "Read":
+		handleRead(input)
+	default:
+		hook.ExitSilent()
+	}
+}
+
+func handleTask(input *hook.Input, session *enforce.SessionState) {
+	agent := input.GetString("subagent_type")
+	if agent == "" {
+		hook.ExitBlockTOON("ENFORCER", "Task:no_subagent_type")
+	}
+	if !patterns.IsValidAgent(agent) {
+		hook.ExitBlockTOON("ENFORCER", "Task:invalid_agent:"+agent)
+	}
+
+	// DACE: Check if task prompt needs research first
+	prompt := input.GetString("prompt")
+	if prompt != "" && researchGate != nil {
+		// P1 FIX: Require research for ALL engineer agent delegations
+		// Not just when frameworks are detected - research is the DEFAULT
+		if isEngineerAgent(agent) && !session.ResearchDone {
+			// Build helpful search query
+			frameworks := agentic.ExtractFrameworkFromTask(prompt)
+			var query string
+			if len(frameworks) > 0 {
+				query = frameworks[0] + " " + researchGate.Year() + " best practices"
+			} else {
+				query = researchGate.BuildSearchQuery("implementation patterns")
+			}
+			hook.ExitBlockTOON("RESEARCH_GATE",
+				"engineer_delegation_requires_research:agent:"+agent+":suggest:"+query)
+		}
+
+		// Check for forbidden phrases in prompt
+		violations := researchGate.CheckForForbiddenPhrases(prompt)
+		if len(violations) > 0 {
+			hook.ExitBlockTOON("RESEARCH_GATE",
+				"forbidden_phrase:"+violations[0])
+		}
+	}
+
+	session.MarkCEOInvoked()
+	hook.ExitSilent()
+}
+
+// isEngineerAgent returns true for agents that implement code.
+// P1 FIX: These agents ALWAYS require research before delegation.
+func isEngineerAgent(agent string) bool {
+	engineers := []string{
+		"backend-engineer", "frontend-engineer", "database-engineer",
+		"devops-engineer", "security-engineer",
+	}
+	for _, e := range engineers {
+		if agent == e {
+			return true
+		}
+	}
+	return false
+}
+
+func handleWrite(input *hook.Input, session *enforce.SessionState) {
+	filePath := input.GetString("file_path")
+
+	// DACE: Use research gate for code file detection
+	if patterns.IsCodeFile(filePath) && !session.ResearchDone {
+		// Build helpful search query suggestion
+		query := ""
+		if researchGate != nil {
+			query = researchGate.BuildSearchQuery("implementation patterns")
+		}
+		hook.ExitBlockTOON("TABULA_RASA",
+			"WebSearch_required_before_code:suggest:"+query)
+	}
+
+	// Check content for forbidden phrases
+	content := input.GetString("content")
+	if content != "" && researchGate != nil {
+		violations := researchGate.CheckForForbiddenPhrases(content)
+		if len(violations) > 0 {
+			hook.ExitBlockTOON("RESEARCH_GATE",
+				"forbidden_phrase_in_code:"+violations[0])
+		}
+	}
+
+	hook.ExitSilent()
+}
+
+func handleBash(input *hook.Input) {
+	cmd := input.GetString("command")
+	if cmd == "" {
+		hook.ExitBlockTOON("ENFORCER", "Bash:empty_command")
+	}
+	if patterns.IsBlocked(cmd) {
+		hook.ExitBlockTOON("ENFORCER", "Bash:blocked_command")
+	}
+	hook.ExitSilent()
+}
+
+func handleRead(input *hook.Input) {
+	path := input.GetString("file_path")
+	if patterns.IsSensitive(path) {
+		hook.ExitBlockTOON("ENFORCER", "Read:sensitive_file")
+	}
+	hook.ExitSilent()
+}

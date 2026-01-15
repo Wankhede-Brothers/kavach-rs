@@ -1,0 +1,55 @@
+# Router Mappings Configuration
+# DACE: All routing patterns loaded dynamically (NO HARDCODING)
+
+[META]
+version: 1.0
+purpose: Skill and intent routing for DACE
+
+[SKILL:INTENT_MAPPINGS]
+# Maps intent keywords to skill names
+frontend: frontend
+backend: backend
+rust: rust
+api: api-design
+test: testing
+debug: debug-like-expert
+security: security
+sql: sql
+database: sql
+infra: cloud-infrastructure-mastery
+cloud: cloud-infrastructure-mastery
+terraform: cloud-infrastructure-mastery
+docker: cloud-infrastructure-mastery
+kubernetes: cloud-infrastructure-mastery
+arch: arch
+
+[COMPLEX:INDICATORS]
+# Keywords indicating complex tasks requiring CEO orchestration
+implement
+build
+create
+refactor
+full
+complete
+entire
+whole
+
+[SKILL:AGENT_DEFAULTS]
+# Default skill for each agent type
+backend-engineer: backend
+frontend-engineer: frontend
+database-engineer: sql
+devops-engineer: cloud-infrastructure-mastery
+security-engineer: security
+qa-lead: testing
+
+[SKILL:PREFERRED_KEYWORDS]
+# Task types that prefer skills over agents
+research
+pattern
+validate
+check
+lint
+format
+test
+query

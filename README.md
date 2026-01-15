@@ -1,0 +1,318 @@
+# Kavach
+
+**Universal enforcement layer for AI coding assistants**
+
+Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/3.0) + TOON Format + DACE
+
+---
+
+## What is Kavach?
+
+Kavach (Sanskrit: कवच, "armor/shield") is a Go binary that enforces best practices for AI coding assistants through hook-based gates.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              KAVACH STACK                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  DACE          Dynamic Agentic Context Engineering                          │
+│  SP/3.0        Sutra Protocol - 75-80% token reduction                     │
+│  TOON          Text-Only Object Notation - 40% savings vs JSON             │
+│  Memory Bank   Persistent context across sessions                          │
+│  Gates         Hook-based enforcement (TABULA_RASA, sanitization)          │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Quick Install
+
+**Linux/macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+```
+
+**With options:**
+```bash
+# Install with Rust CLI tools (bat, eza, fd, rg, etc.)
+curl -fsSL .../install.sh | bash -s -- --rust-cli
+
+# Install for OpenCode
+curl -fsSL .../install.sh | bash -s -- --cli opencode
+```
+
+**Build from source:**
+```bash
+git clone https://github.com/Wankhede-Brothers/kavach-go.git
+cd kavach-go
+go build -o kavach ./cmd/kavach
+cp kavach ~/.local/bin/
+```
+
+---
+
+## Features
+
+| Problem | Kavach Solution |
+|---------|-----------------|
+| LLMs use stale patterns (cutoff: 2025-01) | **TABULA_RASA**: WebSearch BEFORE code |
+| No memory between sessions | **Memory Bank**: Project-isolated persistence |
+| Dangerous command execution | **Bash Gate**: Command sanitization |
+| Context pollution across projects | **Project Isolation**: Scope by active directory |
+| Concurrent write conflicts | **File Locking**: Prevents race conditions |
+| No telemetry/observability | **Event Bus**: Session, write, agent events |
+
+---
+
+## Commands
+
+```bash
+# Status & Health
+kavach status                    # System health check
+kavach memory bank               # Memory bank summary (project-scoped)
+kavach memory bank --all         # All projects
+kavach memory kanban             # Kanban board
+
+# Agents & Skills
+kavach agents                    # List all agents
+kavach agents --get ceo          # Get specific agent
+kavach agents --get ceo --inject # With Memory Bank context
+kavach skills                    # List all skills
+kavach skills --get rust         # Get specific skill
+
+# Session
+kavach session init              # Initialize session (date injection)
+kavach session validate          # Validate session state
+kavach session end               # Save session state
+
+# Gates (Hook Mode)
+kavach gates enforcer --hook     # Full pipeline (TABULA_RASA + research gate)
+kavach gates ceo --hook          # Task orchestration validation
+kavach gates bash --hook         # Command sanitization
+kavach gates read --hook         # Sensitive file blocking
+```
+
+---
+
+## Hook Configuration
+
+**Claude Code** (`~/.claude/settings.json`):
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {"hooks": [{"type": "command", "command": "kavach session init"}]}
+    ],
+    "UserPromptSubmit": [
+      {"hooks": [{"type": "command", "command": "kavach session init"}]}
+    ],
+    "PreToolUse": [
+      {"matcher": "Task", "hooks": [{"type": "command", "command": "kavach gates ceo --hook"}]},
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "kavach gates bash --hook"}]},
+      {"matcher": "Read", "hooks": [{"type": "command", "command": "kavach gates read --hook"}]},
+      {"matcher": "Write", "hooks": [{"type": "command", "command": "kavach gates enforcer --hook"}]},
+      {"matcher": "Edit", "hooks": [{"type": "command", "command": "kavach gates enforcer --hook"}]}
+    ],
+    "Stop": [
+      {"hooks": [{"type": "command", "command": "kavach session end"}]}
+    ]
+  }
+}
+```
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           KAVACH ARCHITECTURE                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                     │
+│  │ Claude Code │    │  OpenCode   │    │  Other CLI  │                     │
+│  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                     │
+│         │                  │                  │                             │
+│         └──────────────────┼──────────────────┘                             │
+│                            ▼                                                │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                        KAVACH BINARY                                 │   │
+│  ├─────────────────────────────────────────────────────────────────────┤   │
+│  │  gates/          memory/         session/        agents/   skills/  │   │
+│  │  ├─ enforcer     ├─ bank         ├─ init         ├─ list   ├─ list │   │
+│  │  ├─ ceo          ├─ write        ├─ validate     ├─ get    ├─ get  │   │
+│  │  ├─ bash         ├─ kanban       └─ end          └─ inject └─ inject│   │
+│  │  └─ read         └─ stm                                              │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                            │                                                │
+│         ┌──────────────────┼──────────────────┐                            │
+│         ▼                  ▼                  ▼                            │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                    │
+│  │ Memory Bank │    │  Event Bus  │    │ File Lock   │                    │
+│  │ (TOON files)│    │ (telemetry) │    │ (concurrency)│                   │
+│  └─────────────┘    └─────────────┘    └─────────────┘                    │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Project Structure
+
+```
+kavach/
+├── cmd/kavach/                 # Main binary
+│   └── internal/commands/
+│       ├── gates/              # Enforcement gates
+│       │   ├── enforcer.go     # Full pipeline (TABULA_RASA)
+│       │   ├── ceo.go          # Task orchestration
+│       │   ├── bash.go         # Command sanitization
+│       │   └── read.go         # File access control
+│       ├── memory/             # Memory operations
+│       │   ├── bank.go         # Project-scoped queries
+│       │   ├── write.go        # With file locking + events
+│       │   └── kanban.go       # 5-stage pipeline
+│       ├── session/            # Session management
+│       │   └── init.go         # With event publishing
+│       ├── agents/             # Agent management (micro-modular)
+│       │   ├── types.go        # Agent struct
+│       │   ├── builtin.go      # 10 built-in agents
+│       │   ├── discover.go     # Find agents
+│       │   ├── inject.go       # Memory Bank injection
+│       │   └── output.go       # TOON/Sutra output
+│       └── skills/             # Skill management (micro-modular)
+│           └── (same structure as agents)
+├── shared/                     # Shared packages
+│   ├── pkg/
+│   │   ├── hook/               # Hook I/O
+│   │   ├── toon/               # TOON parser
+│   │   ├── patterns/           # Dynamic patterns
+│   │   ├── enforce/            # Enforcement logic
+│   │   ├── agentic/            # Research gate (TABULA_RASA)
+│   │   ├── dsa/                # LRU cache, data structures
+│   │   └── util/               # Path utilities, project detection
+│   ├── events/                 # Event bus (telemetry)
+│   └── lock/                   # File locking (concurrency)
+├── examples/                   # Reference examples
+│   ├── agents/                 # 6 agents
+│   └── skills/                 # 15 skills with DACE
+└── configs/                    # Platform configs
+    ├── linux/
+    ├── darwin/
+    └── windows/
+```
+
+---
+
+## Core Concepts
+
+### TABULA_RASA
+LLM training data is stale (cutoff: 2025-01). Enforces WebSearch BEFORE code.
+
+```
+TABULA_RASA:ENFORCEMENT
+  cutoff: 2025-01
+  today: $(kavach status | grep today)
+  rule: WebSearch BEFORE code
+  forbidden: assumptions without verification
+```
+
+### Project Isolation
+Memory Bank queries scoped to active project, preventing context pollution.
+
+```
+PROJECT:DETECTION (Priority Order)
+  1. KAVACH_PROJECT env var
+  2. .git root directory name
+  3. .claude/project.json marker
+  4. Memory Bank project match
+  5. "global" fallback
+```
+
+### DACE (Dynamic Agentic Context Engineering)
+```
+DACE:PRINCIPLES
+  lazy_load:    Load context on-demand
+  skill_first:  Use kavach binary before spawning agents
+  on_demand:    Inject research only when needed
+  no_hardcode:  WebSearch for current patterns
+```
+
+### Sutra Protocol (SP/3.0)
+Agent communication with 75-80% token reduction:
+```
+[AGENTS:HIERARCHY]
+L-1: nlu-intent-analyzer (haiku)  - Fast intent parsing
+L0:  ceo, research-director (opus) - Decision makers
+L1:  backend, frontend (sonnet)    - Engineers
+L2:  aegis-guardian (opus)         - Final verification
+```
+
+### Memory Bank
+Persistent storage at `~/.local/shared/shared-ai/memory/`:
+```
+memory/
+├── decisions/    # Architecture decisions
+├── research/     # Research findings (TABULA_RASA)
+├── patterns/     # Code patterns
+├── kanban/       # Task boards (5-stage pipeline)
+├── proposals/    # Feature proposals
+├── roadmaps/     # Project roadmaps
+├── graph/        # Knowledge graph
+├── STM/          # Short-term memory (scratchpad)
+├── GOVERNANCE.toon
+├── index.toon
+└── volatile.toon
+```
+
+### Kanban Pipeline
+5-stage production pipeline with Aegis-Guard verification:
+```
+Backlog → In-Progress → Testing → Verified → Done
+                           ↓          ↓
+                      lint/bugs    algorithm
+                      warnings     dead code
+                      unit tests   suppressed
+```
+
+---
+
+## Examples
+
+See [examples/](examples/) for:
+- **6 Agents**: ceo, aegis-guardian, backend-engineer, frontend-engineer, nlu-intent-analyzer, research-director
+- **15 Skills**: api-design, arch, cloud, debug, dsa, frontend, heal, data-processing, resume, rust, security, sql, sutra, testing, create-components
+
+Each skill includes:
+- `SKILL.md` with KAVACH:DYNAMIC block
+- `references.toon` with dynamic WebSearch queries
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and flow |
+| [HOOKS.md](docs/HOOKS.md) | Hook configuration guide |
+| [MEMORY_BANK.md](docs/MEMORY_BANK.md) | Memory Bank structure |
+| [INSTALLATION.md](docs/INSTALLATION.md) | Installation guide |
+| [API.md](docs/API.md) | Command reference |
+| [CONTRIBUTING.md](docs/CONTRIBUTING.md) | Contribution guide |
+
+---
+
+## License
+
+MIT License - see [LICENSE](LICENSE)
+
+---
+
+**Author**: Gaurav Wankhede
+**Stack**: Brahmastra
+**Protocol**: SP/3.0
+**Binary**: kavach

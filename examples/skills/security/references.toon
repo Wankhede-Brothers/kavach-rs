@@ -1,0 +1,154 @@
+# SECURITY References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:security
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[4]
+  owasp.org/
+  cwe.mitre.org/
+  nvd.nist.gov/
+  cheatsheetseries.owasp.org/
+
+[RESEARCH:TOPICS]
+
+OWASP_TOP_10
+  queries[4]
+    "OWASP top 10 {YEAR}"
+    "OWASP vulnerabilities {YEAR}"
+    "web application security {YEAR}"
+    "API security OWASP {YEAR}"
+  fetch[3]
+    owasp.org/Top10/
+    owasp.org/www-project-api-security/
+    cheatsheetseries.owasp.org/
+  verify: Security checklist complete
+
+AUTHENTICATION
+  queries[4]
+    "authentication best practices {YEAR}"
+    "OAuth 2.1 {YEAR}"
+    "JWT security {YEAR}"
+    "passkeys WebAuthn {YEAR}"
+  fetch[3]
+    oauth.net/2.1/
+    auth0.com/docs/
+    webauthn.guide/
+  verify: Auth flow secure
+
+AUTHORIZATION
+  queries[3]
+    "authorization patterns {YEAR}"
+    "RBAC vs ABAC {YEAR}"
+    "permission systems {YEAR}"
+  fetch[2]
+    casbin.org/docs/
+    authzed.com/docs/
+  verify: Access control enforced
+
+ENCRYPTION
+  queries[4]
+    "encryption best practices {YEAR}"
+    "TLS 1.3 {YEAR}"
+    "password hashing {YEAR} argon2"
+    "encryption at rest {YEAR}"
+  fetch[2]
+    cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
+    latacora.micro.blog/2018/04/03/cryptographic-right-answers.html
+  verify: Crypto current and secure
+
+INPUT_VALIDATION
+  queries[3]
+    "input validation {YEAR}"
+    "SQL injection prevention {YEAR}"
+    "XSS prevention {YEAR}"
+  fetch[2]
+    cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html
+    cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+  verify: All inputs validated
+
+SECRETS_MANAGEMENT
+  queries[3]
+    "secrets management {YEAR}"
+    "HashiCorp Vault {YEAR}"
+    "secrets in kubernetes {YEAR}"
+  fetch[2]
+    vaultproject.io/docs/
+    external-secrets.io/
+  verify: No hardcoded secrets
+
+[VULNERABILITIES:DYNAMIC]
+
+INJECTION
+  queries[3]
+    "injection vulnerabilities {YEAR}"
+    "SQL injection mitigation"
+    "command injection prevention"
+  cwe: CWE-89, CWE-78
+  research_before_implementing: true
+
+XSS
+  queries[2]
+    "XSS prevention {YEAR}"
+    "CSP headers {YEAR}"
+  cwe: CWE-79
+  research_before_implementing: true
+
+CSRF
+  queries[2]
+    "CSRF prevention {YEAR}"
+    "SameSite cookies {YEAR}"
+  cwe: CWE-352
+  research_before_implementing: true
+
+SSRF
+  queries[2]
+    "SSRF prevention {YEAR}"
+    "URL validation security"
+  cwe: CWE-918
+  research_before_implementing: true
+
+[TOOLS:DYNAMIC]
+queries[3]
+  "security scanning tools {YEAR}"
+  "SAST DAST tools {YEAR}"
+  "dependency vulnerability scanning"
+fetch[2]
+  snyk.io/
+  semgrep.dev/
+verify: Security scan passes
+
+[COMPLIANCE:DYNAMIC]
+queries[3]
+  "security compliance {YEAR}"
+  "SOC 2 {YEAR}"
+  "GDPR security {YEAR}"
+research_before_implementing: true
+
+[PRINCIPLE:CORE]
+rule: "Defense in depth - multiple layers"
+layers[4]
+  1. Network (firewall, WAF)
+  2. Application (input validation, auth)
+  3. Data (encryption, access control)
+  4. Monitoring (logging, alerting)
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch CVEs before using library
+  WebFetch OWASP cheatsheets
+  Replace {YEAR} with current year
+  Security review before deploy
+forbidden[3]
+  Hardcoded security examples
+  Outdated encryption algorithms
+  Trust without audit
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: DEFENSE_IN_DEPTH

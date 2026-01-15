@@ -1,0 +1,89 @@
+# Skill Patterns - Dynamic Configuration
+# Loaded at runtime by kavach gates ceo
+# NO HARDCODING - Edit this file to update patterns
+
+[META]
+version: 1.0
+updated: ${DATE}
+loader: kavach gates ceo --hook
+
+[SKILL:/cloud-infrastructure-mastery]
+priority: 1
+keywords: kubernetes,k8s,docker,container,pod,helm,istio
+keywords: aws,gcp,azure,digitalocean,cloudflare,vercel
+keywords: terraform,ansible,pulumi,infrastructure
+keywords: ci/cd,pipeline,github actions,deploy,deployment
+keywords: prometheus,grafana,monitoring,logging,metrics
+keywords: nginx,traefik,load balancer,ingress,dns,cdn,ssl
+
+[SKILL:/security]
+priority: 2
+keywords: auth,authentication,authorization,jwt,oauth,oidc
+keywords: login,logout,signup,mfa,2fa,passkey
+keywords: rbac,permission,role,access control
+keywords: encrypt,decrypt,hash,bcrypt,argon2
+keywords: owasp,security,vulnerability,xss,csrf
+keywords: session,cookie,token,password
+
+[SKILL:/sql]
+priority: 3
+keywords: sql,postgresql,postgres,mysql,sqlite
+keywords: database,schema,migration,table,index
+keywords: query optimization,explain analyze,slow query
+keywords: sqlx,diesel,prisma,drizzle,gorm
+keywords: mongodb,redis,elasticsearch
+
+[SKILL:/high-performance-data-processing]
+priority: 4
+keywords: parquet,arrow,avro,csv
+keywords: polars,pandas,duckdb,datafusion,spark
+keywords: etl,data pipeline,batch processing,kafka
+
+[SKILL:/rust]
+priority: 5
+keywords: rust,cargo,crate,clippy
+keywords: axum,actix,rocket,warp,tower
+keywords: tokio,async-std
+keywords: serde,tonic,hyper,reqwest
+keywords: anyhow,thiserror,clap,rayon
+
+[SKILL:/frontend]
+priority: 6
+keywords: react,vue,angular,svelte,next.js,remix
+keywords: component,ui,ux,frontend
+keywords: button,modal,form,input,dropdown
+keywords: css,tailwind,styled-components,shadcn
+keywords: redux,zustand,state management
+keywords: typescript,jsx,tsx,vite
+
+[SKILL:/debug-like-expert]
+priority: 7
+keywords: debug,troubleshoot,investigate,diagnose
+keywords: fix bug,resolve issue,root cause
+keywords: error,crash,panic,memory leak
+keywords: race condition,deadlock,stack trace
+
+[SKILL:/testing]
+priority: 8
+keywords: test,unit test,integration test,e2e
+keywords: coverage,mock,fixture,tdd,bdd
+keywords: jest,vitest,playwright,pytest
+
+[SKILL:/arch]
+priority: 9
+keywords: architecture,system design,scalability
+keywords: microservice,event sourcing,cqrs
+keywords: distributed,circuit breaker
+keywords: latency,throughput,benchmark
+
+[SKILL:/dsa]
+priority: 10
+keywords: algorithm,sorting,binary search,dfs,bfs
+keywords: data structure,tree,graph,heap,trie
+keywords: complexity,big o,optimize
+
+[SKILL:/api-design]
+priority: 11
+keywords: api,rest,grpc,graphql,websocket
+keywords: endpoint,route,handler,middleware
+keywords: openapi,swagger,rate limit,pagination

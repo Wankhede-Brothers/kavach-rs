@@ -1,0 +1,137 @@
+# HEAL References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:heal
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  en.wikipedia.org/wiki/Static_program_analysis
+  owasp.org/www-project-code-review-guide/
+  semgrep.dev/docs/
+
+[RESEARCH:TOPICS]
+
+STATIC_ANALYSIS
+  queries[4]
+    "static code analysis {YEAR}"
+    "linting best practices {YEAR}"
+    "semgrep rules {YEAR}"
+    "code quality tools {YEAR}"
+  fetch[2]
+    semgrep.dev/docs/
+    eslint.org/docs/
+  verify: Lint passes with no warnings
+
+SEMANTIC_ANALYSIS
+  queries[3]
+    "semantic code analysis {YEAR}"
+    "type checking {YEAR}"
+    "dataflow analysis tools"
+  fetch[2]
+    flow.org/
+    typescriptlang.org/docs/
+  verify: Type checker passes
+
+SECURITY_ANALYSIS
+  queries[4]
+    "SAST tools {YEAR}"
+    "code security scanning {YEAR}"
+    "OWASP code review {YEAR}"
+    "dependency vulnerability scanning"
+  fetch[3]
+    owasp.org/www-project-code-review-guide/
+    snyk.io/
+    github.com/features/security
+  verify: Security scan passes
+
+DEAD_CODE
+  queries[3]
+    "dead code detection {YEAR}"
+    "unused code analysis"
+    "tree shaking {YEAR}"
+  fetch[1]
+    en.wikipedia.org/wiki/Dead_code_elimination
+  verify: No unreachable code
+
+SUPPRESSED_ELEMENTS
+  queries[3]
+    "code suppression antipatterns"
+    "eslint disable abuse"
+    "@ts-ignore code smell"
+  fetch[1]
+    eslint.org/docs/rules/
+  verify: No unnecessary suppressions
+
+[FIVE_LAYER_ANALYSIS]
+# 5-layer code health check
+
+LAYER_1_STATIC
+  queries[2]
+    "static analysis {LANGUAGE} {YEAR}"
+    "linting rules {LANGUAGE}"
+  tools: eslint, clippy, golangci-lint, ruff
+  verify: No warnings
+
+LAYER_2_SEMANTIC
+  queries[2]
+    "semantic analysis {LANGUAGE} {YEAR}"
+    "type inference {LANGUAGE}"
+  tools: typescript, flow, mypy, rust-analyzer
+  verify: Types correct
+
+LAYER_3_SECURITY
+  queries[2]
+    "security analysis {LANGUAGE} {YEAR}"
+    "vulnerability scanning"
+  tools: semgrep, snyk, trivy, bandit
+  verify: No vulnerabilities
+
+LAYER_4_DEAD_CODE
+  queries[2]
+    "dead code detection {LANGUAGE}"
+    "unused imports removal"
+  tools: knip, deadcode, vulture
+  verify: No dead code
+
+LAYER_5_SUPPRESSED
+  queries[2]
+    "suppression audit {LANGUAGE}"
+    "ignore comment audit"
+  pattern: grep -r "@ts-ignore\|eslint-disable\|#.*noqa"
+  verify: All suppressions justified
+
+[LANGUAGE_TOOLS:DYNAMIC]
+# Research current tools per language
+rust: "rust code analysis tools {YEAR}"
+typescript: "typescript linting {YEAR}"
+python: "python code analysis {YEAR}"
+go: "go static analysis {YEAR}"
+
+[PRINCIPLE:CORE]
+rule: "5 layers: static, semantic, security, dead code, suppressed"
+steps[5]
+  1. Static analysis (syntax, style)
+  2. Semantic analysis (types, inference)
+  3. Security analysis (vulnerabilities)
+  4. Dead code detection
+  5. Suppression audit
+
+[DACE:RULES]
+mandatory[4]
+  Run all 5 layers before approval
+  WebSearch for current tool versions
+  Replace {YEAR} with current year
+  Document any justified suppressions
+forbidden[3]
+  Skip security layer
+  Ignore dead code
+  Allow unjustified suppressions
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: FIVE_LAYER_ANALYSIS

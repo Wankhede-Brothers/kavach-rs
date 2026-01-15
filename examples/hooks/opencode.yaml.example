@@ -1,0 +1,49 @@
+# OpenCode Hook Configuration
+# Copy to ~/.opencode/hooks.yaml
+
+hooks:
+  # Session lifecycle
+  session_start:
+    - command: kavach session init
+      timeout: 2000
+
+  session_end:
+    - command: kavach session end
+      timeout: 2000
+
+  # User prompt
+  user_prompt:
+    - command: kavach intent --hook
+      timeout: 1000
+
+  # Pre-tool validation
+  pre_tool:
+    - matcher: task
+      command: kavach gates ceo --hook
+      timeout: 1000
+
+    - matcher: bash
+      command: kavach gates bash --hook
+      timeout: 500
+
+    - matcher: read
+      command: kavach gates read --hook
+      timeout: 500
+
+    - matcher: write
+      command: kavach gates enforcer --hook
+      timeout: 1000
+
+    - matcher: edit
+      command: kavach gates enforcer --hook
+      timeout: 1000
+
+  # Pre-compact
+  pre_compact:
+    - command: kavach session compact
+      timeout: 2000
+
+# Environment
+env:
+  KAVACH_MEMORY: ~/.local/share/shared-ai/memory
+  KAVACH_DEBUG: "false"

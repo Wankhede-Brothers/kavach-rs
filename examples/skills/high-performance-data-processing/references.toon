@@ -1,0 +1,156 @@
+# HIGH-PERFORMANCE-DATA-PROCESSING References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:high-performance-data-processing
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[4]
+  arrow.apache.org/docs/
+  pola.rs/
+  docs.rs/rayon/
+  parquet.apache.org/
+
+[RESEARCH:TOPICS]
+
+APACHE_ARROW
+  queries[4]
+    "apache arrow {YEAR}"
+    "arrow columnar format {YEAR}"
+    "arrow memory layout"
+    "arrow flight {YEAR}"
+  fetch[2]
+    arrow.apache.org/docs/
+    arrow.apache.org/cookbook/
+  verify: Arrow schema validates
+
+POLARS
+  queries[4]
+    "polars {YEAR} best practices"
+    "polars vs pandas {YEAR}"
+    "polars lazy evaluation"
+    "polars rust {YEAR}"
+  fetch[2]
+    pola.rs/py-polars/html/
+    docs.rs/polars/
+  verify: Query plan optimized
+
+PARQUET
+  queries[3]
+    "parquet {YEAR} best practices"
+    "parquet compression {YEAR}"
+    "parquet partitioning strategies"
+  fetch[2]
+    parquet.apache.org/docs/
+    arrow.apache.org/docs/python/parquet.html
+  verify: File size optimized
+
+RAYON
+  queries[3]
+    "rayon rust {YEAR}"
+    "parallel iterators rust"
+    "rayon vs tokio {YEAR}"
+  fetch[2]
+    docs.rs/rayon/
+    smallcultfollowing.com/babysteps/blog/2015/12/18/rayon-data-parallelism-in-rust/
+  verify: Speedup measured
+
+SIMD
+  queries[3]
+    "SIMD {YEAR} programming"
+    "vectorization {LANGUAGE} {YEAR}"
+    "auto-vectorization tips"
+  fetch[1]
+    rust-lang.github.io/packed_simd/
+  verify: SIMD instructions used
+
+STREAMING
+  queries[3]
+    "stream processing {YEAR}"
+    "kafka streams vs flink {YEAR}"
+    "batch vs streaming {YEAR}"
+  fetch[2]
+    kafka.apache.org/documentation/streams/
+    flink.apache.org/docs/
+  verify: Throughput measured
+
+[DATA_FORMATS:DYNAMIC]
+
+CSV_PROCESSING
+  queries[2]
+    "fast CSV parsing {YEAR}"
+    "CSV vs Parquet performance"
+  research_before_implementing: true
+
+JSON_PROCESSING
+  queries[2]
+    "high performance JSON {YEAR}"
+    "simd JSON parsing"
+  research_before_implementing: true
+
+BINARY_FORMATS
+  queries[3]
+    "arrow vs protobuf vs flatbuffers {YEAR}"
+    "binary serialization {YEAR}"
+    "zero-copy deserialization"
+  research_before_implementing: true
+
+[OPTIMIZATION:DYNAMIC]
+
+MEMORY
+  queries[3]
+    "memory optimization {YEAR}"
+    "cache-friendly data structures"
+    "memory-mapped files {YEAR}"
+  research_before_implementing: true
+
+CPU
+  queries[3]
+    "CPU optimization {YEAR}"
+    "branch prediction optimization"
+    "CPU cache optimization"
+  research_before_implementing: true
+
+IO
+  queries[3]
+    "IO optimization {YEAR}"
+    "async IO vs sync IO"
+    "io_uring {YEAR}"
+  research_before_implementing: true
+
+[BENCHMARKING:DYNAMIC]
+queries[3]
+  "benchmarking {LANGUAGE} {YEAR}"
+  "criterion vs hyperfine"
+  "microbenchmarking pitfalls"
+fetch[2]
+  docs.rs/criterion/
+  github.com/sharkdp/hyperfine
+verify: Benchmarks reproducible
+
+[PRINCIPLE:CORE]
+rule: "Measure first, optimize second"
+steps[4]
+  1. Benchmark baseline
+  2. Profile to find bottleneck
+  3. Research optimization technique
+  4. Measure improvement
+
+[DACE:RULES]
+mandatory[4]
+  Benchmark BEFORE optimizing
+  WebSearch for current techniques
+  Replace {YEAR} with current year
+  Verify optimization with numbers
+forbidden[3]
+  Optimize without profiling
+  Hardcoded performance numbers
+  Trust without benchmarking
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: MEASURE_FIRST

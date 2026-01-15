@@ -1,0 +1,126 @@
+# API-DESIGN References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:api-design
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  swagger.io/specification/
+  grpc.io/docs/
+  graphql.org/learn/
+
+[RESEARCH:TOPICS]
+
+REST_API
+  queries[4]
+    "REST API design {YEAR} best practices"
+    "OpenAPI 3.1 {YEAR} specification"
+    "REST versioning strategies {YEAR}"
+    "HATEOAS REST {YEAR}"
+  fetch[2]
+    swagger.io/specification/
+    restfulapi.net/
+  verify: openapi-generator validate
+
+GRPC
+  queries[3]
+    "gRPC {YEAR} best practices"
+    "protobuf schema design {YEAR}"
+    "gRPC vs REST {YEAR} comparison"
+  fetch[2]
+    grpc.io/docs/guides/
+    protobuf.dev/programming-guides/
+  verify: protoc --lint
+
+GRAPHQL
+  queries[3]
+    "GraphQL {YEAR} best practices"
+    "GraphQL schema design {YEAR}"
+    "GraphQL N+1 problem solutions"
+  fetch[2]
+    graphql.org/learn/best-practices/
+    spec.graphql.org/
+  verify: graphql-schema-linter
+
+HTTP_STATUS
+  queries[2]
+    "HTTP status codes {YEAR} when to use"
+    "REST API error responses {YEAR}"
+  fetch[1]
+    httpstatuses.io/
+  verify: API contract tests
+
+PAGINATION
+  queries[3]
+    "API pagination {YEAR} cursor vs offset"
+    "REST pagination best practices"
+    "GraphQL pagination relay connection"
+  fetch[1]
+    jsonapi.org/format/#fetching-pagination
+  verify: Load test with large datasets
+
+RATE_LIMITING
+  queries[2]
+    "API rate limiting {YEAR} strategies"
+    "token bucket vs leaky bucket"
+  fetch[1]
+    cloud.google.com/architecture/rate-limiting-strategies-techniques
+  verify: Rate limit headers present
+
+AUTHENTICATION
+  queries[3]
+    "API authentication {YEAR} best practices"
+    "OAuth 2.1 {YEAR} specification"
+    "API key vs JWT vs OAuth"
+  fetch[2]
+    oauth.net/2.1/
+    jwt.io/introduction/
+  verify: Security audit
+
+[PATTERNS:DYNAMIC]
+
+VERSIONING
+  queries[2]
+    "API versioning {YEAR} URL vs header"
+    "breaking changes API {YEAR}"
+  strategies[3]: URL path, Query param, Header
+  research_before_implementing: true
+
+ERROR_FORMAT
+  queries[2]
+    "API error response format {YEAR}"
+    "RFC 7807 problem details"
+  fetch[1]
+    tools.ietf.org/html/rfc7807
+  research_before_implementing: true
+
+IDEMPOTENCY
+  queries[2]
+    "API idempotency {YEAR} patterns"
+    "idempotency key implementation"
+  research_before_implementing: true
+
+[TOOLS:VALIDATION]
+openapi: swagger-cli validate spec.yaml
+grpc: buf lint
+graphql: graphql-schema-linter
+postman: newman run collection.json
+
+[DACE:RULES]
+mandatory[3]
+  WebSearch API patterns BEFORE designing
+  WebFetch official specs for verification
+  Replace {YEAR} with current year
+forbidden[3]
+  Hardcoded API examples
+  Outdated HTTP patterns
+  Trust without spec verification
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: NO_HARDCODED_CONTENT

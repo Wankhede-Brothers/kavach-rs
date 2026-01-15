@@ -1,0 +1,131 @@
+# RESUME References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:resume
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+local[3]
+  Memory Bank: ~/.local/shared/shared-ai/memory/
+  Kavach Binary: ~/.local/bin/kavach
+  Session State: ~/.claude/
+
+[RESEARCH:TOPICS]
+
+MEMORY_BANK
+  queries[2]
+    "AI memory systems {YEAR}"
+    "context recovery patterns"
+  local[4]
+    kavach memory bank
+    kavach memory bank --status
+    kavach memory bank --scan
+    kavach memory kanban
+  verify: Memory loaded correctly
+
+SESSION_RECOVERY
+  queries[2]
+    "session state recovery"
+    "context preservation AI"
+  local[3]
+    kavach session init
+    kavach session validate
+    kavach status
+  verify: Session restored
+
+PROJECT_CONTEXT
+  queries[2]
+    "project context loading"
+    "workspace awareness"
+  local[3]
+    kavach memory bank --project
+    kavach status
+    kavach session init
+  verify: Project detected
+
+[CATEGORIES:DYNAMIC]
+
+DECISIONS
+  path: ~/.local/shared/shared-ai/memory/decisions/
+  query: kavach memory bank | grep decisions
+  purpose: Past decisions with rationale
+
+KANBAN
+  path: ~/.local/shared/shared-ai/memory/kanban/
+  query: kavach memory kanban
+  purpose: Task/project tracking
+
+PATTERNS
+  path: ~/.local/shared/shared-ai/memory/patterns/
+  query: kavach memory bank | grep patterns
+  purpose: Code patterns and solutions
+
+PROPOSALS
+  path: ~/.local/shared/shared-ai/memory/proposals/
+  query: kavach memory bank | grep proposals
+  purpose: Feature/design proposals
+
+RESEARCH
+  path: ~/.local/shared/shared-ai/memory/research/
+  query: kavach memory bank | grep research
+  purpose: Research findings (TABULA_RASA)
+
+ROADMAPS
+  path: ~/.local/shared/shared-ai/memory/roadmaps/
+  query: kavach memory bank | grep roadmaps
+  purpose: Project roadmaps
+
+STM
+  path: ~/.local/shared/shared-ai/memory/STM/
+  query: kavach memory bank | grep STM
+  purpose: Short-term memory (scratchpad)
+
+GRAPH
+  path: ~/.local/shared/shared-ai/memory/graph/
+  query: kavach memory bank | grep graph
+  purpose: Knowledge graph connections
+
+[ROOT_FILES]
+GOVERNANCE: ~/.local/shared/shared-ai/memory/GOVERNANCE.toon
+index: ~/.local/shared/shared-ai/memory/index.toon
+volatile: ~/.local/shared/shared-ai/memory/volatile.toon
+
+[COMMANDS:KAVACH]
+status: kavach status
+memory: kavach memory bank
+kanban: kavach memory kanban
+session: kavach session init
+validate: kavach session validate
+
+[RECOVERY:STEPS]
+steps[5]
+  1. kavach session init (inject date, project)
+  2. kavach status (verify enforcement state)
+  3. kavach memory bank (load context)
+  4. kavach memory kanban (load tasks)
+  5. Continue from where left off
+
+[PRINCIPLE:CORE]
+rule: "Memory Bank is single source of truth"
+benefits[3]
+  1. Project-aware context loading
+  2. No redundant file reads
+  3. Instant session recovery
+
+[DACE:RULES]
+mandatory[3]
+  Use kavach commands for recovery
+  Query Memory Bank for context
+  Never manually read memory files
+forbidden[3]
+  Hardcoded recovery steps
+  Reading files directly
+  Ignoring Memory Bank
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: MEMORY_BANK_FIRST

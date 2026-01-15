@@ -1,0 +1,113 @@
+# CREATE-CLAUDE-COMPONENTS References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:create-claude-components
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  docs.anthropic.com/
+  github.com/anthropics/claude-code
+  anthropic.com/claude
+
+[RESEARCH:TOPICS]
+
+HOOKS
+  queries[4]
+    "claude code hooks {YEAR}"
+    "claude code PreToolUse hook"
+    "claude code PostToolUse hook"
+    "claude code SessionStart hook"
+  fetch[2]
+    docs.anthropic.com/claude-code/hooks
+    github.com/anthropics/claude-code/blob/main/docs/hooks.md
+  verify: Hook executes in settings.json
+
+SKILLS
+  queries[3]
+    "claude code skills {YEAR}"
+    "claude code SKILL.md format"
+    "claude code custom skills"
+  fetch[2]
+    docs.anthropic.com/claude-code/skills
+    github.com/anthropics/claude-code/blob/main/docs/skills.md
+  verify: Skill loads with /skill-name
+
+AGENTS
+  queries[3]
+    "claude code agents {YEAR}"
+    "claude code subagent_type"
+    "claude code Task tool agents"
+  fetch[2]
+    docs.anthropic.com/claude-code/agents
+    github.com/anthropics/claude-code/blob/main/docs/agents.md
+  verify: Agent spawns with Task tool
+
+MCP_SERVERS
+  queries[3]
+    "model context protocol {YEAR}"
+    "claude code MCP servers"
+    "MCP server development"
+  fetch[2]
+    modelcontextprotocol.io/
+    docs.anthropic.com/claude-code/mcp
+  verify: MCP server connects
+
+SETTINGS
+  queries[3]
+    "claude code settings.json {YEAR}"
+    "claude code configuration"
+    "claude code permissions"
+  fetch[1]
+    docs.anthropic.com/claude-code/settings
+  verify: settings.json valid JSON
+
+[COMPONENT:FORMATS]
+
+SKILL_MD
+  queries[2]
+    "claude code SKILL.md format {YEAR}"
+    "claude code skill frontmatter"
+  structure: YAML frontmatter + TOON body
+  verify: kavach skills --get {name}
+
+AGENT_MD
+  queries[2]
+    "claude code agent .md format {YEAR}"
+    "claude code agent configuration"
+  structure: YAML frontmatter + instructions
+  verify: kavach agents --get {name}
+
+HOOKS_JSON
+  queries[2]
+    "claude code hooks configuration"
+    "settings.json hooks array format"
+  structure: JSON array in settings.json
+  verify: Hook triggers on tool use
+
+[KAVACH:INTEGRATION]
+# Use kavach binary for component management
+commands[4]
+  kavach skills --get {name}
+  kavach agents --get {name}
+  kavach gates enforcer --hook
+  kavach status
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch claude code docs BEFORE implementing
+  WebFetch official anthropic docs
+  Replace {YEAR} with current year
+  Test hook/skill/agent after creation
+forbidden[3]
+  Hardcoded component examples
+  Outdated claude code patterns
+  Trust without testing
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: NO_HARDCODED_CONTENT

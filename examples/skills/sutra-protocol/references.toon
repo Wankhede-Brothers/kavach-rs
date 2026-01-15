@@ -1,0 +1,121 @@
+# SUTRA-PROTOCOL References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:sutra-protocol
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[2]
+  Memory Bank: ~/.local/shared/shared-ai/memory/
+  Kavach Binary: ~/.local/bin/kavach
+
+[RESEARCH:TOPICS]
+
+PROTOCOL_SPECIFICATION
+  queries[3]
+    "structured agent communication {YEAR}"
+    "agent-to-agent protocol {YEAR}"
+    "token-efficient communication AI"
+  local[2]
+    kavach sutra --help
+    kavach memory bank | grep -i sutra
+  verify: Protocol parsing succeeds
+
+BLOCK_TYPES
+  queries[2]
+    "structured data blocks communication"
+    "TOON format specification"
+  local[2]
+    kavach sutra parse
+    kavach sutra validate
+  types[8]
+    META: protocol, from, to, date, session
+    TASK: id, desc, accept[], constraints[]
+    FACT: id, category, verified, ttl, src
+    UNKNOWN: id, topic, priority, action
+    CONTEXT: workdir, facts[], state
+    DELEGATE: task assignment
+    RESULT: completion report
+    PROMISE: verification signal
+
+TOKEN_REDUCTION
+  queries[2]
+    "token-efficient AI communication"
+    "structured vs natural language tokens"
+  benefit: 75-80% reduction vs natural language
+  verify: Token count comparison
+
+AGENT_HIERARCHY
+  queries[2]
+    "multi-agent orchestration {YEAR}"
+    "agent delegation patterns"
+  levels[5]
+    L-1: nlu-intent-analyzer (parser)
+    L0: ceo, research-director (decision)
+    L1: engineers (implementation)
+    L1.5: code-reviewer (review)
+    L2: aegis-guardian (verification)
+
+[BLOCKS:DYNAMIC]
+
+META_BLOCK
+  fields[5]: protocol, from, to, date, session
+  required: true
+  research_format: kavach sutra --help
+
+TASK_BLOCK
+  fields[4]: id, desc, accept[], constraints[]
+  required: true
+  research_format: kavach sutra --help
+
+FACT_BLOCK
+  fields[5]: id, category, verified, ttl, src
+  required: false
+  research_format: kavach sutra --help
+
+DELEGATE_BLOCK
+  fields[4]: to, task, context, deadline
+  required: false
+  research_format: kavach sutra --help
+
+RESULT_BLOCK
+  fields[4]: status, artifacts[], summary, next
+  required: false
+  research_format: kavach sutra --help
+
+[COMMANDS:KAVACH]
+parse: kavach sutra parse
+validate: kavach sutra validate
+generate: kavach sutra generate
+
+[INTEGRATION:DYNAMIC]
+# Research current integration patterns
+queries[2]
+  "agent communication protocols {YEAR}"
+  "multi-agent systems {YEAR}"
+local: kavach status
+
+[PRINCIPLE:CORE]
+rule: "Structured blocks > Natural language"
+benefits[3]
+  1. 75-80% token reduction
+  2. Unambiguous parsing
+  3. Machine-verifiable contracts
+
+[DACE:RULES]
+mandatory[3]
+  Use kavach sutra commands
+  Query Memory Bank for patterns
+  Validate protocol format
+forbidden[3]
+  Hardcoded block examples
+  Natural language between agents
+  Unstructured communication
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: TOKEN_EFFICIENT_COMMUNICATION

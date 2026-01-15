@@ -1,0 +1,144 @@
+# FRONTEND References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:frontend
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[4]
+  developer.mozilla.org/
+  react.dev/
+  vuejs.org/
+  svelte.dev/
+
+[RESEARCH:TOPICS]
+
+REACT
+  queries[4]
+    "react {YEAR} best practices"
+    "react hooks {YEAR}"
+    "react server components {YEAR}"
+    "react 19 features {YEAR}"
+  fetch[3]
+    react.dev/learn
+    react.dev/reference/react
+    react.dev/blog
+  verify: npm run build && npm run lint
+
+VUE
+  queries[3]
+    "vue 3 {YEAR} best practices"
+    "vue composition API {YEAR}"
+    "nuxt 3 {YEAR}"
+  fetch[2]
+    vuejs.org/guide/
+    nuxt.com/docs
+  verify: npm run build && npm run lint
+
+SVELTE
+  queries[3]
+    "svelte {YEAR} best practices"
+    "sveltekit {YEAR}"
+    "svelte 5 runes {YEAR}"
+  fetch[2]
+    svelte.dev/docs
+    kit.svelte.dev/docs
+  verify: npm run build && npm run check
+
+TYPESCRIPT
+  queries[3]
+    "typescript {YEAR} best practices"
+    "typescript strict mode {YEAR}"
+    "typescript generics patterns"
+  fetch[2]
+    typescriptlang.org/docs/
+    typescript-eslint.io/
+  verify: tsc --noEmit && eslint
+
+STATE_MANAGEMENT
+  queries[4]
+    "state management {YEAR} comparison"
+    "zustand vs jotai vs redux {YEAR}"
+    "react query {YEAR}"
+    "tanstack query {YEAR}"
+  fetch[2]
+    tanstack.com/query/latest
+    zustand.surge.sh/
+  verify: State updates correctly
+
+STYLING
+  queries[3]
+    "css {YEAR} best practices"
+    "tailwind vs css modules {YEAR}"
+    "css-in-js {YEAR} performance"
+  fetch[2]
+    tailwindcss.com/docs
+    styled-components.com/docs
+  verify: Styles apply correctly
+
+ACCESSIBILITY
+  queries[3]
+    "web accessibility {YEAR}"
+    "WCAG 2.2 {YEAR}"
+    "a11y testing tools {YEAR}"
+  fetch[2]
+    w3.org/WAI/WCAG22/quickref/
+    dequeuniversity.com/
+  verify: axe audit passes
+
+PERFORMANCE
+  queries[3]
+    "web performance {YEAR}"
+    "core web vitals {YEAR}"
+    "react performance optimization"
+  fetch[2]
+    web.dev/performance/
+    web.dev/vitals/
+  verify: Lighthouse score > 90
+
+[TESTING:DYNAMIC]
+queries[3]
+  "frontend testing {YEAR}"
+  "vitest vs jest {YEAR}"
+  "playwright vs cypress {YEAR}"
+fetch[2]
+  vitest.dev/
+  playwright.dev/
+research_before_implementing: true
+
+[BUILD_TOOLS:DYNAMIC]
+queries[3]
+  "frontend build tools {YEAR}"
+  "vite vs webpack {YEAR}"
+  "esbuild vs rollup vs rspack"
+fetch[2]
+  vitejs.dev/
+  turbo.build/pack
+research_before_implementing: true
+
+[PRINCIPLE:CORE]
+rule: "Research patterns first, implement second"
+steps[4]
+  1. WebSearch framework patterns
+  2. WebFetch official docs
+  3. Verify API is current
+  4. Implement with tests
+
+[DACE:RULES]
+mandatory[4]
+  WebSearch framework version BEFORE coding
+  WebFetch official docs for API
+  Replace {YEAR} with current year
+  Check breaking changes in changelog
+forbidden[3]
+  Hardcoded React/Vue examples
+  Outdated hook patterns
+  Trust stale weights
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: RESEARCH_PATTERNS_FIRST

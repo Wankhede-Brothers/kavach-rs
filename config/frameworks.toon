@@ -1,0 +1,44 @@
+# Framework Patterns - Dynamic Configuration
+# Loaded at runtime for research requirement detection
+# NO HARDCODING - Edit this file to update framework patterns
+
+[META]
+version: 1.0
+updated: ${DATE}
+purpose: Detect when research is needed before implementation
+
+[EVOLVING_FRAMEWORKS]
+# Web frameworks (APIs change frequently)
+react,next.js,remix,vue,nuxt,svelte,angular
+dioxus,leptos,yew,tauri
+axum,actix,rocket,warp
+fastapi,django,flask
+express,hono,elysia,bun
+
+[EVOLVING_LIBRARIES]
+# Database/ORM
+sqlx,diesel,sea-orm,prisma,drizzle
+gorm,ent,bun-db
+
+# Infrastructure
+kubernetes,k8s,docker,terraform,pulumi
+aws-sdk,gcp-sdk,azure-sdk
+
+# Security
+oauth2,oidc,jwt,passkey,webauthn
+
+[API_PATTERNS]
+# Patterns indicating external API usage
+openapi,graphql,grpc,rest
+websocket,sse,webhook
+
+[CACHE_PATTERNS]
+# Caching libraries that evolve
+redis,memcached,valkey
+lru,arc,sieve
+
+[RESEARCH_KEYWORDS]
+# Keywords that always require research
+latest,current,2024,2025,2026
+best practice,recommended,modern
+deprecated,breaking change,migration

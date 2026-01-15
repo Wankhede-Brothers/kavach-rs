@@ -1,0 +1,137 @@
+# SQL References - SP/3.0 + DACE
+# NO hardcoded examples - all content fetched dynamically
+
+REFERENCES:sql
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  version: 3.0
+  updated: DYNAMIC (WebSearch for latest)
+
+[SOURCES:PRIMARY]
+docs[3]
+  postgresql.org/docs/
+  use-the-index-luke.com/
+  pganalyze.com/docs/
+
+[RESEARCH:TOPICS]
+
+POSTGRESQL
+  queries[4]
+    "postgresql {YEAR} best practices"
+    "postgresql performance {YEAR}"
+    "postgresql indexing {YEAR}"
+    "postgresql {VERSION} features"
+  fetch[3]
+    postgresql.org/docs/current/
+    wiki.postgresql.org/wiki/Performance_Optimization
+    pganalyze.com/docs/explain
+  verify: EXPLAIN ANALYZE shows Index Scan
+
+INDEXING
+  queries[4]
+    "postgresql index types {YEAR}"
+    "B-tree vs GIN vs GiST"
+    "composite index strategy"
+    "partial index postgresql"
+  fetch[2]
+    use-the-index-luke.com/
+    postgresql.org/docs/current/indexes.html
+  verify: Index used in query plan
+
+QUERY_OPTIMIZATION
+  queries[4]
+    "postgresql query optimization {YEAR}"
+    "EXPLAIN ANALYZE reading"
+    "postgresql slow query"
+    "seq scan vs index scan"
+  fetch[2]
+    pganalyze.com/docs/explain
+    postgresql.org/docs/current/using-explain.html
+  verify: Seq Scan eliminated
+
+SQLX
+  queries[3]
+    "sqlx rust {YEAR}"
+    "sqlx compile time checking"
+    "sqlx migrations {YEAR}"
+  fetch[2]
+    docs.rs/sqlx/
+    github.com/launchbadge/sqlx
+  verify: sqlx prepare passes
+
+TRANSACTIONS
+  queries[3]
+    "postgresql transactions {YEAR}"
+    "transaction isolation levels"
+    "deadlock prevention postgresql"
+  fetch[2]
+    postgresql.org/docs/current/transaction-iso.html
+    postgresql.org/docs/current/explicit-locking.html
+  verify: No deadlocks
+
+CONNECTION_POOLING
+  queries[3]
+    "postgresql connection pooling {YEAR}"
+    "pgbouncer vs pgpool {YEAR}"
+    "connection pool sizing"
+  fetch[2]
+    pgbouncer.github.io/
+    postgresql.org/docs/current/runtime-config-connection.html
+  verify: Pool metrics healthy
+
+[ANTI_PATTERNS:DYNAMIC]
+queries[3]
+  "postgresql anti-patterns {YEAR}"
+  "sql query mistakes"
+  "N+1 query problem"
+research_before_implementing: true
+
+[OPTIMIZATION:DYNAMIC]
+
+INDEX_STRATEGY
+  queries[2]
+    "postgresql index strategy {YEAR}"
+    "covering index postgresql"
+  research_before_implementing: true
+
+PARTITION
+  queries[2]
+    "postgresql partitioning {YEAR}"
+    "table partitioning strategies"
+  research_before_implementing: true
+
+VACUUM
+  queries[2]
+    "postgresql vacuum {YEAR}"
+    "autovacuum tuning"
+  research_before_implementing: true
+
+[COMMANDS:VALIDATION]
+explain: EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
+index_check: SELECT * FROM pg_stat_user_indexes
+slow_queries: SELECT * FROM pg_stat_statements ORDER BY total_time DESC
+locks: SELECT * FROM pg_locks WHERE NOT granted
+
+[PRINCIPLE:CORE]
+rule: "Index Scan > Seq Scan"
+steps[4]
+  1. EXPLAIN ANALYZE query
+  2. Identify Seq Scans
+  3. Add appropriate index
+  4. Verify Index Scan used
+
+[DACE:RULES]
+mandatory[4]
+  EXPLAIN ANALYZE before optimizing
+  WebSearch for index strategy
+  Replace {YEAR} with current year
+  Test with production-like data
+forbidden[3]
+  Hardcoded query examples
+  Trust without EXPLAIN
+  Index without analyzing
+
+FOOTER
+  protocol: SP/3.0
+  dace: dynamic_research_only
+  principle: INDEX_SCAN_OPTIMIZATION

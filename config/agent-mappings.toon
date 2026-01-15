@@ -1,0 +1,85 @@
+# Agent Mappings - Dynamic Configuration
+# Loaded at runtime by kavach
+# NO HARDCODING - Edit this file to update mappings
+
+[META]
+version: 1.0
+updated: ${DATE}
+loader: kavach
+
+[AGENTS:HIERARCHY]
+# Level -1: Fast intent parsing
+nlu-intent-analyzer: haiku
+
+# Level 0: Decision makers (never write code)
+ceo: opus
+research-director: opus
+
+# Level 1: Implementation engineers (write code)
+backend-engineer: sonnet
+frontend-engineer: sonnet
+devops-engineer: sonnet
+security-engineer: sonnet
+qa-lead: sonnet
+
+# Level 2: Verification (quality gate)
+aegis-guardian: opus
+
+[SKILL:AGENT_MAPPING]
+# Which agent handles which skill
+/cloud-infrastructure-mastery: backend-engineer
+/security: backend-engineer
+/sql: backend-engineer
+/high-performance-data-processing: backend-engineer
+/rust: backend-engineer
+/frontend: frontend-engineer
+/debug-like-expert: backend-engineer
+/testing: qa-lead
+/arch: research-director
+/dsa: backend-engineer
+/api-design: backend-engineer
+
+[INTENT:AGENT_MAPPING]
+# Which agent handles which intent type
+debug: ceo,research-director,backend-engineer
+optimize: ceo,research-director,backend-engineer
+implement: ceo
+research: research-director
+refactor: ceo,backend-engineer,aegis-guardian
+
+[DOMAIN:AGENT_MAPPING]
+# Which agent handles which domain
+security: backend-engineer
+frontend: frontend-engineer
+database: backend-engineer
+infrastructure: backend-engineer
+backend: backend-engineer
+
+[ENGINEERS:LIST]
+# Agents that are implementation engineers (can receive skill injection)
+# BUG-012 FIX: Added database-engineer
+backend-engineer
+frontend-engineer
+database-engineer
+devops-engineer
+security-engineer
+qa-lead
+
+[VALID:AGENTS]
+# All valid agent names for validation
+# BUG-012 FIX: Added database-engineer
+nlu-intent-analyzer
+ceo
+research-director
+backend-engineer
+frontend-engineer
+database-engineer
+devops-engineer
+security-engineer
+qa-lead
+aegis-guardian
+code-reviewer
+Explore
+Plan
+general-purpose
+Bash
