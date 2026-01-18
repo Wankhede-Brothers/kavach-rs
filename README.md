@@ -280,6 +280,114 @@ Backlog → In-Progress → Testing → Verified → Done
 ```
 
 ---
+## Memory Bank
+
+Persistent memory across Claude Code sessions using TOON format with project isolation.
+
+### Storage Location
+
+| Platform | Path |
+|----------|------|
+| **Linux** | `~/.local/shared/shared-ai/memory/` |
+| **macOS** | `~/Library/Application Support/shared-ai/memory/` |
+| **Windows** | `%%APPDATA%%\shared-ai\memory\` |
+
+### Directory Structure
+
+```
+~/.local/shared/shared-ai/memory/
+├── GOVERNANCE.toon     # Rules and enforcement policies
+├── index.toon          # Project index with metadata
+├── volatile.toon       # Session state (cleared on restart)
+│
+├── decisions/          # Architecture decisions (ADRs)
+│   ├── global/         # Shared across all projects
+│   └── {project}/      # Project-specific decisions
+│
+├── patterns/           # Code patterns with TTL
+│   └── {project}/
+│
+├── research/           # Research cache (TABULA_RASA)
+│   └── {project}/      # Framework docs, API patterns
+│
+├── kanban/             # 5-stage task pipeline
+│   └── {project}/      # Backlog → InProgress → Testing → Verified → Done
+│       └── kanban.toon
+│
+├── proposals/          # Feature proposals
+├── roadmaps/           # Project roadmaps
+├── graph/              # Knowledge graphs
+└── STM/                # Short-term memory
+    └── scratchpad.toon # Session scratchpad
+```
+
+### Project Isolation
+
+Memory Bank queries are scoped to the active project:
+
+```
+PROJECT:DETECTION (Priority Order)
+1. KAVACH_PROJECT env var      # Explicit override
+2. .git root directory name    # Git repository name
+3. .claude/project.json        # Project marker file
+4. Memory Bank project match   # Match against known projects
+5. "global" fallback           # Shared context
+```
+
+### Commands
+
+```bash
+# Query Memory Bank
+kavach memory bank               # Project-scoped summary
+kavach memory bank --all         # All projects
+kavach memory bank --category X  # Specific category
+
+# Kanban Operations
+kavach memory kanban             # View task board
+kavach memory kanban --status    # Pipeline status
+
+# Short-term Memory
+kavach memory stm                # Session scratchpad
+```
+
+### TOON Format Example
+
+```toon
+# Research Cache - kavach
+
+FACT:cloudflare-bun-version
+  category: config
+  verified: 2026-01-18
+  ttl: 5d
+  expires: 2026-01-23
+  src: https://developers.cloudflare.com/pages/
+  val: BUN_VERSION=1.1.33 (V2 build system)
+
+FACT:axum-0.8-router
+  category: syntax
+  verified: 2026-01-18
+  ttl: 7d
+  src: https://docs.rs/axum/0.8/
+  val: Router::new().route("/", get(handler))
+```
+
+### Fact TTL (Time-To-Live)
+
+Research facts expire based on volatility:
+
+| Category | TTL | Use Case |
+|----------|-----|----------|
+| `syntax` | 7d | Code patterns, API usage |
+| `config` | 5d | Configuration, env vars |
+| `behavior` | 3d | Runtime behavior |
+| `migration` | 30d | Breaking changes |
+| `security` | 1d | CVEs, advisories |
+
+**Rule**: If `today > verified + ttl` → Fact is STALE → Re-research required
+
+See [MEMORY_BANK.md](docs/MEMORY_BANK.md) for complete documentation.
+
+---
 
 ## Examples
 
