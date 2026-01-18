@@ -50,11 +50,11 @@ mkdir -p "${MEMORY_DIR}"/{decisions,patterns,research,kanban,proposals,roadmaps,
 # Create index.toon
 DATE=$(date +%Y-%m-%d)
 cat > "${MEMORY_DIR}/index.toon" << EOF
-# Memory Bank Index - SP/3.0
+# Memory Bank Index - SP/1.0
 INDEX:memory-bank
-  version: 3.0
+  version: 1.0
   created: ${DATE}
-  protocol: SP/3.0
+  protocol: SP/1.0
 
 STRUCTURE[8]{dir,purpose}
   decisions/,Architecture decisions
@@ -69,7 +69,7 @@ EOF
 
 # Create volatile.toon
 cat > "${MEMORY_DIR}/volatile.toon" << EOF
-# Volatile Session State - SP/3.0
+# Volatile Session State - SP/1.0
 VOLATILE:session
   created: ${DATE}
   ttl: session
@@ -78,9 +78,9 @@ EOF
 
 # Create GOVERNANCE.toon
 cat > "${MEMORY_DIR}/GOVERNANCE.toon" << EOF
-# Memory Bank Governance - SP/3.0
+# Memory Bank Governance - SP/1.0
 GOVERNANCE:memory-bank
-  version: 3.0
+  version: 1.0
   created: ${DATE}
 
 RULES[4]{name,description}

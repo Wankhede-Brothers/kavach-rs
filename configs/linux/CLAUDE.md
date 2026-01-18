@@ -1,7 +1,7 @@
-# Brahmastra Stack - SP/3.0 (Linux)
+# Brahmastra Stack - SP/1.0 (Linux)
 
 META:SYSTEM
-  protocol: SP/3.0
+  protocol: SP/1.0
   platform: linux
   binary: ~/.local/bin/kavach
   memory: ~/.local/share/shared-ai/memory/
@@ -73,5 +73,5 @@ ANTI:PATTERNS{bad,good}
   Read(memory/),kavach memory bank
 
 META:END
-  protocol: SP/3.0
+  protocol: SP/1.0
   stack: Brahmastra

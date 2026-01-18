@@ -1,4 +1,4 @@
-# File Structure Patterns - SP/3.0
+# File Structure Patterns - SP/1.0
 # Lazy-loaded for project structure rules
 
 STRUCTURE:UNIVERSAL

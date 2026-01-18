@@ -57,8 +57,8 @@ var rootCmd = &cobra.Command{
 	Long: `[KAVACH]
 desc: Universal enforcement binary for AI coding assistants
 stack: Brahmastra Stack
-protocol: SP/3.0 (Sutra Protocol)
-compatible: Claude Code, OpenCode, any SP/3.0 CLI
+protocol: SP/1.0 (Sutra Protocol)
+compatible: Claude Code, OpenCode, any SP/1.0 CLI
 
 [COMMANDS]
 gates:    Hook enforcement (PreToolUse, PostToolUse)
@@ -256,7 +256,7 @@ TaskComplete:      orch post (final verification)`,
 
 var statusCmd = &cobra.Command{
 	Use:   "status",
-	Short: "Show system status (SP/3.0 TOON format)",
+	Short: "Show system status (SP/1.0 TOON format)",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := enforce.NewContext()
 		sess := enforce.GetOrCreateSession()

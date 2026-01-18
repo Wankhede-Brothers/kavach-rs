@@ -2,7 +2,7 @@
 // DACE: Single responsibility - type definitions only
 package agents
 
-// Hierarchy levels (SP/3.0)
+// Hierarchy levels (SP/1.0)
 const (
 	LevelNLU      = -1
 	LevelCEO      = 0

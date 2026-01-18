@@ -1,4 +1,4 @@
-# Binary Commands - SP/3.0
+# Binary Commands - SP/1.0
 # Reference for kavach CLI commands
 
 COMMANDS:SESSION

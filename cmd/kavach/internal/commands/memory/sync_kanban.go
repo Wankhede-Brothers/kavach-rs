@@ -33,7 +33,7 @@ func updateKanban(project, today string, completed, inProgress, pending []TodoIt
 		}
 		defer f.Close()
 
-		fmt.Fprintln(f, "# Kanban - SP/3.0")
+		fmt.Fprintln(f, "# Kanban - SP/1.0")
 		fmt.Fprintln(f, "# Auto-synced from TodoWrite")
 		fmt.Fprintln(f)
 		fmt.Fprintf(f, "KANBAN:%s\n", project)

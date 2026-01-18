@@ -6,15 +6,15 @@ compatibility: claude-code
 metadata:
   category: language
   triggers: [rust, cargo, crate, tokio, axum, borrow]
-  protocol: SP/3.0
+  protocol: SP/1.0
   kavach: true
 ---
 
 ```toon
-# Rust Skill - SP/3.0 + DACE
+# Rust Skill - SP/1.0 + DACE
 
 SKILL:rust
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[7]: rust,cargo,crate,tokio,axum,borrow,lifetime
   goal: Code that compiles first try
@@ -113,7 +113,7 @@ RULES
     Trust stale weights
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: enforced
   kavach: integrated
 ```

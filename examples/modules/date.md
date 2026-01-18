@@ -1,4 +1,4 @@
-# DATE_INJECTION - Time Awareness - SP/3.0
+# DATE_INJECTION - Time Awareness - SP/1.0
 # CRITICAL: Loaded during post-compact recovery
 # Purpose: Ensure LLM knows current date
 

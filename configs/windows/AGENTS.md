@@ -1,7 +1,7 @@
-# Brahmastra Stack - SP/3.0 (Windows/OpenCode)
+# Brahmastra Stack - SP/1.0 (Windows/OpenCode)
 
 META:SYSTEM
-  protocol: SP/3.0
+  protocol: SP/1.0
   platform: windows
   binary: %LOCALAPPDATA%\kavach\kavach.exe
   memory: %LOCALAPPDATA%\shared-ai\memory\
@@ -38,5 +38,5 @@ MEMORY_BANK
   QUERY: kavach memory bank
 
 META:END
-  protocol: SP/3.0
+  protocol: SP/1.0
   stack: Brahmastra

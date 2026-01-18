@@ -1,10 +1,10 @@
-# SUTRA-PROTOCOL References - SP/3.0 + DACE
+# SUTRA-PROTOCOL References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:sutra-protocol
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -116,6 +116,6 @@ forbidden[3]
   Unstructured communication
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: TOKEN_EFFICIENT_COMMUNICATION

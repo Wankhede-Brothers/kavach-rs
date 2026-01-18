@@ -19,7 +19,7 @@ var kanbanCmd = &cobra.Command{
 	Long: `[KANBAN]
 desc: Production pipeline dashboard with automated verification gates
 path: ~/.local/shared/shared-ai/memory/kanban/<project>/kanban.toon
-protocol: SP/3.0 (Sutra Protocol)
+protocol: SP/1.0 (Sutra Protocol)
 
 [PIPELINE_STAGES]
 1. BACKLOG      → Tasks waiting to be started

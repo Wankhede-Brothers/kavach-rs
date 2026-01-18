@@ -2,7 +2,7 @@
 
 **Universal enforcement layer for AI coding assistants**
 
-Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/3.0) + TOON Format + DACE
+Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/1.0) + TOON Format + DACE
 
 ---
 
@@ -300,7 +300,7 @@ Skills follow Dynamic Agentic Context Engineering:
 
 ```toon
 SKILL:example
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
 
 KAVACH:DYNAMIC

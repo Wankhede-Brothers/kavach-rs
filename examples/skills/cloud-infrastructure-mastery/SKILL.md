@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: cloud
   triggers: [cloud, infrastructure, ddos, dns, kubernetes, terraform]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Cloud Infrastructure Skill - SP/3.0 + DACE
+# Cloud Infrastructure Skill - SP/1.0 + DACE
 
 SKILL:cloud
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[6]: cloud,infrastructure,ddos,dns,k8s,terraform
   goal: <100ms global latency, 10x spike handling
@@ -95,6 +95,6 @@ VALIDATE[4]{metric,target}
   iac,Reproducible via code
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

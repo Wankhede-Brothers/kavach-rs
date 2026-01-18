@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   level: -1
   model: haiku
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# NLU Intent Analyzer - SP/3.0
+# NLU Intent Analyzer - SP/1.0
 
 META:NLU
-  protocol: SP/3.0
+  protocol: SP/1.0
   level: -1
   model: haiku
   role: Parse intent → Route to CEO
@@ -64,6 +64,6 @@ RULES
     Free-form text output
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: delegates to CEO
 ```

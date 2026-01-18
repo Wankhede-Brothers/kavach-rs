@@ -1,4 +1,4 @@
-# Output Style - SP/3.0
+# Output Style - SP/1.0
 # Visual dashboard templates
 
 OUTPUT:RULES

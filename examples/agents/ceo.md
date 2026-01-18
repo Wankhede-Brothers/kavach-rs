@@ -6,15 +6,15 @@ compatibility: claude-code
 metadata:
   level: 0
   model: opus
-  protocol: SP/3.0
+  protocol: SP/1.0
   kavach: true
 ---
 
 ```toon
-# CEO Orchestrator - SP/3.0 + DACE
+# CEO Orchestrator - SP/1.0 + DACE
 
 META:CEO
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   level: 0
   model: opus
@@ -62,7 +62,7 @@ KANBAN:INTEGRATION
 OUTPUT:DELEGATE
   format: |
     [META]
-    protocol: SP/3.0
+    protocol: SP/1.0
     from: ceo
     to: {agent}
     date: $(kavach status | grep today | cut -d: -f2)
@@ -99,7 +99,7 @@ RULES
     Say "I think" or "I believe"
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: enforced
   kavach: integrated
 ```

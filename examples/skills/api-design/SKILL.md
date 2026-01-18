@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: api
   triggers: [api, rest, grpc, graphql, endpoint, pagination]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# API Design Skill - SP/3.0 + DACE
+# API Design Skill - SP/1.0 + DACE
 
 SKILL:api-design
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[6]: api,rest,grpc,graphql,endpoint,pagination
   goal: Consistent, versioned APIs
@@ -89,6 +89,6 @@ RULES
     OFFSET large datasets
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

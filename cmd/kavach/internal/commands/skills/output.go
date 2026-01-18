@@ -86,7 +86,7 @@ func OutputTOONSingle(s *Skill) {
 // OutputSutraList outputs all skills in Sutra Protocol
 func OutputSutraList(skills []*Skill) {
 	fmt.Println("[META]")
-	fmt.Println("protocol: SP/3.0")
+	fmt.Println("protocol: SP/1.0")
 	fmt.Println("from: kavach/skills")
 	fmt.Println("to: Claude")
 	fmt.Printf("date: %s\n", time.Now().Format("2006-01-02"))
@@ -117,7 +117,7 @@ func OutputSutraList(skills []*Skill) {
 // OutputSutraSingle outputs single skill in Sutra Protocol
 func OutputSutraSingle(s *Skill) {
 	fmt.Println("[META]")
-	fmt.Println("protocol: SP/3.0")
+	fmt.Println("protocol: SP/1.0")
 	fmt.Println("from: kavach/skills")
 	fmt.Printf("skill: %s\n", s.Name)
 	fmt.Printf("date: %s\n", time.Now().Format("2006-01-02"))

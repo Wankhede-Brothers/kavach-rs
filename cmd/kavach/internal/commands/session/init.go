@@ -58,7 +58,7 @@ func runInitCmd(cmd *cobra.Command, args []string) {
 
 	// DACE: Ultra-minimal output (~100 tokens)
 	fmt.Println("[META]")
-	fmt.Printf("protocol: SP/3.0\ndate: %s\nsession: %s\ntype: %s\n\n",
+	fmt.Printf("protocol: SP/1.0\ndate: %s\nsession: %s\ntype: %s\n\n",
 		ctx.Today, session.ID, getSessionType(session))
 
 	fmt.Println("[TABULA_RASA]")
@@ -95,7 +95,7 @@ func runPostCompactInit(ctx *enforce.Context, session *enforce.SessionState, ban
 	// The compact summary already contains TABULA_RASA, NO_AMNESIA, etc.
 	// Only inject: date, session ID, task pointer, memory count
 	fmt.Println("[META]")
-	fmt.Printf("protocol: SP/3.0\ndate: %s\nsession: %s\ntype: post_compact_recovery\ncompact_count: %d\n\n",
+	fmt.Printf("protocol: SP/1.0\ndate: %s\nsession: %s\ntype: post_compact_recovery\ncompact_count: %d\n\n",
 		ctx.Today, session.ID, session.CompactCount)
 
 	fmt.Println("[SESSION]")

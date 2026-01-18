@@ -17,10 +17,10 @@ var (
 
 var cmd = &cobra.Command{
 	Use:   "agents",
-	Short: "Dynamic agent management (DACE + SP/3.0)",
+	Short: "Dynamic agent management (DACE + SP/1.0)",
 	Long: `[AGENTS]
 desc: Dynamic Agentic Context Engineering for agent management
-protocol: SP/3.0 (Sutra Protocol)
+protocol: SP/1.0 (Sutra Protocol)
 sources: ~/.claude/agents/, .claude/agents/, Memory Bank
 
 [DACE_PRINCIPLES]

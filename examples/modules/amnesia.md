@@ -1,4 +1,4 @@
-# NO_AMNESIA - Memory Bank Awareness - SP/3.0
+# NO_AMNESIA - Memory Bank Awareness - SP/1.0
 # CRITICAL: Loaded during post-compact recovery
 # Purpose: Prevent LLM from claiming "no memory access"
 
@@ -35,4 +35,4 @@ RECOVERY:AFTER_COMPACT
 REINFORCE
   Memory Bank = SINGLE SOURCE OF TRUTH
   kavach binary = ONLY interface to Memory Bank
-  Claiming "no memory" = SP/3.0 VIOLATION
+  Claiming "no memory" = SP/1.0 VIOLATION

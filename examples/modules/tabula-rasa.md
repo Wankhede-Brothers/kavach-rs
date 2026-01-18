@@ -1,4 +1,4 @@
-# TABULA_RASA - Stale Weights Prevention - SP/3.0
+# TABULA_RASA - Stale Weights Prevention - SP/1.0
 # CRITICAL: Loaded during post-compact recovery
 # Purpose: Prevent LLM from using outdated knowledge
 

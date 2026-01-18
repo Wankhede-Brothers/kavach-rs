@@ -14,7 +14,7 @@ func appendToIndex(project, wd string) error {
 	indexPath := IndexPath()
 	data, err := os.ReadFile(indexPath)
 	if err != nil {
-		data = []byte("# Memory Bank Index - SP/3.0\n\nPROJECTS[1]{id,path,stack,aliases}\n")
+		data = []byte("# Memory Bank Index - SP/1.0\n\nPROJECTS[1]{id,path,stack,aliases}\n")
 	}
 
 	content := string(data)

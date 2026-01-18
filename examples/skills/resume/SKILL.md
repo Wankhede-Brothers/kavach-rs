@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: context
   triggers: [resume, /resume, context recovery, session start]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Resume Skill - SP/3.0 + DACE
+# Resume Skill - SP/1.0 + DACE
 
 SKILL:resume
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[4]: /resume,session recovery,post-compact,next day
   goal: Load project context from Memory Bank
@@ -69,6 +69,6 @@ RULES
     Miss date injection
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   binary: kavach session resume
 ```

@@ -1,7 +1,7 @@
-# Brahmastra Stack - SP/3.0 (macOS/OpenCode)
+# Brahmastra Stack - SP/1.0 (macOS/OpenCode)
 
 META:SYSTEM
-  protocol: SP/3.0
+  protocol: SP/1.0
   platform: darwin
   binary: /usr/local/bin/kavach
   memory: ~/Library/Application Support/shared-ai/memory/
@@ -38,5 +38,5 @@ MEMORY_BANK
   QUERY: kavach memory bank
 
 META:END
-  protocol: SP/3.0
+  protocol: SP/1.0
   stack: Brahmastra

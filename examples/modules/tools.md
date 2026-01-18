@@ -1,4 +1,4 @@
-# Terminal Tools - SP/3.0
+# Terminal Tools - SP/1.0
 # Lazy-loaded when Bash tool is used
 
 TERMINAL:MODERN_TOOLS

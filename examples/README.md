@@ -107,7 +107,7 @@ See [modules/README.md](modules/README.md) for detailed documentation.
 
 ---
 
-## Skill Structure (SP/3.0)
+## Skill Structure (SP/1.0)
 
 Each skill contains:
 
@@ -128,12 +128,12 @@ compatibility: claude-code
 metadata:
   category: category
   triggers: [keyword1, keyword2]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
 SKILL:skill-name
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[N]: trigger1,trigger2
   goal: What it achieves

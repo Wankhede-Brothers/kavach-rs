@@ -1,5 +1,5 @@
 // Package quality provides standalone quality commands.
-// quality.go: Code quality analysis with SP/3.0 TOON output.
+// quality.go: Code quality analysis with SP/1.0 TOON output.
 // P3 FIX: Standalone quality command for direct CLI usage.
 package quality
 
@@ -25,7 +25,7 @@ var QualityCmd = &cobra.Command{
 	Short: "Analyze code quality metrics",
 	Long: `[QUALITY]
 desc: Analyze code quality and complexity metrics
-output: SP/3.0 TOON format
+output: SP/1.0 TOON format
 
 [METRICS]
 lines:        Total lines of code

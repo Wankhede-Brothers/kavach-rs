@@ -82,7 +82,7 @@ func OutputTOONSingle(a *Agent) {
 // OutputSutraList outputs all agents in Sutra Protocol
 func OutputSutraList(agents []*Agent) {
 	fmt.Println("[META]")
-	fmt.Println("protocol: SP/3.0")
+	fmt.Println("protocol: SP/1.0")
 	fmt.Println("from: kavach/agents")
 	fmt.Println("to: CEO")
 	fmt.Printf("date: %s\n", time.Now().Format("2006-01-02"))
@@ -112,7 +112,7 @@ func OutputSutraList(agents []*Agent) {
 // OutputSutraSingle outputs single agent in Sutra Protocol
 func OutputSutraSingle(a *Agent) {
 	fmt.Println("[META]")
-	fmt.Println("protocol: SP/3.0")
+	fmt.Println("protocol: SP/1.0")
 	fmt.Println("from: kavach/agents")
 	fmt.Printf("to: %s\n", a.Name)
 	fmt.Printf("date: %s\n", time.Now().Format("2006-01-02"))

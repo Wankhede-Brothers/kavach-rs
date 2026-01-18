@@ -8,7 +8,7 @@ $Repo = "Wankhede-Brothers/kavach-go"
 function Write-Header {
     Write-Host "`n============================================" -ForegroundColor Blue
     Write-Host "  KAVACH - Brahmastra Stack Installer" -ForegroundColor Blue
-    Write-Host "  Protocol: SP/3.0 (Sutra Protocol)" -ForegroundColor Blue
+    Write-Host "  Protocol: SP/1.0 (Sutra Protocol)" -ForegroundColor Blue
     Write-Host "============================================`n" -ForegroundColor Blue
 }
 
@@ -91,9 +91,9 @@ function Install-Prompt {
 function Install-Memory {
     Write-Host "[MEMORY]"
     $date = Get-Date -Format "yyyy-MM-dd"
-    $index = "# Memory Bank Index - SP/3.0`nINDEX:memory-bank`n  version: 3.0`n  created: $date"
+    $index = "# Memory Bank Index - SP/1.0`nINDEX:memory-bank`n  version: 1.0`n  created: $date"
     Set-Content -Path "$MemoryDir\index.toon" -Value $index
-    Set-Content -Path "$MemoryDir\volatile.toon" -Value "# Volatile - SP/3.0`nVOLATILE:session`n  created: $date"
+    Set-Content -Path "$MemoryDir\volatile.toon" -Value "# Volatile - SP/1.0`nVOLATILE:session`n  created: $date"
     Write-Host "  initialized: $MemoryDir"
 }
 

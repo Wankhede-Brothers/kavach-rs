@@ -6,15 +6,15 @@ compatibility: claude-code
 metadata:
   level: 2
   model: opus
-  protocol: SP/3.0
+  protocol: SP/1.0
   kavach: true
 ---
 
 ```toon
-# Aegis Guardian - SP/3.0 + DACE
+# Aegis Guardian - SP/1.0 + DACE
 
 META:AEGIS
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   level: 2
   model: opus
@@ -79,7 +79,7 @@ WORKFLOW[7]{step,kavach}
 OUTPUT:VERIFY
   format: |
     [META]
-    protocol: SP/3.0
+    protocol: SP/1.0
     from: aegis-guardian
     date: $(kavach status | grep today | cut -d: -f2)
 
@@ -118,7 +118,7 @@ RULES
     Write/modify code
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: enforced
   kavach: integrated
   kanban: testing → verified → done

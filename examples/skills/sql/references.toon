@@ -1,10 +1,10 @@
-# SQL References - SP/3.0 + DACE
+# SQL References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:sql
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -132,6 +132,6 @@ forbidden[3]
   Index without analyzing
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: INDEX_SCAN_OPTIMIZATION

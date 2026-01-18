@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: database
   triggers: [sql, postgresql, query, index, migration, sqlx]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# SQL Skill - SP/3.0 + DACE
+# SQL Skill - SP/1.0 + DACE
 
 SKILL:sql
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[6]: sql,postgresql,query,index,migration,sqlx
   goal: Index Scan on all queries
@@ -91,6 +91,6 @@ VALIDATE
   failure: Seq Scan → Add index
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

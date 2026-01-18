@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: methodology
   triggers: [debug, troubleshoot, root cause, investigate]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Debug Like Expert Skill - SP/3.0 + DACE
+# Debug Like Expert Skill - SP/1.0 + DACE
 
 SKILL:debug
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[4]: debug,troubleshoot,root cause,investigate
   goal: Root cause identified, fix verified
@@ -92,6 +92,6 @@ REPORT
     ### Verification: [How confirmed]
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

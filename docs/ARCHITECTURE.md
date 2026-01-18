@@ -105,7 +105,7 @@ USER INPUT
 
 ---
 
-## Agent Hierarchy (SP/3.0)
+## Agent Hierarchy (SP/1.0)
 
 ```
                     ┌─────────────────┐

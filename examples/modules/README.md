@@ -1,4 +1,4 @@
-# Modules - SP/3.0 Lazy-Load System
+# Modules - SP/1.0 Lazy-Load System
 
 Modules are lazy-loaded context files that extend CLAUDE.md without bloating the initial context window.
 
@@ -122,11 +122,11 @@ ReinforceEveryN int // Default: 15 turns
 ### Add Custom Modules
 
 1. Create `~/.claude/modules/your-module.md`
-2. Follow SP/3.0 TOON format
+2. Follow SP/1.0 TOON format
 3. Add load trigger to intent hook if needed
 
 ## References
 
 - [Lost in the Middle - Stanford Research](https://arxiv.org/abs/2307.03172)
 - [Attention Sinks - MIT StreamingLLM](https://arxiv.org/abs/2309.17453)
-- [SP/3.0 Sutra Protocol](../docs/ARCHITECTURE.md)
+- [SP/1.0 Sutra Protocol](../docs/ARCHITECTURE.md)

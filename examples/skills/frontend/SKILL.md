@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: frontend
   triggers: [react, vue, astro, dioxus, css, tailwind, accessibility]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Frontend Skill - SP/3.0 + DACE
+# Frontend Skill - SP/1.0 + DACE
 
 SKILL:frontend
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[7]: react,vue,astro,dioxus,tailwind,css,a11y
   goal: Lighthouse >90, Accessible, Mobile-first
@@ -120,6 +120,6 @@ VALIDATE[4]{tool,command}
   success: >90 score + a11y pass
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

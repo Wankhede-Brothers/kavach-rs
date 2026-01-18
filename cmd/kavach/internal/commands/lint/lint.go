@@ -1,5 +1,5 @@
 // Package lint provides standalone lint commands.
-// lint.go: File linting with SP/3.0 TOON output.
+// lint.go: File linting with SP/1.0 TOON output.
 // P3 FIX: Standalone lint command for direct CLI usage.
 package lint
 
@@ -25,7 +25,7 @@ var LintCmd = &cobra.Command{
 	Short: "Lint files for code quality issues",
 	Long: `[LINT]
 desc: Lint files for code quality and style issues
-output: SP/3.0 TOON format
+output: SP/1.0 TOON format
 
 [CHECKS]
 trailing_ws:   Trailing whitespace detection

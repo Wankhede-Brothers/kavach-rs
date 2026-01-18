@@ -25,10 +25,10 @@ install_system_prompt() {
 
 create_default_prompt() {
     cat > "$SYSTEM_PROMPT" << 'EOF'
-# Brahmastra Stack - SP/3.0
+# Brahmastra Stack - SP/1.0
 
 META:SYSTEM
-  protocol: SP/3.0
+  protocol: SP/1.0
   binary: kavach
   stack: Brahmastra
 
@@ -50,11 +50,11 @@ install_memory_templates() {
     DATE=$(date +%Y-%m-%d)
 
     cat > "$MEMORY_DIR/index.toon" << EOF
-# Memory Bank Index - SP/3.0
+# Memory Bank Index - SP/1.0
 INDEX:memory-bank
-  version: 3.0
+  version: 1.0
   created: $DATE
-  protocol: SP/3.0
+  protocol: SP/1.0
 
 STRUCTURE[8]{dir,purpose}
   decisions/,Architecture decisions
@@ -68,7 +68,7 @@ STRUCTURE[8]{dir,purpose}
 EOF
 
     cat > "$MEMORY_DIR/volatile.toon" << EOF
-# Volatile Session State - SP/3.0
+# Volatile Session State - SP/1.0
 VOLATILE:session
   created: $DATE
   ttl: session

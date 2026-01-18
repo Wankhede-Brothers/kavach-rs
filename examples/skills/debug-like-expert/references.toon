@@ -1,10 +1,10 @@
-# DEBUG-LIKE-EXPERT References - SP/3.0 + DACE
+# DEBUG-LIKE-EXPERT References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:debug-like-expert
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -127,6 +127,6 @@ forbidden[3]
   Skip reproduction step
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: VERIFY_DONT_ASSUME

@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: meta
   triggers: [create skill, create hook, create agent, create command, SKILL.md]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Create Claude Components Skill - SP/3.0 + DACE
+# Create Claude Components Skill - SP/1.0 + DACE
 
 SKILL:create-claude-components
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[5]: create skill,create hook,create agent,create command,SKILL.md
   goal: Generate valid Claude Code extension components
@@ -50,9 +50,9 @@ RESEARCH:GATE
     ✓ ALWAYS validate component loads
 
 COMPONENTS:PATHS[4]{type,location,format}
-  Skill,~/.claude/skills/[name]/skill.md,YAML frontmatter + SP/3.0 TOON
+  Skill,~/.claude/skills/[name]/skill.md,YAML frontmatter + SP/1.0 TOON
   Hook,~/.claude/hooks.json,JSON matcher + command
-  Agent,~/.claude/agents/[name].md,YAML frontmatter + SP/3.0 TOON
+  Agent,~/.claude/agents/[name].md,YAML frontmatter + SP/1.0 TOON
   Command,~/.claude/commands/[name].md,YAML frontmatter + prompt
 
 TEMPLATE:SKILL
@@ -65,11 +65,11 @@ TEMPLATE:SKILL
     metadata:
       category: {category}
       triggers: [{keywords}]
-      protocol: SP/3.0
+      protocol: SP/1.0
     ---
     ```toon
     SKILL:{name}
-      protocol: SP/3.0
+      protocol: SP/1.0
       triggers[N]: {comma-separated}
       goal: {what it achieves}
       success: {acceptance criteria}
@@ -117,6 +117,6 @@ VALIDATE:COMPONENT[5]{check,status}
   Component loads in Claude Code,[ ]
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   max_lines: 150
 ```

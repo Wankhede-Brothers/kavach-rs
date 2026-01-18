@@ -2,7 +2,7 @@
 
 **Universal enforcement layer for AI coding assistants**
 
-Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/3.0) + TOON Format + DACE
+Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/1.0) + TOON Format + DACE
 
 ---
 
@@ -15,7 +15,7 @@ Kavach (Sanskrit: कवच, "armor/shield") is a Go binary that enforces best p
 │                              KAVACH STACK                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │  DACE          Dynamic Agentic Context Engineering                          │
-│  SP/3.0        Sutra Protocol - 75-80% token reduction                     │
+│  SP/1.0        Sutra Protocol - 75-80% token reduction                     │
 │  TOON          Text-Only Object Notation - 40% savings vs JSON             │
 │  Memory Bank   Persistent context across sessions                          │
 │  Gates         Hook-based enforcement (TABULA_RASA, sanitization)          │
@@ -242,7 +242,7 @@ DACE:PRINCIPLES
   no_hardcode:  WebSearch for current patterns
 ```
 
-### Sutra Protocol (SP/3.0)
+### Sutra Protocol (SP/1.0)
 Agent communication with 75-80% token reduction:
 ```
 [AGENTS:HIERARCHY]
@@ -314,5 +314,5 @@ MIT License - see [LICENSE](LICENSE)
 
 **Author**: Gaurav Wankhede
 **Stack**: Brahmastra
-**Protocol**: SP/3.0
+**Protocol**: SP/1.0
 **Binary**: kavach

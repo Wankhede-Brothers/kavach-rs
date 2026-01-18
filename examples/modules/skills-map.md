@@ -1,4 +1,4 @@
-# Skills Mapping - SP/3.0
+# Skills Mapping - SP/1.0
 # Maps task types to recommended skills
 
 SKILLS:BACKEND

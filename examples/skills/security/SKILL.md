@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: security
   triggers: [security, auth, owasp, encryption, csrf, xss, injection]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Security Skill - SP/3.0 + DACE
+# Security Skill - SP/1.0 + DACE
 
 SKILL:security
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[7]: security,auth,owasp,gnap,oauth,csrf,xss
   goal: No OWASP Top 10 vulnerabilities
@@ -99,6 +99,6 @@ VALIDATE
   deps: cargo audit / npm audit
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

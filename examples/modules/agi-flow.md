@@ -1,4 +1,4 @@
-# AGI Flow - SP/3.0
+# AGI Flow - SP/1.0
 # Real-time learning system - NEVER trust training weights
 
 PARADIGM:SHIFT

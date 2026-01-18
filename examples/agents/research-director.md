@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   level: 0
   model: opus
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Research Director - SP/3.0
+# Research Director - SP/1.0
 
 META:RESEARCH
-  protocol: SP/3.0
+  protocol: SP/1.0
   level: 0
   model: opus
   role: Evidence-based research (NEVER implement)
@@ -71,6 +71,6 @@ RULES
     Say "I think" or "I believe"
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: IDENTITY
 ```

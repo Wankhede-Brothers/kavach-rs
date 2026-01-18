@@ -1,4 +1,4 @@
-# Compact Rules - SP/3.0
+# Compact Rules - SP/1.0
 # Loaded during PreCompact hook
 # Updated: Lost-in-Middle mitigation
 

@@ -1,4 +1,4 @@
-# DACE Routing - SP/3.0
+# DACE Routing - SP/1.0
 # Maps tasks to Skills + Agents for full pipeline
 
 DACE:PIPELINE

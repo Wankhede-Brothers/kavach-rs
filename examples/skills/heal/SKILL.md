@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: quality
   triggers: [heal, lint, fix, code quality]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Heal Skill - SP/3.0 + DACE
+# Heal Skill - SP/1.0 + DACE
 
 SKILL:heal
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[4]: heal,lint,fix,lint_and_fix
   goal: 5-layer code analysis
@@ -90,6 +90,6 @@ RULES
     Allow "temp" secrets
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

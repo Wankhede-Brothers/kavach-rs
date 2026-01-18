@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: design
   triggers: [system design, architecture, scalability, distributed]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Architecture Skill - SP/3.0 + DACE
+# Architecture Skill - SP/1.0 + DACE
 
 SKILL:arch
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[4]: system design,architecture,scalability,distributed
   goal: Scalable with documented trade-offs
@@ -103,6 +103,6 @@ VALIDATE[3]{check,status}
   Failures analyzed,[ ]
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

@@ -307,7 +307,7 @@ Root governance rules for the Memory Bank:
 
 GOVERNANCE:rules
   version: 4.0
-  protocol: SP/3.0
+  protocol: SP/1.0
 
 [ENFORCEMENT]
 TABULA_RASA: WebSearch BEFORE code

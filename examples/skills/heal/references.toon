@@ -1,10 +1,10 @@
-# HEAL References - SP/3.0 + DACE
+# HEAL References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:heal
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -132,6 +132,6 @@ forbidden[3]
   Allow unjustified suppressions
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: FIVE_LAYER_ANALYSIS

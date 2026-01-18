@@ -84,7 +84,7 @@ func saveScratchpad(session *enforce.SessionState) {
 	}
 	defer f.Close()
 
-	fmt.Fprintln(f, "# Project Scratchpad - SP/3.0")
+	fmt.Fprintln(f, "# Project Scratchpad - SP/1.0")
 	fmt.Fprintln(f, "# Preserved during compact")
 	fmt.Fprintln(f)
 	fmt.Fprintf(f, "[SCRATCHPAD:%s]\n", session.Project)

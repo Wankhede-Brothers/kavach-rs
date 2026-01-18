@@ -1,10 +1,10 @@
-# API-DESIGN References - SP/3.0 + DACE
+# API-DESIGN References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:api-design
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -121,6 +121,6 @@ forbidden[3]
   Trust without spec verification
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: NO_HARDCODED_CONTENT

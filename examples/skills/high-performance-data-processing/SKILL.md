@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: data
   triggers: [parquet, arrow, polars, data pipeline, 100MB+, batch processing]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# High Performance Data Skill - SP/3.0 + DACE
+# High Performance Data Skill - SP/1.0 + DACE
 
 SKILL:data-processing
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[6]: parquet,arrow,polars,large dataset,pipeline,batch
   goal: 10-100x faster data pipelines
@@ -103,6 +103,6 @@ VALIDATE:PIPELINE[5]{check,status}
   cargo check passes,[ ]
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

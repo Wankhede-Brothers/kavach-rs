@@ -26,7 +26,7 @@ func updateScratchpad(project, today string, inProgress, completed []TodoItem) {
 	}
 	defer f.Close()
 
-	fmt.Fprintln(f, "# Scratchpad - SP/3.0")
+	fmt.Fprintln(f, "# Scratchpad - SP/1.0")
 	fmt.Fprintln(f, "# Auto-synced from TodoWrite")
 	fmt.Fprintln(f)
 	fmt.Fprintf(f, "[SCRATCHPAD:%s]\n", project)
@@ -75,7 +75,7 @@ func updateScratchpadManual(project, today, task, status string) {
 	}
 	defer f.Close()
 
-	fmt.Fprintln(f, "# Scratchpad - SP/3.0")
+	fmt.Fprintln(f, "# Scratchpad - SP/1.0")
 	fmt.Fprintf(f, "[SCRATCHPAD:%s]\n", project)
 	fmt.Fprintf(f, "updated: %s\n", today)
 	fmt.Fprintln(f)

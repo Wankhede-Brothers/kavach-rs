@@ -70,7 +70,7 @@ func ExitModify(reason, context string) {
 	os.Exit(0)
 }
 
-// TOON-aware functions for SP/3.0 compliance
+// TOON-aware functions for SP/1.0 compliance
 
 // Today returns current date for injection.
 func Today() string {

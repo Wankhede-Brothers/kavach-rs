@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: testing
   triggers: [test, unit, integration, e2e, vitest, cargo test, coverage]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Testing Skill - SP/3.0 + DACE
+# Testing Skill - SP/1.0 + DACE
 
 SKILL:testing
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[6]: test,unit,integration,e2e,coverage,mock
   goal: 80%+ coverage, proper pyramid
@@ -92,6 +92,6 @@ VALIDATE[4]{check,status}
   Coverage meets threshold,[ ]
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

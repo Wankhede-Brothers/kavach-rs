@@ -17,10 +17,10 @@ var (
 
 var cmd = &cobra.Command{
 	Use:   "skills",
-	Short: "Dynamic skill management (DACE + SP/3.0)",
+	Short: "Dynamic skill management (DACE + SP/1.0)",
 	Long: `[SKILLS]
 desc: Dynamic Agentic Context Engineering for skill management
-protocol: SP/3.0 (Sutra Protocol)
+protocol: SP/1.0 (Sutra Protocol)
 sources: ~/.claude/skills/, .claude/skills/, Memory Bank
 file: SKILL.md (case-sensitive for Claude Code)
 

@@ -1,6 +1,6 @@
 // Package enforce provides enforcement of core principles.
 // DACE: Dynamic Agentic Context Engineering
-// SP/3.0: Sutra Protocol 3.0 (TOON format)
+// SP/1.0: Sutra Protocol 1.0 (TOON format)
 // Tabula Rasa: No trust in training weights
 package enforce
 

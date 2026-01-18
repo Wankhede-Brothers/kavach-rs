@@ -1,4 +1,4 @@
-# Pipeline Architecture - SP/3.0
+# Pipeline Architecture - SP/1.0
 # Lazy-loaded when Task tool is used
 
 PIPELINE:FLOW

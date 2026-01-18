@@ -1,4 +1,4 @@
-# Hooks Reference - SP/3.0
+# Hooks Reference - SP/1.0
 # Reference only, not loaded into context
 
 HOOKS{event,command,purpose}

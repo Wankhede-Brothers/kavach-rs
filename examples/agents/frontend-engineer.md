@@ -6,15 +6,15 @@ compatibility: claude-code
 metadata:
   level: 1
   model: sonnet
-  protocol: SP/3.0
+  protocol: SP/1.0
   package_manager: bun
 ---
 
 ```toon
-# Frontend Engineer - SP/3.0
+# Frontend Engineer - SP/1.0
 
 META:ENGINEER
-  protocol: SP/3.0
+  protocol: SP/1.0
   level: 1
   model: sonnet
   role: TypeScript + Rust frontend implementation
@@ -77,7 +77,7 @@ RULES
     Say "I think"
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
   package_manager: bun
 ```

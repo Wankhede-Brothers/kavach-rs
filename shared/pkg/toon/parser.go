@@ -22,7 +22,7 @@ func NewParser() *Parser {
 // Parse reads and parses a TOON document from a reader.
 // Supports two TOON formats:
 //  1. Bracket format: [BLOCK_NAME] followed by key: value
-//  2. SP/3.0 format: BLOCK_NAME:value followed by indented key: value
+//  2. SP/1.0 format: BLOCK_NAME:value followed by indented key: value
 func (p *Parser) Parse(r io.Reader) (*Document, error) {
 	doc := NewDocument()
 	scanner := bufio.NewScanner(r)
@@ -48,7 +48,7 @@ func (p *Parser) Parse(r io.Reader) (*Document, error) {
 			continue
 		}
 
-		// Format 2: SP/3.0 block header BLOCK_NAME:value
+		// Format 2: SP/1.0 block header BLOCK_NAME:value
 		if !strings.HasPrefix(line, " ") && !strings.HasPrefix(line, "\t") {
 			if idx := strings.Index(trimmed, ":"); idx > 0 {
 				key := trimmed[:idx]
@@ -80,7 +80,7 @@ func (p *Parser) Parse(r io.Reader) (*Document, error) {
 			continue
 		}
 
-		// Indented key-value pair (SP/3.0 format)
+		// Indented key-value pair (SP/1.0 format)
 		if strings.HasPrefix(line, "  ") || strings.HasPrefix(line, "\t") {
 			if idx := strings.Index(trimmed, ":"); idx > 0 {
 				key := strings.TrimSpace(trimmed[:idx])
@@ -141,7 +141,7 @@ func (p *Parser) Parse(r io.Reader) (*Document, error) {
 //   - keywords[3]{string} -> ("keywords", 3, "string")
 //   - keywords{string} -> ("keywords", 0, "string")
 //
-// P2 FIX #6: Adds support for SP/3.0 typed arrays.
+// P2 FIX #6: Adds support for SP/1.0 typed arrays.
 // P2 FIX: Handle type-only syntax (keywords{string}) without brackets.
 func parseArrayKey(key string) (name string, size int, typ string) {
 	// Find bracket position

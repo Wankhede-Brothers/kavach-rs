@@ -23,7 +23,7 @@ print_header() {
     echo ""
     echo "╔════════════════════════════════════════════╗"
     echo "║  KAVACH - Brahmastra Stack Installer       ║"
-    echo "║  Protocol: SP/3.0 (Sutra Protocol)        ║"
+    echo "║  Protocol: SP/1.0 (Sutra Protocol)        ║"
     echo "║  DACE: Rust CLI + Go Binary               ║"
     echo "╚════════════════════════════════════════════╝"
     echo ""

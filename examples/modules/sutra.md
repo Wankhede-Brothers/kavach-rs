@@ -1,4 +1,4 @@
-# Sutra Protocol - SP/3.0
+# Sutra Protocol - SP/1.0
 # Agent communication format (75-80% token reduction)
 
 SUTRA:CORE_BLOCKS
@@ -36,7 +36,7 @@ SUTRA:STATUS_ICONS
 
 SUTRA:EXAMPLE
   [META]
-  protocol: SP/3.0
+  protocol: SP/1.0
   from: ceo
   to: backend-engineer
   date: 2026-01-16

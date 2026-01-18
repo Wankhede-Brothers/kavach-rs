@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-// outputSutraProtocol outputs in SP/3.0 format for agent communication
+// outputSutraProtocol outputs in SP/1.0 format for agent communication
 func outputSutraProtocol(board *KanbanBoard) {
 	fmt.Println("[META]")
-	fmt.Println("protocol: SP/3.0")
+	fmt.Println("protocol: SP/1.0")
 	fmt.Println("from: kavach/kanban")
 	fmt.Println("to: CEO")
 	fmt.Printf("date: %s\n", time.Now().Format("2006-01-02"))

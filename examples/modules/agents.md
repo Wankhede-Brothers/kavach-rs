@@ -1,4 +1,4 @@
-# Agent Hierarchy - SP/3.0
+# Agent Hierarchy - SP/1.0
 # Lazy-loaded when Task tool is used
 
 AGENTS:HIERARCHY

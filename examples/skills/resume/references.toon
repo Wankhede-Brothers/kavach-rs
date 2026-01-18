@@ -1,10 +1,10 @@
-# RESUME References - SP/3.0 + DACE
+# RESUME References - SP/1.0 + DACE
 # NO hardcoded examples - all content fetched dynamically
 
 REFERENCES:resume
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
-  version: 3.0
+  version: 1.0
   updated: DYNAMIC (WebSearch for latest)
 
 [SOURCES:PRIMARY]
@@ -126,6 +126,6 @@ forbidden[3]
   Ignoring Memory Bank
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: dynamic_research_only
   principle: MEMORY_BANK_FIRST

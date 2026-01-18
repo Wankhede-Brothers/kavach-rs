@@ -1,4 +1,4 @@
-# Reusability Patterns - SP/3.0
+# Reusability Patterns - SP/1.0
 # Lazy-loaded for reuse-first principles
 
 REUSE:PRINCIPLE

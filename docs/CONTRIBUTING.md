@@ -106,7 +106,7 @@ kavach/
    # My Skill
 
    SKILL:my-skill
-     protocol: SP/3.0
+     protocol: SP/1.0
      dace: lazy_load,skill_first,on_demand
 
    KAVACH:DYNAMIC

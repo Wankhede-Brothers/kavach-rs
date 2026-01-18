@@ -1,7 +1,7 @@
 #!/bin/bash
 # rust-cli.sh - Rust CLI tools installation for DACE
 # DACE: Single responsibility - Rust tool installation only
-# Protocol: SP/3.0
+# Protocol: SP/1.0
 
 # Rust CLI tool specifications
 # Format: tool_name|cargo_name|description

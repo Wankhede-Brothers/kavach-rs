@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: engineering
   triggers: [algorithm, data structure, complexity, O(n), optimize]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# DSA Skill - SP/3.0 + DACE
+# DSA Skill - SP/1.0 + DACE
 
 SKILL:dsa
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[5]: algorithm,complexity,O(n),performance,optimize
   goal: Optimal structure, documented complexity
@@ -86,6 +86,6 @@ VALIDATE
   benchmark: cargo bench / go test -bench
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

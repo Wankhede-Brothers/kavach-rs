@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   level: 1
   model: sonnet
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Backend Engineer - SP/3.0
+# Backend Engineer - SP/1.0
 
 META:ENGINEER
-  protocol: SP/3.0
+  protocol: SP/1.0
   level: 1
   model: sonnet
   role: Rust + Axum + Tonic + Zig implementation
@@ -71,6 +71,6 @@ RULES:RUST
     Say "I think"
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   research_gate: enforced
 ```

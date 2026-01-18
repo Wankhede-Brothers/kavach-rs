@@ -6,14 +6,14 @@ compatibility: claude-code
 metadata:
   category: communication
   triggers: [agent communication, delegation, handoff, result, sutra]
-  protocol: SP/3.0
+  protocol: SP/1.0
 ---
 
 ```toon
-# Sutra Protocol Skill - SP/3.0 + DACE
+# Sutra Protocol Skill - SP/1.0 + DACE
 
 SKILL:sutra-protocol
-  protocol: SP/3.0
+  protocol: SP/1.0
   dace: lazy_load,skill_first,on_demand
   triggers[5]: delegation,handoff,result,agent communication,sutra
   goal: 75-80% token reduction
@@ -83,6 +83,6 @@ RULES
     Natural language waste
 
 FOOTER
-  protocol: SP/3.0
+  protocol: SP/1.0
   token_reduction: 75-80%
 ```

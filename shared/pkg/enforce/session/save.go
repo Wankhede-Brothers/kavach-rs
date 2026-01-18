@@ -33,7 +33,7 @@ func (s *SessionState) Save() error {
 }
 
 func writeHeader(f *os.File) {
-	fmt.Fprintln(f, "# Session State - SP/3.0")
+	fmt.Fprintln(f, "# Session State - SP/1.0")
 	fmt.Fprintln(f, "# Auto-generated, do not edit")
 	fmt.Fprintln(f)
 }
