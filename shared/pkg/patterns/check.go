@@ -76,11 +76,12 @@ func IsSensitive(path string) bool {
 }
 
 // IsBlocked checks if command matches any blocked pattern.
+// Security: Case-insensitive matching for robust blocking.
 func IsBlocked(cmd string) bool {
 	cfg := Load()
 	cmdLower := strings.ToLower(cmd)
 	for _, p := range cfg.Blocked {
-		if strings.Contains(cmdLower, p) {
+		if strings.Contains(cmdLower, strings.ToLower(p)) {
 			return true
 		}
 	}

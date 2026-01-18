@@ -46,10 +46,9 @@ func runCEOGate(cmd *cobra.Command, args []string) {
 	}
 
 	// Validate agent using dynamic config (not hardcoded)
+	// SECURITY FIX: BLOCK unknown agents instead of just warning
 	if !config.IsValidAgent(subagentType) {
-		hook.ExitModifyTOON("CEO", map[string]string{
-			"status": "unknown_agent:" + subagentType,
-		})
+		hook.ExitBlockTOON("CEO", "unknown_agent:"+subagentType)
 	}
 
 	// DACE: Detect skill from task prompt using dynamic config

@@ -163,10 +163,24 @@ func GetSkillPatterns() map[string][]string { return LoadPatterns("skill-pattern
 func GetAgentMappings() map[string][]string { return LoadPatterns("agent-mappings.toon") }
 
 // GetValidAgents returns list of valid agent names from config
-func GetValidAgents() []string { return GetAgentMappings()["VALID:AGENTS"] }
+// SECURITY: Falls back to built-in defaults if config missing
+func GetValidAgents() []string {
+	agents := GetAgentMappings()["VALID:AGENTS"]
+	if len(agents) == 0 {
+		return getDefaultValidAgents()
+	}
+	return agents
+}
 
 // GetEngineers returns list of engineer agents from config
-func GetEngineers() []string { return GetAgentMappings()["ENGINEERS:LIST"] }
+// SECURITY: Falls back to built-in defaults if config missing
+func GetEngineers() []string {
+	engineers := GetAgentMappings()["ENGINEERS:LIST"]
+	if len(engineers) == 0 {
+		return getDefaultEngineers()
+	}
+	return engineers
+}
 
 // IsValidAgent checks if agent name is valid (from config)
 func IsValidAgent(agent string) bool {
@@ -186,6 +200,25 @@ func IsEngineer(agent string) bool {
 		}
 	}
 	return false
+}
+
+// getDefaultValidAgents returns built-in valid agents (fallback)
+func getDefaultValidAgents() []string {
+	return []string{
+		"nlu-intent-analyzer", "ceo", "research-director",
+		"backend-engineer", "frontend-engineer", "database-engineer",
+		"devops-engineer", "security-engineer", "qa-lead",
+		"aegis-guardian", "code-reviewer",
+		"Explore", "Plan", "general-purpose", "Bash",
+	}
+}
+
+// getDefaultEngineers returns built-in engineers (fallback)
+func getDefaultEngineers() []string {
+	return []string{
+		"backend-engineer", "frontend-engineer", "database-engineer",
+		"devops-engineer", "security-engineer", "qa-lead",
+	}
 }
 
 // ClearCache clears config cache for immediate reloading.
@@ -246,14 +279,31 @@ func GetSkillPreferredKeywords() []string {
 }
 
 // GetValidSkills returns the list of valid skill names from config
+// SECURITY: Falls back to built-in defaults if config missing
 func GetValidSkills() map[string]bool {
 	data := LoadPatterns("valid-skills.toon")
 	skills := data["VALID_SKILLS"]
+	if len(skills) == 0 {
+		skills = getDefaultValidSkills()
+	}
 	result := make(map[string]bool, len(skills))
 	for _, skill := range skills {
 		result[skill] = true
 	}
 	return result
+}
+
+// getDefaultValidSkills returns built-in valid skills (fallback)
+func getDefaultValidSkills() []string {
+	return []string{
+		"commit", "review-pr", "create-pr",
+		"init", "status", "memory", "resume",
+		"research", "plan",
+		"debug-like-expert", "security", "frontend", "testing",
+		"arch", "dsa", "sql", "api-design", "rust",
+		"cloud-infrastructure-mastery", "high-performance-data-processing",
+		"heal", "sutra-protocol", "create-claude-components",
+	}
 }
 
 // GetFrameworkPatterns returns framework patterns for research detection

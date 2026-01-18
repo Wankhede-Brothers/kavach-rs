@@ -1,0 +1,115 @@
+# Kavach Security Patterns - TOON Config
+# Loaded by: shared/pkg/patterns/loader.go
+# Install to: ~/.claude/config/patterns.toon
+
+[BLOCKED]
+# Destructive file operations
+rm -rf /
+rm -rf /*
+rm -rf ~
+> /etc/passwd
+> /etc/shadow
+> /dev/sda
+
+# Disk destruction
+dd if=/dev/zero
+dd if=/dev/random
+dd of=/dev/sd
+mkfs.
+fdisk
+parted
+
+# System control
+shutdown
+reboot
+init 0
+init 6
+poweroff
+halt
+systemctl poweroff
+systemctl reboot
+
+# Remote code execution (pipe to shell)
+| bash
+| sh
+|bash
+|sh
+| /bin/bash
+| /bin/sh
+curl | bash
+wget | sh
+curl|bash
+wget|sh
+
+# Fork bomb patterns
+:()
+:(){
+
+# Dangerous permission changes
+chmod -r 777 /
+chmod 777 /
+chmod -r 000
+chown -r root
+chown root:root /
+
+# Reverse shells
+nc -e
+ncat -e
+bash -i >& /dev/tcp
+/dev/tcp/
+
+# History manipulation
+history -c
+export histsize=0
+unset histfile
+
+# Kernel manipulation
+insmod
+rmmod
+modprobe -r
+
+# Container escape
+nsenter
+--privileged
+
+[SENSITIVE]
+.env
+credentials
+secret
+password
+private_key
+id_rsa
+id_ed25519
+.pem
+.key
+api_key
+auth_token
+access_token
+
+[CODE_EXTS]
+.go
+.rs
+.ts
+.tsx
+.js
+.jsx
+.py
+.rb
+.java
+.kt
+.swift
+.c
+.cpp
+.h
+.hpp
+.zig
+
+[LARGE_EXTS]
+.log
+.csv
+.sql
+.dump
+.bak
+.tar
+.gz
+.zip
