@@ -34,6 +34,17 @@ func formatIntentDirective(intent *IntentClassification, today string) string {
 		sb.WriteString("FIRST_ACTION: WebSearch \"[topic] " + today + " documentation\"\n\n")
 	}
 
+	// QUALITY ENFORCEMENT: Fix warnings/errors, never suppress
+	if intent.Type == "debug" || intent.Type == "fix" {
+		sb.WriteString("[QUALITY:FIX_DONT_SUPPRESS]\n")
+		sb.WriteString("RULE: NEVER suppress warnings - ALWAYS fix them\n")
+		sb.WriteString("FORBIDDEN: #[allow(...)], // @ts-ignore, # noqa, @SuppressWarnings\n")
+		sb.WriteString("REQUIRED: Understand WHY the warning exists\n")
+		sb.WriteString("ACTION: Fix root cause, not symptoms\n")
+		sb.WriteString("DEAD_CODE: Remove unused code, do not comment out\n")
+		sb.WriteString("WARNINGS: Indicate potential bugs - investigate and fix\n\n")
+	}
+
 	if len(intent.Skills) > 0 {
 		sb.WriteString("[SKILL:INJECT]\n")
 		for _, skill := range intent.Skills {
@@ -78,6 +89,7 @@ func formatIntentDirective(intent *IntentClassification, today string) string {
 	sb.WriteString("[CRITICAL:RULES]\n")
 	sb.WriteString("NO_AMNESIA: Memory Bank at ~/.local/shared/shared-ai/memory/\n")
 	sb.WriteString("TABULA_RASA: WebSearch BEFORE code\n")
+	sb.WriteString("FIX_DONT_SUPPRESS: Fix warnings, never silence them\n")
 	sb.WriteString("DATE: " + today + "\n")
 
 	return sb.String()
@@ -118,5 +130,6 @@ turn: ` + strconv.Itoa(session.TurnCount) + `
 
 CRITICAL:BINARY_FIRST - kavach BEFORE Read/Explore
 CRITICAL:TABULA_RASA - WebSearch BEFORE code (cutoff: 2025-01, today: ` + today + `)
-CRITICAL:NO_AMNESIA - Memory Bank EXISTS`
+CRITICAL:NO_AMNESIA - Memory Bank EXISTS
+CRITICAL:FIX_DONT_SUPPRESS - Fix warnings, never silence them`
 }

@@ -1,0 +1,74 @@
+# Suppression Patterns - Quality Enforcement
+# NEVER suppress warnings - ALWAYS fix them
+# Loaded by: kavach gates quality --hook
+
+[META]
+version: 1.0
+rule: FIX_DONT_SUPPRESS
+enforcement: BLOCKING
+
+[RUST:SUPPRESSION]
+# Rust allow attributes - BLOCKED
+#[allow(
+#![allow(
+#[cfg_attr(*, allow(
+// dead_code suppression
+#[allow(dead_code)]
+#[allow(unused)]
+#[allow(unused_variables)]
+#[allow(unused_imports)]
+#[allow(unused_mut)]
+
+[GO:SUPPRESSION]
+# Go blank identifier for ignoring - BLOCKED when misused
+_ = err
+//nolint
+// nolint
+//lint:ignore
+// lint:ignore
+
+[TYPESCRIPT:SUPPRESSION]
+# TypeScript/JavaScript ignore comments - BLOCKED
+// @ts-ignore
+// @ts-nocheck
+// @ts-expect-error
+/* eslint-disable
+// eslint-disable-next-line
+/* tslint:disable
+// tslint:disable
+
+[PYTHON:SUPPRESSION]
+# Python suppression comments - BLOCKED
+# type: ignore
+# noqa
+# pylint: disable
+# pragma: no cover
+
+[JAVA:SUPPRESSION]
+# Java suppression annotations - BLOCKED
+@SuppressWarnings
+@SuppressLint
+
+[CPP:SUPPRESSION]
+# C/C++ suppression pragmas - BLOCKED
+#pragma warning(disable
+#pragma GCC diagnostic ignored
+// NOLINT
+/* NOLINT
+
+[GENERAL:DEAD_CODE]
+# Dead code indicators
+TODO: remove
+FIXME: delete
+XXX: unused
+DEPRECATED
+@deprecated
+#[deprecated
+
+[ENFORCEMENT:MESSAGE]
+BLOCKING: Suppression detected - FIX the issue instead
+ACTION: Understand WHY the warning exists
+RULE: Warnings indicate potential bugs or technical debt
+FORBIDDEN: Silencing warnings without fixing root cause
+REQUIRED: Fix or refactor to eliminate warning
+
