@@ -35,15 +35,40 @@ func isStatusQuery(prompt string) bool {
 	return false
 }
 
-// isImplementationIntent returns true for intent types that require code changes.
-// P1 FIX: These intents reset research state to enforce task-scoped research.
+// isImplementationIntent returns true for intent types that require research first.
+// TABULA_RASA: ALL intents except pure greetings require research.
 func isImplementationIntent(intentType string) bool {
-	implementationTypes := []string{
+	// ALL non-trivial intents require research - training weights are STALE
+	requiresResearch := []string{
 		"implement", "debug", "refactor", "optimize", "fix",
-		"audit", "docs", "unclassified",
+		"audit", "docs", "unclassified", "research",
 	}
-	for _, t := range implementationTypes {
+	for _, t := range requiresResearch {
 		if intentType == t {
+			return true
+		}
+	}
+	return false
+}
+
+// containsTechnicalTerms checks if prompt contains terms that need current docs.
+// These terms indicate user needs FRESH information, not stale training weights.
+func containsTechnicalTerms(prompt string) bool {
+	terms := []string{
+		"version", "install", "config", "setup", "deploy",
+		"error", "fix", "issue", "bug", "fail",
+		"how to", "how do", "what is", "which",
+		"bun", "node", "npm", "yarn", "pnpm",
+		"docker", "kubernetes", "terraform", "cloudflare",
+		"react", "vue", "angular", "nextjs", "astro",
+		"rust", "go", "python", "java",
+		"api", "endpoint", "route", "handler",
+		"database", "postgres", "mysql", "redis",
+		"env", "environment", "variable",
+	}
+	lower := strings.ToLower(prompt)
+	for _, term := range terms {
+		if strings.Contains(lower, term) {
 			return true
 		}
 	}
