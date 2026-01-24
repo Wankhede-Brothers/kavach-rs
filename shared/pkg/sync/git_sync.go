@@ -32,11 +32,11 @@ type SyncState struct {
 
 // GitSync handles git-backed synchronization
 type GitSync struct {
-	workDir     string
-	beadsDir    string // .kavach directory
-	state       *SyncState
-	debounceMs  int
-	lastExport  time.Time
+	workDir    string
+	beadsDir   string // .kavach directory
+	state      *SyncState
+	debounceMs int
+	lastExport time.Time
 }
 
 // NewGitSync creates a new git sync manager

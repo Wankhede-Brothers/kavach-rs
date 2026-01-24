@@ -25,22 +25,22 @@ var (
 
 // Vertex represents a node in the DAG (a task)
 type Vertex struct {
-	ID          string            `json:"id"`
-	Label       string            `json:"label"`
-	Status      string            `json:"status"` // pending, in_progress, completed, blocked
-	Priority    int               `json:"priority"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
-	Metadata    map[string]string `json:"metadata,omitempty"`
-	inDegree    int               // Number of incoming edges (blockers)
-	outDegree   int               // Number of outgoing edges (blocks)
+	ID        string            `json:"id"`
+	Label     string            `json:"label"`
+	Status    string            `json:"status"` // pending, in_progress, completed, blocked
+	Priority  int               `json:"priority"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	Metadata  map[string]string `json:"metadata,omitempty"`
+	inDegree  int               // Number of incoming edges (blockers)
+	outDegree int               // Number of outgoing edges (blocks)
 }
 
 // Edge represents a dependency between tasks
 type Edge struct {
-	From     string `json:"from"`      // Blocker task ID
-	To       string `json:"to"`        // Blocked task ID
-	Relation string `json:"relation"`  // blocks, related, parent
+	From     string `json:"from"`     // Blocker task ID
+	To       string `json:"to"`       // Blocked task ID
+	Relation string `json:"relation"` // blocks, related, parent
 }
 
 // DAG is a thread-safe directed acyclic graph for task dependencies
