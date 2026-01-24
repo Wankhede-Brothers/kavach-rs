@@ -12,24 +12,32 @@ Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/1.0) + TOON Fo
 
 ## What's New in v0.2.0
 
-**Full support for Claude Code 2.1.19's persistent task system:**
+**Full support for Claude Code 2.1.19's persistent task system + Beads-inspired features:**
 
+### Task System (Claude Code 2.1.19)
 - **Task Gates**: Validation for `TaskCreate`, `TaskUpdate`, `TaskGet`, `TaskList`, `TaskOutput`
 - **Health Monitoring**: Runtime bug detection for known Claude Code issues
 - **Zombie Detection**: Catches orphaned background tasks
 - **Multi-Session Coordination**: Via `CLAUDE_CODE_TASK_LIST_ID`
 
+### Beads Integration ([steveyegge/beads](https://github.com/steveyegge/beads))
+- **DAG Dependencies**: Task dependency graph with cycle detection
+- **Hash-Based IDs**: Merge-safe task IDs (`kv-a1b2c3`)
+- **Git-Backed Sync**: JSONL export to `.kavach/` with auto-sync
+- **"Land the Plane"**: Clean session handoff protocol
+
 ```bash
 # Check task health
 kavach orch task-health
 
+# Land the plane (session handoff)
+kavach session land
+
 # Output
-[TASK_HEALTH]
-active_tasks: 3
-completed_tasks: 12
-zombie_candidates: 0
-issues_found: 0
-[STATUS] OK - No issues detected.
+[LANDING_THE_PLANE]
+step: 1/6 - Checking session state...
+step: 5/6 - Pushing to remote (MANDATORY)...
+[STATUS] LANDED - All changes pushed to remote.
 ```
 
 ---
@@ -324,6 +332,9 @@ kavach gates read --hook         # Sensitive file blocking
 kavach orch task-health          # Run full health check
 kavach orch task-health --cleanup           # Clean old completed tasks
 kavach orch task-health --cleanup --days 14 # Custom retention period
+
+# Beads-Inspired (Session Handoff)
+kavach session land              # "Land the plane" - commit, push, handoff
 ```
 
 ---
@@ -559,6 +570,79 @@ issues_found: 1
     github: anthropics/claude-code#17542
     fix: Check with TaskOutput(task_id='abc123'). If unresponsive, use TaskStop.
 ```
+
+### Beads-Inspired Features
+
+Kavach integrates patterns from [steveyegge/beads](https://github.com/steveyegge/beads) for improved task management:
+
+#### DAG Task Dependencies (`shared/pkg/dsa/dag.go`)
+
+```go
+// Thread-safe directed acyclic graph
+dag := dsa.NewDAG()
+
+// Hash-based IDs prevent merge conflicts
+id := dsa.GenerateID("Build API")  // → "kv-a1b2c3"
+
+// Add task with dependencies
+dag.AddVertex(id, "Build API", priority)
+dag.AddEdge(blockerID, blockedID, "blocks")
+
+// Get ready tasks (no incomplete blockers)
+ready := dag.Ready()
+```
+
+#### Git-Backed Sync (`shared/pkg/sync/git_sync.go`)
+
+```bash
+# Project-local storage (like Beads .beads/)
+.kavach/
+├── tasks/
+│   └── dag.json      # Task DAG (git-tracked)
+├── memory/           # Memory Bank export
+└── cache/            # SQLite cache (gitignored)
+```
+
+```go
+sync := syncp.NewGitSync(workDir)
+sync.Init(stealth: false)            // Create .kavach/
+sync.Export(tasks, "tasks/dag.json") // JSONL export (30s debounce)
+sync.Sync("commit message")          // git add + commit + push
+```
+
+#### "Land the Plane" Protocol (`kavach session land`)
+
+Explicit session handoff ensuring all work is committed and pushed:
+
+```bash
+kavach session land
+
+# 6-step process:
+# 1. Check session state (open tasks)
+# 2. Sync Memory Bank to git
+# 3. Run quality gates (go vet)
+# 4. Git commit
+# 5. Git push (MANDATORY - not landed until pushed)
+# 6. Generate handoff prompt for next session
+
+[LANDING_REPORT]
+session_id: sess_abc123
+tasks_closed: 5
+push_succeeded: true
+[STATUS] LANDED - All changes pushed to remote.
+
+[HANDOFF_PROMPT]
+Continue session from 2026-01-24.
+Next task: kv-a1b2c3: Implement REST endpoints
+```
+
+| Feature | Beads | Kavach |
+|---------|-------|--------|
+| Storage | `.beads/issues.jsonl` | `.kavach/tasks/dag.json` |
+| IDs | `bd-a1b2` | `kv-a1b2c3` |
+| Dependencies | `bd dep add` | `dag.AddEdge()` |
+| Ready tasks | `bd ready` | `dag.Ready()` |
+| Session end | "Land the plane" | `kavach session land` |
 
 ---
 ## Memory Bank
