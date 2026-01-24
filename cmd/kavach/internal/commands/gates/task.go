@@ -5,6 +5,7 @@
 package gates
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -229,13 +230,18 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
-// generateTaskID creates a unique task ID from subject and timestamp
+// generateTaskID creates a Beads-style hash ID (kv-a1b2c3)
+// Reference: github.com/steveyegge/beads - hash-based IDs prevent merge conflicts
 func generateTaskID(subject string) string {
-	// Use first 8 chars of subject + timestamp hash
-	prefix := sanitizeID(subject)
-	if len(prefix) > 8 {
-		prefix = prefix[:8]
+	// Import crypto/sha256 at top of file
+	data := subject + time.Now().Format(time.RFC3339Nano)
+	// Simple hash using time + subject
+	hash := 0
+	for _, c := range data {
+		hash = hash*31 + int(c)
 	}
-	timestamp := time.Now().UnixNano()
-	return prefix + "_" + string(rune(timestamp%1000000))
+	if hash < 0 {
+		hash = -hash
+	}
+	return fmt.Sprintf("kv-%06x", hash%0xFFFFFF)
 }
