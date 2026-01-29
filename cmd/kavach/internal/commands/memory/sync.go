@@ -5,12 +5,12 @@ package memory
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
+	"github.com/claude/shared/pkg/stmlog"
 	"github.com/claude/shared/pkg/util"
 	"github.com/spf13/cobra"
 )
@@ -100,7 +100,7 @@ func syncTaskCreate(input *hook.Input, project, today string) {
 	if subject == "" {
 		return
 	}
-	appendToSTMLog(project, today, "task_created", subject, description)
+	stmlog.AppendEvent(project,"task_created", subject, description)
 }
 
 func syncTaskUpdate(input *hook.Input, project, today string) {
@@ -110,7 +110,7 @@ func syncTaskUpdate(input *hook.Input, project, today string) {
 		return
 	}
 	subject := input.GetString("subject")
-	appendToSTMLog(project, today, "task_"+status, subject, taskID)
+	stmlog.AppendEvent(project,"task_"+status, subject, taskID)
 
 	// Update scratchpad and kanban on completion
 	if status == "completed" && subject != "" {
@@ -131,7 +131,7 @@ func syncFileChange(input *hook.Input, project, today string) {
 	session := enforce.GetOrCreateSession()
 	session.AddFileModified(filePath)
 
-	appendToSTMLog(project, today, "file_"+input.ToolName, filePath, "")
+	stmlog.AppendEvent(project,"file_"+input.ToolName, filePath, "")
 }
 
 func syncBashResult(input *hook.Input, project, today string) {
@@ -142,7 +142,7 @@ func syncBashResult(input *hook.Input, project, today string) {
 	// Phase 7b: Only log significant commands (builds, tests, deploys, git)
 	for _, sig := range []string{"build", "test", "deploy", "cargo", "go ", "bun ", "npm ", "git commit", "git push", "git merge"} {
 		if containsStr(command, sig) {
-			appendToSTMLog(project, today, "bash_"+sig, command, "")
+			stmlog.AppendEvent(project,"bash_"+sig, command, "")
 			return
 		}
 	}
@@ -155,40 +155,9 @@ func syncAgentResult(input *hook.Input, project, today string) {
 	if desc == "" {
 		return
 	}
-	appendToSTMLog(project, today, "agent_"+agentType, desc, "")
+	stmlog.AppendEvent(project,"agent_"+agentType, desc, "")
 }
 
 func containsStr(s, sub string) bool {
 	return len(s) >= len(sub) && strings.Contains(strings.ToLower(s), sub)
-}
-
-func appendToSTMLog(project, today, eventType, subject, detail string) {
-	stmDir, err := util.EnsureScratchpadDir(project)
-	if err != nil {
-		// Phase 7d: Graceful degradation — log + skip
-		fmt.Fprintf(os.Stderr, "[SYNC] scratchpad dir error: %v\n", err)
-		return
-	}
-	logPath := stmDir + "/session_log.toon"
-
-	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "[SYNC] log open error: %v\n", err)
-		return
-	}
-	defer f.Close()
-
-	// Phase 7c: Cap session log at 200 events
-	info, _ := f.Stat()
-	if info != nil && info.Size() > 50*1024 { // ~200 events at ~256 bytes each
-		// Rotate: file is too large, skip writing
-		return
-	}
-
-	ts := time.Now().Format("15:04:05")
-	line := fmt.Sprintf("[%s] %s: %s", ts, eventType, sanitizeTitle(subject))
-	if detail != "" {
-		line += " | " + sanitizeTitle(detail)
-	}
-	fmt.Fprintln(f, line)
 }
