@@ -79,11 +79,19 @@ func runCEOGate(cmd *cobra.Command, args []string) {
 		orchDirective["IF_FAIL"] = "Re-delegate with specific feedback"
 		orchDirective["IF_PASS"] = "Run kavach orch aegis for final verification"
 
-		// DAG Scheduler: If breakdown has >1 step, build parallel dispatch
+		// DAG Scheduler: build parallel dispatch from breakdown or intent SubAgents
+		session := enforce.GetOrCreateSession()
 		breakdown := extractBreakdown(prompt)
+		agents := resolveAgents(session, subagentType)
+
+		// Auto-decompose: if no explicit breakdown but intent has multiple SubAgents,
+		// generate research + implementation steps automatically
+		if len(breakdown) <= 1 && len(agents) > 1 {
+			breakdown = autoDecompose(prompt, agents)
+		}
+
 		if len(breakdown) > 1 {
-			session := enforce.GetOrCreateSession()
-			nodes := dag.Decompose(breakdown, []string{subagentType})
+			nodes := dag.Decompose(breakdown, agents)
 			state, err := dag.Schedule(session.SessionID, prompt, nodes)
 			if err == nil {
 				if err := dag.Save(state); err != nil {

@@ -40,4 +40,10 @@ type SessionState struct {
 	TasksCreated   int    // Count of tasks created this session
 	TasksCompleted int    // Count of tasks completed this session
 	TaskListID     string // CLAUDE_CODE_TASK_LIST_ID for shared task lists
+
+	// Intent bridge: passes NLU classification from intent gate to CEO gate
+	IntentType      string   // e.g., "implement", "debug", "optimize"
+	IntentDomain    string   // e.g., "security", "frontend", "database"
+	IntentSubAgents []string // e.g., ["research-director", "backend-engineer"]
+	IntentSkills    []string // e.g., ["/security", "/rust"]
 }

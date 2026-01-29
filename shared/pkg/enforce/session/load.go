@@ -98,10 +98,38 @@ func parseField(state *SessionState, key, value string, inFiles *bool) {
 		if value != "" {
 			state.FilesModified = append(state.FilesModified, value)
 		}
+	// Intent bridge fields (written by intent gate, read by CEO gate)
+	case "type":
+		if state.IntentType == "" { // Only set if not already set by [SESSION] block
+			state.IntentType = value
+		}
+	case "domain":
+		if state.IntentDomain == "" {
+			state.IntentDomain = value
+		}
+	case "subagents":
+		if value != "" {
+			state.IntentSubAgents = splitCSV(value)
+		}
+	case "skills":
+		if value != "" && len(state.IntentSkills) == 0 {
+			state.IntentSkills = splitCSV(value)
+		}
 	}
 }
 
 // isValidToday checks if session date matches today.
 func isValidToday(sessionDate string) bool {
 	return sessionDate == time.Now().Format("2006-01-02")
+}
+
+func splitCSV(s string) []string {
+	parts := strings.Split(s, ",")
+	var result []string
+	for _, p := range parts {
+		if t := strings.TrimSpace(p); t != "" {
+			result = append(result, t)
+		}
+	}
+	return result
 }

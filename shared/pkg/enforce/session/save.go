@@ -71,6 +71,34 @@ func writeTaskBlock(f *os.File, s *SessionState) {
 	fmt.Fprintf(f, "task: %s\n", s.CurrentTask)
 	fmt.Fprintf(f, "task_status: %s\n", s.TaskStatus)
 	writeFilesArray(f, s.FilesModified)
+	fmt.Fprintln(f)
+	writeIntentBlock(f, s)
+}
+
+func writeIntentBlock(f *os.File, s *SessionState) {
+	if s.IntentType == "" {
+		return
+	}
+	fmt.Fprintln(f, "[INTENT_BRIDGE]")
+	fmt.Fprintf(f, "type: %s\n", s.IntentType)
+	fmt.Fprintf(f, "domain: %s\n", s.IntentDomain)
+	if len(s.IntentSubAgents) > 0 {
+		fmt.Fprintf(f, "subagents: %s\n", joinCSV(s.IntentSubAgents))
+	}
+	if len(s.IntentSkills) > 0 {
+		fmt.Fprintf(f, "skills: %s\n", joinCSV(s.IntentSkills))
+	}
+}
+
+func joinCSV(items []string) string {
+	result := ""
+	for i, s := range items {
+		if i > 0 {
+			result += ","
+		}
+		result += s
+	}
+	return result
 }
 
 func writeFilesArray(f *os.File, files []string) {

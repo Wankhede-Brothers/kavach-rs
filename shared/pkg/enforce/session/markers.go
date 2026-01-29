@@ -92,9 +92,17 @@ func (s *SessionState) SetCurrentTask(task string) {
 }
 
 // ResetTaskResearch resets research state for a new task.
-// Call this when NLU detects an implementation intent.
 func (s *SessionState) ResetTaskResearch() {
 	s.ResearchDone = false
 	s.AegisVerified = false
+	s.Save()
+}
+
+// StoreIntent persists intent classification for the CEO gate to read.
+func (s *SessionState) StoreIntent(intentType, domain string, subAgents, skills []string) {
+	s.IntentType = intentType
+	s.IntentDomain = domain
+	s.IntentSubAgents = subAgents
+	s.IntentSkills = skills
 	s.Save()
 }

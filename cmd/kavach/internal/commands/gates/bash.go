@@ -1,6 +1,6 @@
 // Package gates provides hook gates for Claude Code.
 // bash.go: Bash command sanitizer with Rust CLI enforcement.
-// NO HARDCODING - Legacy/Rust mappings from config/rust-cli.toon
+// DACE: Uses shared/pkg/config for JSON-based security rules.
 package gates
 
 import (
@@ -41,19 +41,38 @@ func runBashGate(cmd *cobra.Command, args []string) {
 		hook.ExitBlockTOON("BASH", "empty_command")
 	}
 
+	// Check blocked commands from gates/config.json (priority)
+	if config.IsBlockedCommand(command) {
+		hook.ExitBlockTOON("BASH", "blocked_command")
+	}
+
+	// Legacy: Check patterns from patterns.toon
 	if patterns.IsBlocked(command) {
 		hook.ExitBlockTOON("BASH", "blocked_command")
 	}
 
+	// Check for legacy CLI commands that should use Rust alternatives
 	if legacy, rust, reason := detectLegacyCommand(command); legacy != "" {
 		msg := "LEGACY_BLOCKED:" + legacy + ":USE:" + rust + ":" + reason
 		hook.ExitBlockTOON("RUST_CLI", msg)
 	}
 
+	// Warn on sudo commands
 	if strings.HasPrefix(strings.TrimSpace(command), "sudo") {
 		hook.ExitModifyTOON("BASH", map[string]string{
 			"warn": "sudo_detected",
 		})
+	}
+
+	// Warn on other risky patterns from config
+	cfg := config.LoadGatesConfig()
+	cmdLower := strings.ToLower(command)
+	for _, warn := range cfg.Bash.WarnCommands {
+		if strings.Contains(cmdLower, strings.ToLower(warn)) {
+			hook.ExitModifyTOON("BASH", map[string]string{
+				"warn": warn + "_detected",
+			})
+		}
 	}
 
 	hook.ExitSilent()

@@ -1,9 +1,10 @@
 // Package gates provides hook gates for Claude Code.
 // read.go: Read file blocker gate.
-// DACE: Uses shared/pkg/patterns for dynamic patterns.
+// DACE: Uses shared/pkg/config for JSON-based dynamic patterns.
 package gates
 
 import (
+	"github.com/claude/shared/pkg/config"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/patterns"
 	"github.com/spf13/cobra"
@@ -38,9 +39,26 @@ func runReadGate(cmd *cobra.Command, args []string) {
 		hook.ExitBlockTOON("READ", "no_file_path")
 	}
 
-	// Check sensitive files using shared patterns
+	// Check blocked paths from gates/config.json (priority)
+	if config.IsBlockedPath(filePath) {
+		hook.ExitBlockTOON("READ", "blocked_path")
+	}
+
+	// Check blocked extensions (private keys, etc.)
+	if config.IsBlockedExtension(filePath) {
+		hook.ExitBlockTOON("READ", "blocked_extension")
+	}
+
+	// Legacy: Check sensitive files using shared patterns
 	if patterns.IsSensitive(filePath) {
 		hook.ExitBlockTOON("READ", "sensitive_file")
+	}
+
+	// Warn for files that may contain secrets
+	if config.IsWarnPath(filePath) {
+		hook.ExitModifyTOON("READ", map[string]string{
+			"warn": "may_contain_secrets",
+		})
 	}
 
 	// Warn for large files

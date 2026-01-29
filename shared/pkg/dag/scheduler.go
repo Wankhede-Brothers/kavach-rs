@@ -15,12 +15,34 @@ var researchKeywords = []string{"research", "search", "explore", "investigate", 
 
 // Decompose creates nodes from a CEO TaskBreakdown with agent assignments.
 // Steps containing research keywords are treated as parallel-safe (no inter-deps).
+// Agents are matched by content: research steps → research agents, others → non-research agents.
 func Decompose(breakdown []string, agents []string) []*Node {
+	// Separate agents into research vs implementation pools
+	var researchAgents, implAgents []string
+	for _, a := range agents {
+		if strings.Contains(a, "research") {
+			researchAgents = append(researchAgents, a)
+		} else {
+			implAgents = append(implAgents, a)
+		}
+	}
+	if len(implAgents) == 0 {
+		implAgents = []string{"general-purpose"}
+	}
+	if len(researchAgents) == 0 {
+		researchAgents = []string{"research-director"}
+	}
+
 	nodes := make([]*Node, len(breakdown))
+	rIdx, iIdx := 0, 0
 	for i, step := range breakdown {
-		agent := "general-purpose"
-		if i < len(agents) && agents[i] != "" {
-			agent = agents[i]
+		var agent string
+		if isResearch(step) {
+			agent = researchAgents[rIdx%len(researchAgents)]
+			rIdx++
+		} else {
+			agent = implAgents[iIdx%len(implAgents)]
+			iIdx++
 		}
 		id := nodeID(step)
 		nodes[i] = &Node{
