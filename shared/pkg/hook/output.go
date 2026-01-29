@@ -87,13 +87,21 @@ func TOONBlock(name string, kvs map[string]string) string {
 }
 
 // ExitApproveTOON outputs approve with TOON context.
+// Uses hookSpecificOutput format (consistent with ExitBlockTOON).
 func ExitApproveTOON(gate string) {
 	ctx := TOONBlock("GATE", map[string]string{
 		"name":   gate,
 		"status": "approve",
 		"date":   Today(),
 	})
-	Modify(gate+" passed", ctx)
+	Output(&types.HookResponse{
+		HookSpecificOutput: &types.HookSpecificOutput{
+			HookEventName:            "PreToolUse",
+			PermissionDecision:       "allow",
+			PermissionDecisionReason: gate + " passed",
+			AdditionalContext:        ctx,
+		},
+	})
 	os.Exit(0)
 }
 

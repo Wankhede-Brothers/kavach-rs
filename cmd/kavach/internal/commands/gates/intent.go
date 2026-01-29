@@ -69,8 +69,15 @@ func runIntentGate(cmd *cobra.Command, args []string) {
 	// 4. AGI NLU: Classify intent using dynamic config
 	intent := classifyIntentFromConfig(prompt)
 	if intent != nil {
-		// Bridge: store intent in session so CEO gate can read SubAgents/Skills
+		session.MarkNLUParsed()
 		session.StoreIntent(intent.Type, intent.Domain, intent.SubAgents, intent.Skills)
+
+		// Boost research requirement if prompt has technical terms
+		if containsTechnicalTerms(prompt) && isImplementationIntent(intent.Type) {
+			intent.ResearchReq = true
+			intent.Confidence = "high"
+		}
+
 		contextBlocks = append(contextBlocks, formatIntentDirective(intent, today))
 	}
 

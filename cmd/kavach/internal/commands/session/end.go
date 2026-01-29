@@ -3,6 +3,7 @@ package session
 import (
 	"fmt"
 
+	"github.com/claude/shared/pkg/dag"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/spf13/cobra"
 )
@@ -43,4 +44,7 @@ func runEndCmd(cmd *cobra.Command, args []string) {
 		boolStr(session.CEOInvoked), boolStr(session.AegisVerified))
 
 	session.Save()
+
+	// Cleanup DAG state files older than 7 days
+	dag.CleanupOld(7)
 }

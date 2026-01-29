@@ -34,12 +34,29 @@ func runContextGate(cmd *cobra.Command, args []string) {
 
 	input := hook.MustReadHookInput()
 
-	// P1 FIX: Track multiple tool types
+	// Track all file operation tools (Read, Glob, Grep, Write, Edit, Task)
 	switch input.ToolName {
 	case "Read":
 		filePath := input.GetString("file_path")
 		if filePath != "" {
 			context.TrackFileRead(filePath)
+		}
+	case "Glob":
+		// Glob uses "path" field (optional, defaults to cwd)
+		path := input.GetString("path")
+		pattern := input.GetString("pattern")
+		if path != "" {
+			context.TrackFileRead(path)
+		} else if pattern != "" {
+			context.TrackFileRead("glob:" + pattern)
+		}
+	case "Grep":
+		path := input.GetString("path")
+		pattern := input.GetString("pattern")
+		if path != "" {
+			context.TrackFileRead(path)
+		} else if pattern != "" {
+			context.TrackFileRead("grep:" + pattern)
 		}
 	case "Write":
 		filePath := input.GetString("file_path")
@@ -52,7 +69,6 @@ func runContextGate(cmd *cobra.Command, args []string) {
 			context.TrackFileEdit(filePath)
 		}
 	case "Task":
-		// Track agent completion
 		agentType := input.GetString("subagent_type")
 		if agentType != "" {
 			context.TrackAgentCompletion(agentType)

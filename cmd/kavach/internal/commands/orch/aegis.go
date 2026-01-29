@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/util"
 	"github.com/spf13/cobra"
@@ -86,10 +87,12 @@ func runAegisCmd(cmd *cobra.Command, args []string) {
 		// Run verification
 		result := runVerification(project)
 
-		// Output result
-		outputAegisResult(project, today, result)
+		// Output TOON report to stderr (stdout is reserved for JSON hook response)
+		outputAegisResult(os.Stderr, project, today, result)
 
 		if result.Status == "passed" {
+			session := enforce.GetOrCreateSession()
+			session.MarkAegisVerified()
 			hook.Approve("aegis:verified")
 		} else {
 			hook.ExitBlockTOON("AEGIS_FAIL", strings.Join(result.FailReasons, ","))
@@ -97,16 +100,16 @@ func runAegisCmd(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	// Manual mode
+	// Manual mode — output to stdout (no hook JSON conflict)
 	if aegisTaskID != "" {
 		result := runVerification(project)
-		outputAegisResult(project, today, result)
+		outputAegisResult(os.Stdout, project, today, result)
 		return
 	}
 
 	// Default: run verification on current project
 	result := runVerification(project)
-	outputAegisResult(project, today, result)
+	outputAegisResult(os.Stdout, project, today, result)
 }
 
 func runVerification(project string) *AegisResult {
@@ -316,46 +319,45 @@ func hasSuppressedElements(workDir string) (bool, error) {
 	return len(strings.TrimSpace(string(out))) > 0, nil
 }
 
-func outputAegisResult(project, today string, result *AegisResult) {
-	fmt.Println("[AEGIS:VERIFICATION]")
-	fmt.Printf("project: %s\n", project)
-	fmt.Printf("date: %s\n", today)
-	fmt.Printf("stage: %s\n", result.Stage)
-	fmt.Printf("status: %s\n", result.Status)
-	fmt.Println()
+func outputAegisResult(w *os.File, project, today string, result *AegisResult) {
+	fmt.Fprintln(w, "[AEGIS:VERIFICATION]")
+	fmt.Fprintf(w, "project: %s\n", project)
+	fmt.Fprintf(w, "date: %s\n", today)
+	fmt.Fprintf(w, "stage: %s\n", result.Stage)
+	fmt.Fprintf(w, "status: %s\n", result.Status)
+	fmt.Fprintln(w)
 
-	fmt.Println("[TESTING_STAGE]")
-	fmt.Printf("lint_issues: %d\n", result.LintIssues)
-	fmt.Printf("warnings: %d\n", result.Warnings)
-	fmt.Printf("core_bugs: %d\n", result.CoreBugs)
-	fmt.Println()
+	fmt.Fprintln(w, "[TESTING_STAGE]")
+	fmt.Fprintf(w, "lint_issues: %d\n", result.LintIssues)
+	fmt.Fprintf(w, "warnings: %d\n", result.Warnings)
+	fmt.Fprintf(w, "core_bugs: %d\n", result.CoreBugs)
+	fmt.Fprintln(w)
 
-	fmt.Println("[VERIFIED_STAGE]")
-	fmt.Printf("dead_code: %s\n", boolToStatus(result.DeadCode))
-	fmt.Printf("suppressed: %s\n", boolToStatus(result.Suppressed))
-	fmt.Printf("algorithm: %s\n", boolToOK(result.AlgoOK))
-	fmt.Println()
+	fmt.Fprintln(w, "[VERIFIED_STAGE]")
+	fmt.Fprintf(w, "dead_code: %s\n", boolToStatus(result.DeadCode))
+	fmt.Fprintf(w, "suppressed: %s\n", boolToStatus(result.Suppressed))
+	fmt.Fprintf(w, "algorithm: %s\n", boolToOK(result.AlgoOK))
+	fmt.Fprintln(w)
 
-	// P1 FIX: Display exec errors if any
 	if len(result.ExecErrors) > 0 {
-		fmt.Println("[EXEC_ERRORS]")
-		fmt.Println("note: Some verification commands failed")
+		fmt.Fprintln(w, "[EXEC_ERRORS]")
+		fmt.Fprintln(w, "note: Some verification commands failed")
 		for _, err := range result.ExecErrors {
-			fmt.Printf("  - %s\n", err)
+			fmt.Fprintf(w, "  - %s\n", err)
 		}
-		fmt.Println()
+		fmt.Fprintln(w)
 	}
 
 	if result.Status == "passed" {
-		fmt.Println("[PROMISE]")
-		fmt.Println("status: PRODUCTION_READY")
-		fmt.Println("signal: <promise>PRODUCTION_READY</promise>")
+		fmt.Fprintln(w, "[PROMISE]")
+		fmt.Fprintln(w, "status: PRODUCTION_READY")
+		fmt.Fprintln(w, "signal: <promise>PRODUCTION_READY</promise>")
 	} else {
-		fmt.Println("[AEGIS_FAILURES]")
-		fmt.Println("action: REPORT_TO_CEO")
-		fmt.Println("result: LOOP_CONTINUES")
+		fmt.Fprintln(w, "[AEGIS_FAILURES]")
+		fmt.Fprintln(w, "action: REPORT_TO_CEO")
+		fmt.Fprintln(w, "result: LOOP_CONTINUES")
 		for _, reason := range result.FailReasons {
-			fmt.Printf("  - %s\n", reason)
+			fmt.Fprintf(w, "  - %s\n", reason)
 		}
 	}
 }

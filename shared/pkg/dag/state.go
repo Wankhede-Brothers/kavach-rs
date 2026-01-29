@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // StatePath returns the file path for a session's DAG state.
@@ -44,4 +45,29 @@ func Load(sessionID string) (*DAGState, error) {
 // Delete removes DAG state for a session.
 func Delete(sessionID string) error {
 	return os.Remove(StatePath(sessionID))
+}
+
+// CleanupOld removes DAG state files older than maxAge.
+// Called from session end to prevent accumulation.
+func CleanupOld(maxAgeDays int) error {
+	home, _ := os.UserHomeDir()
+	dagDir := filepath.Join(home, ".claude", "dag")
+	entries, err := os.ReadDir(dagDir)
+	if err != nil {
+		return nil // dir may not exist
+	}
+	cutoff := time.Now().AddDate(0, 0, -maxAgeDays)
+	for _, e := range entries {
+		if e.IsDir() || filepath.Ext(e.Name()) != ".json" {
+			continue
+		}
+		info, err := e.Info()
+		if err != nil {
+			continue
+		}
+		if info.ModTime().Before(cutoff) {
+			os.Remove(filepath.Join(dagDir, e.Name()))
+		}
+	}
+	return nil
 }

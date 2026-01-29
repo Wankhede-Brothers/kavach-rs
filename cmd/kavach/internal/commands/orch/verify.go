@@ -5,6 +5,7 @@ package orch
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/claude/shared/pkg/util"
@@ -52,7 +53,7 @@ func runVerifyCmd(cmd *cobra.Command, args []string) {
 	result := runVerification(project)
 
 	// Output result
-	outputAegisResult(project, today, result)
+	outputAegisResult(os.Stdout, project, today, result)
 
 	// Update kanban if verification passed
 	if result.Status == "passed" {

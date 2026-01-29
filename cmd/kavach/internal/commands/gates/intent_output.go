@@ -23,8 +23,8 @@ func formatIntentDirective(intent *IntentClassification, today string) string {
 	sb.WriteString(" confidence=" + intent.Confidence + " date=" + today + "\n")
 
 	// Research block (only if needed and not done)
-	if intent.ResearchReq && !session.ResearchDone {
-		sb.WriteString("[BLOCK:RESEARCH] WebSearch BEFORE code (cutoff:2025-01 today:" + today + ")\n")
+	if msg := enforce.ValidateResearchDone(session); intent.ResearchReq && msg != "" {
+		sb.WriteString("[BLOCK:RESEARCH] " + msg + " today:" + today + "\n")
 	}
 
 	// Skill auto-invoke (only if skills detected)
@@ -43,8 +43,9 @@ func formatIntentDirective(intent *IntentClassification, today string) string {
 		sb.WriteString("[AGENT] primary=" + intent.Agent + "\n")
 	}
 
-	// DACE enforcement (always, compact)
+	// DACE + forbidden phrases enforcement
 	sb.WriteString("[DACE] max:100lines depth:5-7levels split:concern no:duplicates no:monoliths\n")
+	sb.WriteString("[FORBIDDEN] " + strings.Join(enforce.BlockedPhrases(), ",") + "\n")
 
 	return sb.String()
 }

@@ -35,6 +35,29 @@ func isStatusQuery(prompt string) bool {
 	return false
 }
 
-// Dead code removed: isImplementationIntent, containsTechnicalTerms
-// Both were defined but never called from any gate or hook.
-// Intent classification now handled entirely by classifyIntentFromConfig() in intent_nlu.go.
+// isImplementationIntent returns true for intent types that require research.
+// Called by: intent_output.go to decide whether to inject BLOCK:RESEARCH.
+func isImplementationIntent(intentType string) bool {
+	for _, t := range []string{"implement", "debug", "refactor", "optimize", "fix", "audit", "docs", "unclassified"} {
+		if intentType == t {
+			return true
+		}
+	}
+	return false
+}
+
+// containsTechnicalTerms checks if prompt contains terms needing current docs.
+// Called by: intent NLU to boost research requirement confidence.
+func containsTechnicalTerms(prompt string) bool {
+	lower := strings.ToLower(prompt)
+	for _, term := range []string{
+		"version", "install", "config", "deploy", "error", "fix", "bug",
+		"docker", "kubernetes", "cloudflare", "react", "astro", "rust", "go",
+		"api", "endpoint", "database", "postgres",
+	} {
+		if strings.Contains(lower, term) {
+			return true
+		}
+	}
+	return false
+}

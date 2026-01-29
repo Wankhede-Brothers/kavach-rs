@@ -119,6 +119,21 @@ func (c *Context) FullEnforcementContext() string {
 		c.DACEBlock()
 }
 
-// Dead code audit: ValidateResearchDone(map[string]bool) and BlockedPhrases()
-// were never called. Research validation is done by agentic.ResearchGate and
-// chain.ResearchCheck. Blocked phrases are enforced by intent_output.go directives.
+// ValidateResearchDone checks if WebSearch was performed.
+// Called by: chain runner research gate and intent output directive.
+func ValidateResearchDone(session *SessionState) string {
+	if !session.ResearchDone {
+		return "BLOCKED: WebSearch required before implementation. Training weights are stale (cutoff: 2025-01)."
+	}
+	return ""
+}
+
+// BlockedPhrases returns phrases that indicate amnesia/assumption.
+// Called by: intent output directive for forbidden phrase enforcement.
+func BlockedPhrases() []string {
+	return []string{
+		"I think", "I believe", "I recall",
+		"Based on my knowledge", "In my experience",
+		"As I understand", "I have no memory", "I don't have access",
+	}
+}

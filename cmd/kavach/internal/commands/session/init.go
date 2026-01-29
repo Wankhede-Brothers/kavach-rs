@@ -34,11 +34,14 @@ func runInitCmd(cmd *cobra.Command, args []string) {
 	session := enforce.GetOrCreateSession()
 	bank := toon.NewMemoryBank()
 
-	// P0 FIX: Ensure Memory Bank directory structure exists (including STM)
-	// P2 FIX: Don't silently ignore error - it's not fatal but should be noted
+	// Deploy TOON config files to ~/.config/kavach/ if missing
+	if err := util.DeployAllConfigs(); err != nil {
+		fmt.Fprintf(os.Stderr, "[INIT] config deploy: %v\n", err)
+	}
+
+	// Ensure Memory Bank directory structure exists
 	if err := util.EnsureMemoryBankDirs(session.Project); err != nil {
-		// Non-fatal: Memory Bank dirs may already exist or have permission issues
-		// Continue with session init regardless
+		// Non-fatal: continue with session init
 	}
 
 	// DACE: Publish EventSessionStart for subscribers (telemetry, hooks)

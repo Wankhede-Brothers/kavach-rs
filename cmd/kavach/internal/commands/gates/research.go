@@ -32,7 +32,8 @@ func runResearchGate(cmd *cobra.Command, args []string) {
 	ctx := enforce.NewContext()
 	session := enforce.GetOrCreateSession()
 
-	if input.ToolName == "WebSearch" {
+	// Both WebSearch and WebFetch count as research
+	if input.ToolName == "WebSearch" || input.ToolName == "WebFetch" {
 		session.MarkResearchDone()
 		hook.ExitSilent()
 	}

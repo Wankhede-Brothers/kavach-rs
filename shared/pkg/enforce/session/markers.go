@@ -23,8 +23,19 @@ func (s *SessionState) MarkCEOInvoked() {
 	s.Save()
 }
 
-// Dead code audit: MarkNLUParsed and MarkAegisVerified were never called.
-// NLUParsed and AegisVerified fields are still persisted for future use.
+// MarkNLUParsed marks that NLU parsing was done.
+// Called by: intent gate after classifyIntentFromConfig().
+func (s *SessionState) MarkNLUParsed() {
+	s.NLUParsed = true
+	s.Save()
+}
+
+// MarkAegisVerified marks that Aegis verification passed.
+// Called by: aegis gate after verification passes.
+func (s *SessionState) MarkAegisVerified() {
+	s.AegisVerified = true
+	s.Save()
+}
 
 // MarkPostCompact marks that context was compacted.
 func (s *SessionState) MarkPostCompact() {
@@ -69,8 +80,17 @@ func (s *SessionState) MarkReinforcementDone() {
 	s.Save()
 }
 
-// Dead code audit: SetCurrentTask and ResetTaskResearch were never called.
-// Task state is managed by task.go gate via TaskCreate/TaskUpdate hooks.
+// SetCurrentTask sets a new task and resets task-scoped research state.
+// Called by: task gate on TaskCreate to scope research per task.
+func (s *SessionState) SetCurrentTask(task string) {
+	if s.CurrentTask != task && task != "" {
+		s.CurrentTask = task
+		s.ResearchDone = false
+		s.AegisVerified = false
+		s.TaskStatus = "in_progress"
+		s.Save()
+	}
+}
 
 // StoreIntent persists intent classification for the CEO gate to read.
 func (s *SessionState) StoreIntent(intentType, domain string, subAgents, skills []string) {

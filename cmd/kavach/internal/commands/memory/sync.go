@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/util"
 	"github.com/spf13/cobra"
@@ -125,6 +126,10 @@ func syncFileChange(input *hook.Input, project, today string) {
 	if filePath == "" {
 		return
 	}
+	// Track modified file in session state for task scoping
+	session := enforce.GetOrCreateSession()
+	session.AddFileModified(filePath)
+
 	appendToSTMLog(project, today, "file_"+input.ToolName, filePath, "")
 }
 

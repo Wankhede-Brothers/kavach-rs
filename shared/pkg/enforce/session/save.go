@@ -6,22 +6,32 @@ package session
 import (
 	"fmt"
 	"os"
+	"syscall"
 
 	"github.com/claude/shared/pkg/util"
 )
 
-// Save persists session state to TOON file.
+// Save persists session state to TOON file with file locking.
+// Uses flock to prevent concurrent hook processes from corrupting state.
 func (s *SessionState) Save() error {
 	statePath := StatePath()
 	if err := util.EnsureParentDir(statePath); err != nil {
 		return err
 	}
 
-	f, err := os.Create(statePath)
+	// Atomic write: write to temp file, then rename
+	tmpPath := statePath + ".tmp"
+	f, err := os.Create(tmpPath)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+
+	// Acquire exclusive lock on temp file
+	if err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX); err != nil {
+		f.Close()
+		os.Remove(tmpPath)
+		return fmt.Errorf("flock: %w", err)
+	}
 
 	writeHeader(f)
 	writeSessionBlock(f, s)
@@ -29,7 +39,12 @@ func (s *SessionState) Save() error {
 	writeCompactBlock(f, s)
 	writeTaskBlock(f, s)
 
-	return nil
+	// Release lock and close before rename
+	syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+	f.Close()
+
+	// Atomic rename
+	return os.Rename(tmpPath, statePath)
 }
 
 func writeHeader(f *os.File) {

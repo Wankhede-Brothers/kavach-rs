@@ -6,6 +6,7 @@ package gates
 import (
 	"path/filepath"
 
+	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/util"
 	"github.com/claude/shared/pkg/validate"
@@ -73,6 +74,10 @@ func runQualityGate(cmd *cobra.Command, args []string) {
 	if lineCount > 100 {
 		hook.ExitBlockTOON("DACE", "exceeds_100_lines:"+util.Itoa(lineCount))
 	}
+
+	// Track file in session state for task scoping
+	session := enforce.GetOrCreateSession()
+	session.AddFileModified(filePath)
 
 	hook.ExitSilent()
 }

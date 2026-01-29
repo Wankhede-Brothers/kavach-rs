@@ -65,7 +65,12 @@ func runSkillGate(cmd *cobra.Command, args []string) {
 	// P1 FIX: Load valid skills from config instead of hardcoded map
 	validSkills := getValidSkills()
 	if !validSkills[skillName] {
-		hook.ExitBlockTOON("SKILL", "unknown:"+skillName)
+		// Warn but allow — user may have installed custom skills/plugins
+		hook.ExitModifyTOON("SKILL_WARN", map[string]string{
+			"skill":  skillName,
+			"status": "unrecognized_but_allowed",
+			"note":   "not in valid-skills.toon",
+		})
 	}
 
 	hook.ExitModifyTOON("SKILL", map[string]string{

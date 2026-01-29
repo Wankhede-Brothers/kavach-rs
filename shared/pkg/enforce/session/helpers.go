@@ -29,6 +29,7 @@ func GetOrCreateSession() *SessionState {
 		wd, _ := os.Getwd()
 		state.WorkDir = wd
 		state.Project = util.DetectProject()
+		state.Save() // Persist updated project/workdir
 	}
 	return state
 }

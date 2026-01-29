@@ -102,9 +102,9 @@ func handleTaskCreate(input *hook.Input, session *enforce.SessionState) {
 	}
 
 	// Only increment on PostToolUse (settings.json fires this gate for both Pre and Post).
-	// At PreToolUse, HookEventName is "PreToolUse"; at PostToolUse it's "PostToolUse".
 	if input.HookEventName == "PostToolUse" {
 		session.TasksCreated++
+		session.SetCurrentTask(subject) // Scopes research to this task
 		session.Save()
 	}
 
@@ -144,10 +144,13 @@ func handleTaskUpdate(input *hook.Input, session *enforce.SessionState) {
 		health.TrackTaskUpdate(taskID, status)
 	}
 
-	// Track completion in session
-	if status == "completed" {
+	// Track status changes in session
+	subject := input.GetString("subject")
+	if status == "completed" || status == "deleted" {
 		session.TasksCompleted++
-		session.Save()
+		session.ClearTask()
+	} else if status == "in_progress" && subject != "" {
+		session.SetTask(subject, status)
 	}
 
 	// DAG Scheduler: advance state on task updates
