@@ -143,15 +143,24 @@ func HandleTaskEvent(state *DAGState, toolName string, toolInput map[string]inte
 		if taskID == "" || (status != "completed" && status != "in_progress") {
 			break
 		}
-		// Match by taskId first, fall back to subject for nodes without taskId
-		subject, _ := toolInput["subject"].(string)
+		// Match by: (1) taskId, (2) dag_node_id from metadata, (3) subject fallback
+		md, _ := toolInput["metadata"].(map[string]interface{})
+		dagNodeID, _ := md["dag_node_id"].(string)
+
 		for _, n := range state.Nodes {
 			matched := false
 			if n.TaskID != "" && n.TaskID == taskID {
 				matched = true
-			} else if n.TaskID == "" && subject != "" && n.Subject == subject {
-				n.TaskID = taskID // late-bind the taskId
+			} else if dagNodeID != "" && n.ID == dagNodeID {
+				n.TaskID = taskID
 				matched = true
+			} else if n.TaskID == "" && dagNodeID == "" {
+				// Last resort: subject match, but only if exactly one node matches
+				subject, _ := toolInput["subject"].(string)
+				if subject != "" && n.Subject == subject && countBySubject(state, subject) == 1 {
+					n.TaskID = taskID
+					matched = true
+				}
 			}
 			if matched {
 				if status == "completed" {
@@ -177,4 +186,15 @@ func HandleTaskEvent(state *DAGState, toolName string, toolInput map[string]inte
 
 	directive := BuildDirective(state)
 	return false, false, directive
+}
+
+// countBySubject counts how many nodes share a given subject.
+func countBySubject(state *DAGState, subject string) int {
+	count := 0
+	for _, n := range state.Nodes {
+		if n.Subject == subject {
+			count++
+		}
+	}
+	return count
 }

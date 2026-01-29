@@ -74,12 +74,14 @@ func saveScratchpad(session *enforce.SessionState) {
 
 	projectDir := filepath.Join(util.STMPath(), "projects", session.Project)
 	if err := os.MkdirAll(projectDir, 0755); err != nil {
+		fmt.Fprintf(os.Stderr, "[COMPACT] mkdir failed: %v\n", err)
 		return
 	}
 
 	scratchpadPath := filepath.Join(projectDir, "scratchpad.toon")
 	f, err := os.Create(scratchpadPath)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "[COMPACT] scratchpad write failed: %v\n", err)
 		return
 	}
 	defer f.Close()

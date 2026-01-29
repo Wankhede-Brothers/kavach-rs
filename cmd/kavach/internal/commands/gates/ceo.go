@@ -79,8 +79,13 @@ func runCEOGate(cmd *cobra.Command, args []string) {
 		orchDirective["IF_FAIL"] = "Re-delegate with specific feedback"
 		orchDirective["IF_PASS"] = "Run kavach orch aegis for final verification"
 
-		// DAG Scheduler: build parallel dispatch from breakdown or intent SubAgents
+		// Load session for DAG and task context
 		session := enforce.GetOrCreateSession()
+
+		// If a task is already active, include it in context
+		if session.HasTask() {
+			orchDirective["current_task"] = session.CurrentTask
+		}
 		breakdown := extractBreakdown(prompt)
 		agents := resolveAgents(session, subagentType)
 
@@ -94,11 +99,15 @@ func runCEOGate(cmd *cobra.Command, args []string) {
 			nodes := dag.Decompose(breakdown, agents)
 			state, err := dag.Schedule(session.SessionID, prompt, nodes)
 			if err == nil {
-				if err := dag.Save(state); err != nil {
-					fmt.Fprintf(os.Stderr, "[CEO_DAG] Save error: %v\n", err)
+				if saveErr := dag.Save(state); saveErr != nil {
+					fmt.Fprintf(os.Stderr, "[CEO_DAG] Save error: %v\n", saveErr)
+					orchDirective["WARNING"] = "DAG state NOT persisted: " + saveErr.Error()
 				}
 				directive := dag.BuildDirective(state)
 				hook.ExitModifyTOONWithModule("CEO_DAG_DISPATCH", orchDirective, directive)
+			} else {
+				fmt.Fprintf(os.Stderr, "[CEO_DAG] Schedule error: %v\n", err)
+				orchDirective["WARNING"] = "DAG scheduling failed: " + err.Error()
 			}
 		}
 
@@ -127,8 +136,10 @@ func detectSkillFromConfig(prompt string) string {
 }
 
 // extractBreakdown splits a multi-step prompt into individual steps.
-// Looks for numbered lists (1. 2. 3.), bullet lists (- ), or (• ).
+// Supports: numbered lists (1. 2.), bullet lists (- ), semicolons,
+// and natural language conjunctions (then, after that, next, finally).
 func extractBreakdown(prompt string) []string {
+	// Try structured lists first (numbered, bulleted)
 	lines := strings.Split(prompt, "\n")
 	var steps []string
 	for _, line := range lines {
@@ -136,7 +147,6 @@ func extractBreakdown(prompt string) []string {
 		if trimmed == "" {
 			continue
 		}
-		// Strip leading digits + separator ("1. ", "10) ", "2. ")
 		i := 0
 		for i < len(trimmed) && trimmed[i] >= '0' && trimmed[i] <= '9' {
 			i++
@@ -147,7 +157,64 @@ func extractBreakdown(prompt string) []string {
 			steps = append(steps, strings.TrimSpace(trimmed[2:]))
 		}
 	}
-	return steps
+	if len(steps) > 1 {
+		return steps
+	}
+
+	// Try semicolons ("research auth; implement login; add tests")
+	if strings.Contains(prompt, ";") {
+		steps = nil
+		for _, p := range strings.Split(prompt, ";") {
+			if t := strings.TrimSpace(p); t != "" {
+				steps = append(steps, t)
+			}
+		}
+		if len(steps) > 1 {
+			return steps
+		}
+	}
+
+	// Try natural language conjunctions
+	conjSplits := splitByConjunctions(prompt)
+	if len(conjSplits) > 1 {
+		return conjSplits
+	}
+
+	return nil
+}
+
+// splitByConjunctions splits a prompt by sequential conjunctions.
+func splitByConjunctions(prompt string) []string {
+	lower := " " + strings.ToLower(prompt) + " "
+	conjunctions := []string{" then ", " after that ", " and then ", " next ", " finally ", " also "}
+
+	// Find earliest conjunction
+	bestPos, bestLen := -1, 0
+	for _, conj := range conjunctions {
+		if pos := strings.Index(lower, conj); pos >= 0 && (bestPos < 0 || pos < bestPos) {
+			bestPos = pos
+			bestLen = len(conj)
+		}
+	}
+	if bestPos < 0 {
+		return nil
+	}
+
+	// Recursive split: left part + split(right part)
+	// Adjust for the leading space we added
+	left := strings.TrimSpace(prompt[:bestPos])
+	right := strings.TrimSpace(prompt[bestPos+bestLen-1:]) // -1 for leading space offset
+	var result []string
+	if left != "" {
+		result = append(result, left)
+	}
+	rightParts := splitByConjunctions(right)
+	if len(rightParts) > 0 {
+		result = append(result, rightParts...)
+	} else if right != "" {
+		result = append(result, right)
+	}
+	return result
 }
 
 // matchesKeywords checks if text contains any keyword (word boundary)

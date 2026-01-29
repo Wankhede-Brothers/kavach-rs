@@ -45,10 +45,7 @@ var symlinkMap = map[string][]string{
 	"aegis-auto":       {"orch", "aegis", "--hook"},
 	"autonomous-orch":  {"orch", "auto"},
 	"post-verify":      {"orch", "post"},
-	"context-monitor":  {"tracking", "context"},
-	"hot-context":      {"tracking", "hot"},
-	"mistake-tracker":  {"tracking", "mistake"},
-	"threshold-gate":   {"tracking", "threshold"},
+	// tracking subcommands deferred — see kavach-go#tracking-issue
 }
 
 var rootCmd = &cobra.Command{
@@ -64,7 +61,6 @@ compatible: Claude Code, OpenCode, any SP/1.0 CLI
 gates:    Hook enforcement (PreToolUse, PostToolUse)
 memory:   Query/write memory bank, context injection
 session:  Lifecycle management (init, validate, end)
-tracking: Context monitoring, hot paths, mistakes
 orch:     Multi-agent orchestration, verification
 status:   System health check
 agents:   List available agents with models
@@ -120,7 +116,6 @@ func registerSubcommands() {
 	rootCmd.AddCommand(gatesCmd)
 	rootCmd.AddCommand(memoryCmd)
 	rootCmd.AddCommand(sessionCmd)
-	rootCmd.AddCommand(trackingCmd)
 	rootCmd.AddCommand(orchCmd)
 	rootCmd.AddCommand(statusCmd)
 
@@ -224,24 +219,6 @@ SessionStart:     session init
 UserPromptSubmit: session init (refresh context)
 Stop:             session end
 PreCompact:       session compact`,
-}
-
-var trackingCmd = &cobra.Command{
-	Use:   "tracking",
-	Short: "Context tracking",
-	Long: `[TRACKING]
-desc: Context monitoring and hot path tracking
-purpose: Optimize context usage, track patterns
-
-[AVAILABLE_COMMANDS]
-context:   Monitor context usage and patterns
-hot:       Track hot (frequently accessed) files/functions
-mistake:   Track and learn from mistakes
-threshold: Context threshold gate (warn at 95%, block at 98%)
-
-[WHEN_TO_USE]
-PostToolUse: tracking context, tracking hot
-OnError:     tracking mistake`,
 }
 
 var orchCmd = &cobra.Command{
