@@ -112,9 +112,10 @@ func syncTaskUpdate(input *hook.Input, project, today string) {
 	subject := input.GetString("subject")
 	appendToSTMLog(project, today, "task_"+status, subject, taskID)
 
-	// Update scratchpad on completion
+	// Update scratchpad and kanban on completion
 	if status == "completed" && subject != "" {
 		updateScratchpadManual(project, today, subject, "completed")
+		UpdateKanbanTimestamp(project, today)
 	}
 	if status == "in_progress" && subject != "" {
 		updateScratchpadManual(project, today, subject, "in_progress")
@@ -138,13 +139,14 @@ func syncBashResult(input *hook.Input, project, today string) {
 	if command == "" {
 		return
 	}
-	// Only log significant commands (builds, tests, deploys)
-	for _, sig := range []string{"build", "test", "deploy", "cargo", "go ", "bun ", "npm ", "git commit"} {
+	// Phase 7b: Only log significant commands (builds, tests, deploys, git)
+	for _, sig := range []string{"build", "test", "deploy", "cargo", "go ", "bun ", "npm ", "git commit", "git push", "git merge"} {
 		if containsStr(command, sig) {
 			appendToSTMLog(project, today, "bash_"+sig, command, "")
 			return
 		}
 	}
+	// Skip sync for trivial bash commands (ls, cat, etc.)
 }
 
 func syncAgentResult(input *hook.Input, project, today string) {
@@ -163,15 +165,25 @@ func containsStr(s, sub string) bool {
 func appendToSTMLog(project, today, eventType, subject, detail string) {
 	stmDir, err := util.EnsureScratchpadDir(project)
 	if err != nil {
+		// Phase 7d: Graceful degradation — log + skip
+		fmt.Fprintf(os.Stderr, "[SYNC] scratchpad dir error: %v\n", err)
 		return
 	}
 	logPath := stmDir + "/session_log.toon"
 
 	f, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "[SYNC] log open error: %v\n", err)
 		return
 	}
 	defer f.Close()
+
+	// Phase 7c: Cap session log at 200 events
+	info, _ := f.Stat()
+	if info != nil && info.Size() > 50*1024 { // ~200 events at ~256 bytes each
+		// Rotate: file is too large, skip writing
+		return
+	}
 
 	ts := time.Now().Format("15:04:05")
 	line := fmt.Sprintf("[%s] %s: %s", ts, eventType, sanitizeTitle(subject))

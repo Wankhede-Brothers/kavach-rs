@@ -9,11 +9,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/claude/shared/pkg/agentic"
 	"github.com/claude/shared/pkg/config"
+	"github.com/claude/shared/pkg/context"
 	"github.com/claude/shared/pkg/dag"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/patterns"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/spf13/cobra"
 )
 
@@ -35,7 +38,11 @@ func runPreToolGate(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	span := telemetry.StartSpan("pre-tool")
+	defer span.End()
+
 	input := hook.MustReadHookInput()
+	span.SetTool(input.ToolName)
 
 	switch input.ToolName {
 	case "Bash":
@@ -69,6 +76,15 @@ func preToolBash(input *hook.Input) {
 	}
 	if patterns.IsBlocked(command) {
 		hook.ExitBlockTOON("BASH", "blocked_command")
+	}
+
+	// Phase 11c: Check forbidden phrases in Bash description
+	desc := input.GetString("description")
+	if desc != "" {
+		rg := agentic.NewResearchGate()
+		if violations := rg.CheckForForbiddenPhrases(desc); len(violations) > 0 {
+			hook.ExitBlockTOON("RESEARCH_GATE", "forbidden_phrase_in_bash:"+violations[0])
+		}
 	}
 
 	// Legacy CLI detection
@@ -127,6 +143,15 @@ func preToolRead(input *hook.Input) {
 		hook.ExitModifyTOON("READ", map[string]string{"warn": "large_file"})
 	}
 
+	// Hot-context: hint if this file was already read recently
+	if input.ToolName == "Read" && context.WasFileRecentlyRead(filePath) {
+		hook.ExitModifyTOON("HOT_CONTEXT", map[string]string{
+			"file":   filePath,
+			"status": "recently_read",
+			"hint":   "file_already_in_context",
+		})
+	}
+
 	hook.ExitSilent()
 }
 
@@ -141,6 +166,15 @@ func preToolCEO(input *hook.Input) {
 	}
 
 	prompt := input.GetString("prompt")
+
+	// Phase 11c: Check forbidden phrases in Task prompts
+	if prompt != "" {
+		rg := agentic.NewResearchGate()
+		if violations := rg.CheckForForbiddenPhrases(prompt); len(violations) > 0 {
+			hook.ExitBlockTOON("RESEARCH_GATE", "forbidden_phrase_in_task:"+violations[0])
+		}
+	}
+
 	skill := detectSkillFromConfig(prompt)
 	today := time.Now().Format("2006-01-02")
 

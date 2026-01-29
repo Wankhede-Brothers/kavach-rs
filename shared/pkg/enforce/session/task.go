@@ -13,15 +13,17 @@ func (s *SessionState) SetTask(task, status string) {
 }
 
 // AddFileModified tracks a file that was modified in this session.
+// Returns true if the file was newly added, false if already tracked.
 // Called by: memory sync on PostToolUse:Write/Edit.
-func (s *SessionState) AddFileModified(filePath string) {
+func (s *SessionState) AddFileModified(filePath string) bool {
 	for _, f := range s.FilesModified {
 		if f == filePath {
-			return
+			return false
 		}
 	}
 	s.FilesModified = append(s.FilesModified, filePath)
 	s.Save()
+	return true
 }
 
 // ClearTask clears the current task state.
