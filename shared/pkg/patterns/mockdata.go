@@ -3,6 +3,7 @@
 package patterns
 
 import (
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -96,12 +97,46 @@ func isAllowlisted(path string) bool {
 func isFrontendFile(path string) bool {
 	p := strings.ToLower(path)
 	return strings.HasSuffix(p, ".tsx") || strings.HasSuffix(p, ".ts") ||
-		strings.HasSuffix(p, ".jsx") || strings.HasSuffix(p, ".js")
+		strings.HasSuffix(p, ".jsx") || strings.HasSuffix(p, ".js") ||
+		strings.HasSuffix(p, ".astro")
+}
+
+func isAstroFile(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".astro")
+}
+
+func isRustFile(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".rs")
 }
 
 func isBackendFile(path string) bool {
 	p := strings.ToLower(path)
-	return strings.HasSuffix(p, ".rs") || strings.HasSuffix(p, ".go")
+	return strings.HasSuffix(p, ".rs") || strings.HasSuffix(p, ".go") ||
+		strings.HasSuffix(p, ".py") || strings.HasSuffix(p, ".java") ||
+		strings.HasSuffix(p, ".kt")
+}
+
+func isGoFile(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".go")
+}
+
+func isPythonFile(path string) bool {
+	return strings.HasSuffix(strings.ToLower(path), ".py")
+}
+
+func isJavaFile(path string) bool {
+	p := strings.ToLower(path)
+	return strings.HasSuffix(p, ".java") || strings.HasSuffix(p, ".kt")
+}
+
+func isDockerfile(path string) bool {
+	base := strings.ToLower(filepath.Base(path))
+	return base == "dockerfile" || strings.HasSuffix(base, ".dockerfile")
+}
+
+func isShellFile(path string) bool {
+	p := strings.ToLower(path)
+	return strings.HasSuffix(p, ".sh") || strings.HasSuffix(p, ".bash") || strings.HasSuffix(p, ".zsh")
 }
 
 func isTestFile(path string) bool {

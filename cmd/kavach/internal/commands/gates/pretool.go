@@ -177,6 +177,7 @@ func preToolCEO(input *hook.Input) {
 
 	skill := detectSkillFromConfig(prompt)
 	today := time.Now().Format("2006-01-02")
+	session := enforce.GetOrCreateSession()
 
 	if config.IsEngineer(subagentType) {
 		orchDirective := map[string]string{
@@ -193,7 +194,6 @@ func preToolCEO(input *hook.Input) {
 			orchDirective["inject"] = "Invoke " + skill + " for domain expertise"
 		}
 
-		session := enforce.GetOrCreateSession()
 		if session.HasTask() {
 			orchDirective["current_task"] = session.CurrentTask
 		}
@@ -209,9 +209,12 @@ func preToolCEO(input *hook.Input) {
 			runDAGSchedule(session, prompt, breakdown, agents, orchDirective)
 		}
 
+		session.MarkCEOInvoked()
 		hook.ExitModifyTOON("CEO_ORCHESTRATION", orchDirective)
 	}
 
+	// Non-engineer agents (ceo, research-director) also count as delegation
+	session.MarkCEOInvoked()
 	hook.ExitSilent()
 }
 
