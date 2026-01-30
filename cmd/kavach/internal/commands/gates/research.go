@@ -4,6 +4,9 @@
 package gates
 
 import (
+	"strings"
+
+	"github.com/claude/shared/pkg/agentic"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/patterns"
@@ -42,8 +45,22 @@ func runResearchGate(cmd *cobra.Command, args []string) {
 		filePath := input.GetString("file_path")
 
 		// Use shared patterns for code detection
-		if patterns.IsCodeFile(filePath) && !session.ResearchDone {
+		if (patterns.IsCodeFile(filePath) || patterns.IsInfraFile(filePath)) && !session.ResearchDone {
 			hook.ExitBlockTOON("TABULA_RASA", "WebSearch_required,cutoff:"+session.TrainingCutoff+",today:"+ctx.Today)
+		}
+
+		// Soft topic mismatch warning (same as prewrite)
+		if session.ResearchDone && len(session.ResearchTopics) > 0 {
+			frameworks := agentic.ExtractFrameworkFromTask(filePath)
+			topicsJoined := strings.ToLower(strings.Join(session.ResearchTopics, " "))
+			for _, fw := range frameworks {
+				if !strings.Contains(topicsJoined, fw) {
+					hook.ExitModifyTOON("RESEARCH_TOPIC_WARN", map[string]string{
+						"warning": "File references '" + fw + "' but no matching research topic found",
+						"suggest": "WebSearch " + fw + " before writing to " + filePath,
+					})
+				}
+			}
 		}
 	}
 
