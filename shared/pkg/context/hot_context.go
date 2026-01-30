@@ -34,7 +34,8 @@ func hotContextPath() string {
 	return filepath.Join(util.STMPath(), "hot-context.json")
 }
 
-// LoadHotContext loads the hot-context from disk.
+// LoadHotContext loads the hot-context from disk with auto-cleanup.
+// Entries older than 1 hour are automatically evicted on load.
 func LoadHotContext() *HotContext {
 	ctx := &HotContext{
 		Files: make(map[string]*FileEntry),
@@ -49,6 +50,11 @@ func LoadHotContext() *HotContext {
 	json.Unmarshal(data, ctx)
 	if ctx.Files == nil {
 		ctx.Files = make(map[string]*FileEntry)
+	}
+
+	// Auto-cleanup stale entries on load (TTL: 1 hour)
+	if removed := ctx.Cleanup(time.Hour); removed > 0 {
+		ctx.Save()
 	}
 	return ctx
 }

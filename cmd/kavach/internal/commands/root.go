@@ -14,6 +14,7 @@ import (
 	"github.com/claude/cmd/kavach/internal/commands/quality"
 	"github.com/claude/cmd/kavach/internal/commands/session"
 	"github.com/claude/cmd/kavach/internal/commands/skills"
+	telCmd "github.com/claude/cmd/kavach/internal/commands/telemetry"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/spf13/cobra"
 )
@@ -126,6 +127,9 @@ func registerSubcommands() {
 	// P3 FIX: Standalone lint and quality commands
 	rootCmd.AddCommand(lint.LintCmd)
 	rootCmd.AddCommand(quality.QualityCmd)
+
+	// Telemetry (Phase 10: observability)
+	telCmd.Register(rootCmd)
 
 	// Top-level aliases for backward compatibility
 	rootCmd.AddCommand(intentCmd)

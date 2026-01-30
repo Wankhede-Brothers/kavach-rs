@@ -51,7 +51,7 @@ HOOKS:AUTO_TRIGGER
   UserPromptSubmit: kavach gates intent --hook (NLU + context)
   PreToolUse:Task: kavach gates ceo --hook (skill injection)
   PostToolUse:Write: kavach orch aegis --hook (verification)
-  PostToolUse:TodoWrite: kavach memory sync --hook (memory update)
+  PostToolUse:TaskCreate|TaskUpdate: kavach gates post-tool --hook (memory sync)
   PreCompact: kavach session compact (save state)
   Stop: kavach session end (persist)
 
@@ -62,7 +62,7 @@ MEMORY:SYNC_PROTOCOL
     3. Check scratchpad for work-in-progress
 
   AFTER_EXECUTION:
-    1. TodoWrite triggers → kavach memory sync
+    1. TaskCreate/TaskUpdate triggers → kavach gates post-tool (inline memory sync)
     2. Update kanban.toon (task status)
     3. Update scratchpad.toon (learnings)
     4. Update patterns.toon (if new pattern discovered)

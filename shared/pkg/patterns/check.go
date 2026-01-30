@@ -100,6 +100,45 @@ func IsCodeFile(path string) bool {
 	return false
 }
 
+// IsInfraFile checks if path is an infrastructure/config file that needs research.
+// Matches: Dockerfile, docker-compose*, *.yml, *.yaml, *.tf, *.tfvars,
+// *.toml (non-Cargo.toml), Makefile, Jenkinsfile, .github/*, Caddyfile, nginx.conf, etc.
+func IsInfraFile(path string) bool {
+	pathLower := strings.ToLower(path)
+	base := strings.ToLower(filepath.Base(path))
+
+	// Exact filename matches
+	infraFiles := []string{
+		"dockerfile", "makefile", "jenkinsfile", "caddyfile",
+		"nginx.conf", "docker-compose.yml", "docker-compose.yaml",
+	}
+	for _, f := range infraFiles {
+		if base == f || strings.HasPrefix(base, "docker-compose") {
+			return true
+		}
+	}
+
+	// Extension matches
+	infraExts := []string{".yml", ".yaml", ".tf", ".tfvars", ".hcl"}
+	for _, ext := range infraExts {
+		if strings.HasSuffix(pathLower, ext) {
+			return true
+		}
+	}
+
+	// .toml but not Cargo.toml (Cargo.toml is a code project file)
+	if strings.HasSuffix(pathLower, ".toml") && base != "cargo.toml" {
+		return true
+	}
+
+	// Path-based matches
+	if strings.Contains(pathLower, ".github/") || strings.Contains(pathLower, ".gitlab-ci") {
+		return true
+	}
+
+	return false
+}
+
 // IsLargeFile checks if path is a potentially large file.
 func IsLargeFile(path string) bool {
 	cfg := Load()

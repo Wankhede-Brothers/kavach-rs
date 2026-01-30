@@ -73,6 +73,10 @@ func parseField(state *SessionState, key, value string, inFiles *bool) {
 		state.WorkDir = value
 	case "research", "research_done": // Support both old and new key names
 		state.ResearchDone = value == "true"
+	case "research_topics":
+		if value != "" {
+			state.ResearchTopics = splitCSV(value)
+		}
 	case "memory":
 		state.MemoryQueried = value == "true"
 	case "ceo":

@@ -3,7 +3,11 @@
 // DACE: Micro-modular split from intent.go
 package gates
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/claude/shared/pkg/config"
+)
 
 func isSimpleQuery(prompt string) bool {
 	simple := []string{"hello", "hi", "hey", "thanks", "thank you", "bye", "yes", "no", "ok", "okay"}
@@ -46,17 +50,28 @@ func isImplementationIntent(intentType string) bool {
 	return false
 }
 
+// isDelegationRequired returns true for intent types that must go through CEO delegation.
+// These are intents where the CEO should orchestrate sub-agents rather than Claude writing code directly.
+func isDelegationRequired(intentType string) bool {
+	for _, t := range []string{"implement", "debug", "refactor", "optimize", "audit"} {
+		if intentType == t {
+			return true
+		}
+	}
+	return false
+}
+
 // containsTechnicalTerms checks if prompt contains terms needing current docs.
 // Called by: intent NLU to boost research requirement confidence.
+// Loaded dynamically from frameworks.toon — no hardcoded lists.
 func containsTechnicalTerms(prompt string) bool {
 	lower := strings.ToLower(prompt)
-	for _, term := range []string{
-		"version", "install", "config", "deploy", "error", "fix", "bug",
-		"docker", "kubernetes", "cloudflare", "react", "astro", "rust", "go",
-		"api", "endpoint", "database", "postgres",
-	} {
-		if strings.Contains(lower, term) {
-			return true
+	sections := config.GetFrameworkPatterns()
+	for _, items := range sections {
+		for _, term := range items {
+			if strings.Contains(lower, strings.ToLower(term)) {
+				return true
+			}
 		}
 	}
 	return false

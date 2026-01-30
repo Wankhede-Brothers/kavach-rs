@@ -36,9 +36,11 @@ func formatIntentDirective(intent *IntentClassification, today string) string {
 		sb.WriteString("\n")
 	}
 
-	// Agent routing (1 line)
+	// Agent routing — enforce delegation for qualifying intents
 	if intent.Type == "research" {
-		sb.WriteString("[AGENT] MUST: Task(subagent_type='research-director')\n")
+		sb.WriteString("[BLOCK:DELEGATION] MUST: Task(subagent_type='research-director') BEFORE any code\n")
+	} else if isDelegationRequired(intent.Type) {
+		sb.WriteString("[BLOCK:DELEGATION] MUST: Task(subagent_type='ceo') BEFORE Write/Edit — kavach will block direct code writes\n")
 	} else {
 		sb.WriteString("[AGENT] primary=" + intent.Agent + "\n")
 	}

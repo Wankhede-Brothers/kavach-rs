@@ -5,9 +5,18 @@ package session
 
 import "time"
 
-// MarkResearchDone marks that WebSearch was performed.
+// MarkResearchDone marks that WebSearch was performed (backward compat).
 func (s *SessionState) MarkResearchDone() {
 	s.ResearchDone = true
+	s.Save()
+}
+
+// MarkResearchDoneWithTopic marks research done and records the topic.
+func (s *SessionState) MarkResearchDoneWithTopic(topic string) {
+	s.ResearchDone = true
+	if topic != "" {
+		s.ResearchTopics = append(s.ResearchTopics, topic)
+	}
 	s.Save()
 }
 
@@ -61,6 +70,17 @@ func (s *SessionState) IsPostCompact() bool {
 func (s *SessionState) IncrementTurn() {
 	s.TurnCount++
 	s.Save()
+}
+
+// ResetResearchForNewPrompt resets ResearchDone and CEOInvoked on each new user prompt,
+// but only when no explicit task is active (preserves task-scoped behavior).
+func (s *SessionState) ResetResearchForNewPrompt() {
+	if !s.HasTask() {
+		s.ResearchDone = false
+		s.ResearchTopics = nil
+		s.CEOInvoked = false
+		s.Save()
+	}
 }
 
 // NeedsReinforcement returns true if context reinforcement is needed.

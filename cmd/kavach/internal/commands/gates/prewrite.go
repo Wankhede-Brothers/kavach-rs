@@ -4,16 +4,18 @@
 package gates
 
 import (
+	"os"
+	"strings"
+
 	"github.com/claude/shared/pkg/agentic"
 	"github.com/claude/shared/pkg/chain"
 	"github.com/claude/shared/pkg/config"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/patterns"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/claude/shared/pkg/types"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
 )
 
 var preWriteHookMode bool
@@ -34,8 +36,13 @@ func runPreWriteGate(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	span := telemetry.StartSpan("pre-write")
+	defer span.End()
+
 	input := hook.MustReadHookInput()
+	span.SetTool(input.ToolName)
 	session := enforce.GetOrCreateSession()
+	span.SetSessionLoaded(true)
 
 	// L2: SECURITY — chain verification (Intent → CEO → Aegis → Research)
 	if blocked, reason, context := runSecurityChain(input, session); blocked {
@@ -60,8 +67,14 @@ func runPreWriteGate(cmd *cobra.Command, args []string) {
 		runCodeGuardCheck(input)
 	}
 
+	// L2: ANTIPROD — pre-write anti-production pattern blocking
+	runPreWriteAntiProd(input)
+
 	// L2: RESEARCH — TABULA_RASA enforcement
 	runResearchCheck(input, session)
+
+	// L2: DELEGATION — enforce CEO orchestration for delegation-required intents
+	runDelegationCheck(input, session)
 
 	// Check write blocked paths
 	filePath := input.GetString("file_path")
@@ -163,12 +176,113 @@ func runResearchCheck(input *hook.Input, session *enforce.SessionState) {
 	if filePath == "" {
 		return
 	}
-	if !patterns.IsCodeFile(filePath) || session.ResearchDone {
+	if !patterns.IsCodeFile(filePath) && !patterns.IsInfraFile(filePath) {
+		return
+	}
+	if !session.ResearchDone {
+		rg := agentic.NewResearchGate()
+		query := rg.BuildSearchQuery("implementation patterns")
+		hook.ExitBlockTOON("TABULA_RASA",
+			"WebSearch_required_before_code:suggest:"+query)
+	}
+
+	// Soft warning: check if research topics match the file being written
+	warnResearchTopicMismatch(filePath, session)
+}
+
+// runDelegationCheck enforces CEO orchestration for delegation-required intents.
+// Blocks direct Write/Edit if the intent requires CEO delegation but no Task was spawned.
+func runDelegationCheck(input *hook.Input, session *enforce.SessionState) {
+	filePath := input.GetString("file_path")
+	if filePath == "" {
+		return
+	}
+	// Only enforce on code/infra files
+	if !patterns.IsCodeFile(filePath) && !patterns.IsInfraFile(filePath) {
+		return
+	}
+	// If CEO was already invoked this session, allow
+	if session.CEOInvoked {
+		return
+	}
+	// If no intent was classified yet, allow (trivial prompts)
+	if session.IntentType == "" {
+		return
+	}
+	// Only block for delegation-required intents
+	if !isDelegationRequired(session.IntentType) {
+		return
+	}
+	hook.ExitBlockTOON("DELEGATION",
+		"CEO_orchestration_required:intent="+session.IntentType+
+			":action=Use Task(subagent_type=\"ceo\") to delegate before writing code directly")
+}
+
+// warnResearchTopicMismatch emits a soft warning if the file path contains
+// framework names not found in the research topics. Does not block.
+func warnResearchTopicMismatch(filePath string, session *enforce.SessionState) {
+	if len(session.ResearchTopics) == 0 {
+		return
+	}
+	frameworks := agentic.ExtractFrameworkFromTask(filePath)
+	if len(frameworks) == 0 {
+		return
+	}
+	topicsJoined := strings.ToLower(strings.Join(session.ResearchTopics, " "))
+	for _, fw := range frameworks {
+		if !strings.Contains(topicsJoined, fw) {
+			hook.ExitModifyTOON("RESEARCH_TOPIC_WARN", map[string]string{
+				"warning":            "File references '" + fw + "' but no matching research topic found",
+				"suggest":            "WebSearch " + fw + " before writing to " + filePath,
+				"researched_topics":  topicsJoined,
+			})
+		}
+	}
+}
+
+// runPreWriteAntiProd blocks writes containing P0/P1 anti-production patterns.
+// P2/P3 patterns emit warnings but do not block.
+func runPreWriteAntiProd(input *hook.Input) {
+	filePath := input.GetString("file_path")
+	if filePath == "" && input.ToolName == "NotebookEdit" {
+		filePath = input.GetString("notebook_path")
+	}
+	if filePath == "" {
 		return
 	}
 
-	rg := agentic.NewResearchGate()
-	query := rg.BuildSearchQuery("implementation patterns")
-	hook.ExitBlockTOON("TABULA_RASA",
-		"WebSearch_required_before_code:suggest:"+query)
+	var content string
+	switch input.ToolName {
+	case "Write":
+		content = input.GetString("content")
+	case "Edit":
+		content = input.GetString("new_string")
+	case "NotebookEdit":
+		content = input.GetString("new_source")
+	}
+	if content == "" {
+		return
+	}
+
+	results := patterns.DetectAntiProd(filePath, content)
+	if len(results) == 0 {
+		return
+	}
+
+	// P0/P1 → hard block
+	for _, r := range results {
+		if r.Level <= patterns.P1ProdLeak {
+			hook.ExitBlockTOON("ANTIPROD",
+				r.Code+":"+r.Match+":"+r.Message)
+		}
+	}
+
+	// P2/P3 → warning (modify, not block)
+	warnings := map[string]string{}
+	for _, r := range results {
+		warnings[r.Match] = r.Message
+	}
+	if len(warnings) > 0 {
+		hook.ExitModifyTOON("ANTIPROD_WARN", warnings)
+	}
 }

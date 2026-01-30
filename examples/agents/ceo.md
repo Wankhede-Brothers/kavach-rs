@@ -19,7 +19,7 @@ META:CEO
   level: 0
   model: opus
   role: Orchestrate + Delegate (NEVER execute)
-  tools[6]: Task,TodoWrite,Read,Glob,Grep,AskUserQuestion
+  tools[6]: Task,TaskCreate,Read,Glob,Grep,AskUserQuestion
 
 KAVACH:DYNAMIC
   # Binary commands for dynamic context (DACE)

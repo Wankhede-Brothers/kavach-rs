@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "kavach session init",
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
@@ -19,19 +19,19 @@
           {
             "type": "command",
             "command": "kavach gates intent --hook",
-            "timeout": 3000
+            "timeout": 3
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Task",
+        "matcher": "Write|Edit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates ceo --hook",
-            "timeout": 5000
+            "command": "kavach gates pre-write --hook",
+            "timeout": 5
           }
         ]
       },
@@ -40,58 +40,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates bash --hook",
-            "timeout": 2000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 2
           }
         ]
       },
       {
-        "matcher": "Read",
+        "matcher": "Read|Glob|Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates read --hook",
-            "timeout": 2000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 2
           }
         ]
       },
       {
-        "matcher": "Write",
+        "matcher": "Task",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates enforcer --hook",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates enforcer --hook",
-            "timeout": 5000
-          }
-        ]
-      },
-      {
-        "matcher": "Glob",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates read --hook",
-            "timeout": 2000
-          }
-        ]
-      },
-      {
-        "matcher": "Grep",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates read --hook",
-            "timeout": 2000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 5
           }
         ]
       },
@@ -100,18 +70,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates skill --hook",
-            "timeout": 3000
-          }
-        ]
-      },
-      {
-        "matcher": "AskUserQuestion",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates context --hook",
-            "timeout": 2000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 3
           }
         ]
       },
@@ -120,65 +80,50 @@
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates content --hook",
-            "timeout": 3000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 3
           }
         ]
       },
       {
-        "matcher": "NotebookEdit",
+        "matcher": "TaskCreate|TaskUpdate|TaskGet|TaskList|TaskOutput",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates enforcer --hook",
-            "timeout": 5000
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 2
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "TodoWrite",
+        "matcher": "Write|Edit|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
-          },
-          {
-            "type": "command",
-            "command": "kavach orch aegis --hook",
-            "timeout": 10000
+            "command": "kavach gates post-write --hook",
+            "timeout": 5
           }
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "WebSearch|WebFetch",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
+            "command": "kavach gates post-tool --hook",
+            "timeout": 3
           }
         ]
       },
       {
-        "matcher": "WebSearch",
+        "matcher": "Read|Glob|Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates research --hook",
-            "timeout": 3000
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates context --hook",
-            "timeout": 2000
+            "command": "kavach gates post-tool --hook",
+            "timeout": 2
           }
         ]
       },
@@ -187,83 +132,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
+            "command": "kavach gates post-tool --hook",
+            "timeout": 3
           }
         ]
       },
       {
-        "matcher": "Write",
+        "matcher": "TaskCreate|TaskUpdate|TaskOutput",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates quality --hook",
-            "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
+            "command": "kavach gates post-tool --hook",
+            "timeout": 3
           }
         ]
       },
       {
-        "matcher": "Edit",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "kavach gates quality --hook",
-            "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
-          }
-        ]
-      },
-      {
-        "matcher": "Glob",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates context --hook",
-            "timeout": 2000
-          }
-        ]
-      },
-      {
-        "matcher": "Grep",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates context --hook",
-            "timeout": 2000
-          }
-        ]
-      },
-      {
-        "matcher": "WebFetch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates research --hook",
-            "timeout": 3000
-          }
-        ]
-      },
-      {
-        "matcher": "NotebookEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "kavach gates quality --hook",
-            "timeout": 5000
-          },
-          {
-            "type": "command",
-            "command": "kavach memory sync --hook",
-            "timeout": 3000
+            "command": "kavach gates post-tool --hook",
+            "timeout": 3
           }
         ]
       }
@@ -275,7 +165,7 @@
           {
             "type": "command",
             "command": "kavach session end",
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
@@ -287,7 +177,7 @@
           {
             "type": "command",
             "command": "kavach session compact",
-            "timeout": 10000
+            "timeout": 10
           }
         ]
       }

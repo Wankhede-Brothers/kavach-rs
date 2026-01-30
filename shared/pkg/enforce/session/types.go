@@ -14,6 +14,7 @@ type SessionState struct {
 
 	// Enforcement flags
 	ResearchDone   bool
+	ResearchTopics []string // Topics researched via WebSearch/WebFetch
 	MemoryQueried  bool
 	CEOInvoked     bool
 	NLUParsed      bool

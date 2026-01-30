@@ -54,6 +54,16 @@ var (
 	reTsExpectErrorBare = regexp.MustCompile(`@ts-expect-error\s*$`)
 	// P2: client:only skips SSR
 	reAstroClientOnly = regexp.MustCompile(`client:only`)
+	// P1: define:vars with unescaped user input (XSS via JSON serialization)
+	reAstroDefineVars = regexp.MustCompile(`define:vars\s*=`)
+	// P1: Astro.redirect with dynamic/user input (open redirect)
+	reAstroRedirect = regexp.MustCompile(`Astro\.redirect\s*\(`)
+	// P2: is:inline script (no bundling, no CSP nonce)
+	reAstroIsInline = regexp.MustCompile(`is:inline`)
+	// P2: transition:persist without cleanup (memory leak in SPA mode)
+	reAstroTransitionPersist = regexp.MustCompile(`transition:persist\b`)
+	// P1: Astro.url used in href/src (header injection / XSS via x-forwarded-host)
+	reAstroUrlInLink = regexp.MustCompile(`(?:href|src|action)\s*=\s*[{"']?\s*(?:\$\{)?\s*Astro\.url`)
 	// P3: any[] type
 	reAnyArray = regexp.MustCompile(`:\s*any\[\]`)
 	// P3: Record<string, any>
@@ -68,6 +78,18 @@ var (
 	reDocumentWrite = regexp.MustCompile(`document\.write\s*\(`)
 	// P1: setTimeout/setInterval with string arg (eval equivalent)
 	reSetTimeoutString = regexp.MustCompile(`\b(?:setTimeout|setInterval)\s*\(\s*['"]`)
+	// P1: JSON.parse without type validation (untyped at runtime)
+	reJSONParseAs = regexp.MustCompile(`JSON\.parse\s*\([^)]*\)\s+as\s+`)
+	// P1: fetch .json() cast without validation
+	reFetchJsonAs = regexp.MustCompile(`\.json\(\)\s*(?:as\s+|then\s*\(\s*\([^)]*\)\s*=>\s*\S+\s+as\s+)`)
+	// P2: delete operator (sparse objects, perf hit, type unsafety)
+	reDeleteOperator = regexp.MustCompile(`\bdelete\s+\w+[\[.]`)
+	// P2: numeric enum (reverse mapping pitfall)
+	reNumericEnum = regexp.MustCompile(`\benum\s+\w+\s*\{[^}]*=\s*\d`)
+	// P3: String constructor instead of template literal
+	reStringConstructor = regexp.MustCompile(`new\s+String\s*\(`)
+	// P3: Function type (capital F — use arrow type)
+	reFunctionType = regexp.MustCompile(`:\s*Function\b`)
 )
 
 // === Rust patterns (STRICT — no suppression, no shortcuts) ===
@@ -100,6 +122,20 @@ var (
 	reRustPanic = regexp.MustCompile(`\bpanic!\s*\(`)
 	// P2: mem::forget leaks resources
 	reRustMemForget = regexp.MustCompile(`mem::forget\s*\(`)
+	// P1: process::exit skips destructors
+	reRustProcessExit = regexp.MustCompile(`(?:std::)?process::exit\s*\(`)
+	// P1: Box::leak intentional memory leak
+	reRustBoxLeak = regexp.MustCompile(`Box::leak\s*\(`)
+	// P1: mem::transmute dangerous type coercion
+	reRustTransmute = regexp.MustCompile(`(?:mem::)?transmute\s*[:<(]`)
+	// P1: unreachable_unchecked — UB if ever reached
+	reRustUnreachableUnchecked = regexp.MustCompile(`unreachable_unchecked\s*\(`)
+	// P2: #[allow(unused_must_use)] silences important return values
+	reRustAllowMustUse = regexp.MustCompile(`#\[allow\(unused_must_use\)\]`)
+	// P2: lossy `as` casts (u32 as u8, i64 as i32, etc.)
+	reRustLossyCast = regexp.MustCompile(`\bas\s+(?:u8|i8|u16|i16|u32|i32|f32)\b`)
+	// P3: String::from("...").as_str() — unnecessary allocation
+	reRustStringFromAsStr = regexp.MustCompile(`String::from\s*\([^)]+\)\.as_str\(\)`)
 )
 
 // === Go patterns (STRICT) ===
@@ -564,6 +600,62 @@ func DetectAntiProd(filePath, content string) []AntiProdResult {
 				Message: "Excessive .clone() — consider borrowing or Arc/Rc for shared ownership.",
 			})
 		}
+		if reRustProcessExit.MatchString(content) && rsBase != "main.rs" {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "process::exit()",
+				Message: "process::exit skips destructors. Return from main or use anyhow::bail!.",
+			})
+		}
+		if reRustBoxLeak.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "Box::leak()",
+				Message: "Box::leak intentionally leaks memory. Use Arc or lifetime-bound references.",
+			})
+		}
+		if reRustTransmute.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "mem::transmute",
+				Message: "transmute is extremely unsafe. Use TryFrom, bytemuck, or zerocopy instead.",
+			})
+		}
+		if reRustUnreachableUnchecked.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "unreachable_unchecked()",
+				Message: "UB if ever reached. Use unreachable!() which panics safely.",
+			})
+		}
+		if reRustAllowMustUse.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "#[allow(unused_must_use)]",
+				Message: "Handle the return value. #[must_use] exists for a reason.",
+			})
+		}
+		if reRustLossyCast.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "lossy as cast",
+				Message: "Lossy cast may truncate/overflow. Use TryFrom or .try_into() with error handling.",
+			})
+		}
+		if reRustStringFromAsStr.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P3TypeLoose,
+				Code:    "TYPE_LOOSE",
+				Match:   "String::from().as_str()",
+				Message: "Unnecessary allocation. Use string literal directly.",
+			})
+		}
 	}
 
 	// Astro-specific patterns
@@ -576,12 +668,52 @@ func DetectAntiProd(filePath, content string) []AntiProdResult {
 				Message: "XSS risk: set:html injects unescaped HTML. Sanitize input or use {text}.",
 			})
 		}
+		if reAstroDefineVars.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "define:vars",
+				Message: "define:vars inlines via JSON.stringify — XSS if user input reaches it. Sanitize first.",
+			})
+		}
+		if reAstroUrlInLink.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "Astro.url in link",
+				Message: "Astro.url reflects x-forwarded-host header. Validate or allowlist before using in links (CVE-2025-61925).",
+			})
+		}
+		if reAstroRedirect.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "Astro.redirect()",
+				Message: "Open redirect risk if input is user-controlled. Validate redirect target against allowlist.",
+			})
+		}
 		if reAstroClientOnly.MatchString(content) {
 			results = append(results, AntiProdResult{
 				Level:   P2ErrorBlind,
 				Code:    "ERROR_BLIND",
 				Match:   "client:only",
 				Message: "client:only skips SSR — ensure no-JS fallback exists.",
+			})
+		}
+		if reAstroIsInline.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "is:inline",
+				Message: "is:inline skips bundling and CSP nonce injection. Use bundled scripts where possible.",
+			})
+		}
+		if reAstroTransitionPersist.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "transition:persist",
+				Message: "Persisted elements survive navigation — add cleanup logic to prevent memory leaks.",
 			})
 		}
 	}
@@ -620,6 +752,22 @@ func DetectAntiProd(filePath, content string) []AntiProdResult {
 				Message: "String arg to setTimeout/setInterval is eval. Pass a function instead.",
 			})
 		}
+		if reJSONParseAs.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   "JSON.parse() as Type",
+				Message: "JSON.parse returns unknown at runtime. Validate with Zod/io-ts instead of casting.",
+			})
+		}
+		if reFetchJsonAs.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P1ProdLeak,
+				Code:    "PROD_LEAK",
+				Match:   ".json() as Type",
+				Message: "External data is untyped at runtime. Validate with schema (Zod) before casting.",
+			})
+		}
 		if reDangerousHTML.MatchString(content) {
 			results = append(results, AntiProdResult{
 				Level:   P1ProdLeak,
@@ -650,6 +798,22 @@ func DetectAntiProd(filePath, content string) []AntiProdResult {
 				Code:    "ERROR_BLIND",
 				Match:   "@ts-expect-error (bare)",
 				Message: "Add explanation after @ts-expect-error.",
+			})
+		}
+		if reDeleteOperator.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "delete operator",
+				Message: "delete creates sparse objects and breaks V8 optimizations. Use destructuring or omit.",
+			})
+		}
+		if reNumericEnum.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P2ErrorBlind,
+				Code:    "ERROR_BLIND",
+				Match:   "numeric enum",
+				Message: "Numeric enums have reverse mapping pitfalls. Use string enums or as const objects.",
 			})
 		}
 	}
@@ -710,6 +874,22 @@ func DetectAntiProd(filePath, content string) []AntiProdResult {
 				Code:    "TYPE_LOOSE",
 				Match:   "Object type",
 				Message: "Use object (lowercase) or a specific interface.",
+			})
+		}
+		if reStringConstructor.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P3TypeLoose,
+				Code:    "TYPE_LOOSE",
+				Match:   "new String()",
+				Message: "new String() creates wrapper object, not primitive. Use String() or template literal.",
+			})
+		}
+		if reFunctionType.MatchString(content) {
+			results = append(results, AntiProdResult{
+				Level:   P3TypeLoose,
+				Code:    "TYPE_LOOSE",
+				Match:   "Function type",
+				Message: "Use specific function signature (e.g. () => void) instead of Function.",
 			})
 		}
 	}

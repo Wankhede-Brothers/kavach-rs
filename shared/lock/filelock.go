@@ -35,6 +35,9 @@ func GetLockManager() *LockManager {
 	return globalLockManager
 }
 
+// DefaultTimeout is the default lock acquisition timeout for hook gates.
+const DefaultTimeout = 2 * time.Second
+
 func (lm *LockManager) Acquire(path string) error {
 	lm.locksMutex.Lock()
 	defer lm.locksMutex.Unlock()
@@ -45,17 +48,17 @@ func (lm *LockManager) Acquire(path string) error {
 		return fmt.Errorf("failed to create lock file: %w", err)
 	}
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		err = syscall.Flock(int(file.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
 		if err == nil {
 			break
 		}
-		time.Sleep(time.Millisecond * 100)
+		time.Sleep(200 * time.Millisecond)
 	}
 
 	if err != nil {
 		file.Close()
-		return fmt.Errorf("failed to acquire lock after 5 retries: %w", err)
+		return fmt.Errorf("failed to acquire lock after retries: %w", err)
 	}
 
 	lm.locks[path] = &FileLock{file: file, path: lockPath}

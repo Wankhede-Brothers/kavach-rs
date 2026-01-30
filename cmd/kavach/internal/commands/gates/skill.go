@@ -5,6 +5,7 @@ import (
 
 	"github.com/claude/shared/pkg/config"
 	"github.com/claude/shared/pkg/hook"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/spf13/cobra"
 )
 
@@ -43,11 +44,15 @@ func getValidSkills() map[string]bool {
 	return config.GetValidSkills()
 }
 
+// Deprecated: Use umbrella gates. Kept for direct CLI invocation only.
 func runSkillGate(cmd *cobra.Command, args []string) {
 	if !skillHookMode {
 		cmd.Help()
 		return
 	}
+
+	span := telemetry.StartSpan("skill")
+	defer span.End()
 
 	input := hook.MustReadHookInput()
 
@@ -73,6 +78,8 @@ func runSkillGate(cmd *cobra.Command, args []string) {
 		})
 	}
 
+	span.SetTool(skillName)
+	span.SetResult("routed")
 	hook.ExitModifyTOON("SKILL", map[string]string{
 		"skill":  skillName,
 		"status": "routed",

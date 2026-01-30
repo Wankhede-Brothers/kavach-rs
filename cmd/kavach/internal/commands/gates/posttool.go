@@ -11,6 +11,8 @@ import (
 	"github.com/claude/shared/pkg/dag"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
+	"github.com/claude/shared/pkg/stmlog"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/spf13/cobra"
 )
 
@@ -32,12 +34,28 @@ func runPostToolGate(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	span := telemetry.StartSpan("post-tool")
+	defer span.End()
+
 	input := hook.MustReadHookInput()
-	session := enforce.GetOrCreateSession()
+	span.SetTool(input.ToolName)
+
+	// Only load session for tools that need it
+	var session *enforce.SessionState
+	needsSession := input.ToolName == "WebSearch" || input.ToolName == "WebFetch" ||
+		input.ToolName == "TaskCreate" || input.ToolName == "TaskUpdate" ||
+		input.ToolName == "TaskOutput"
+	if needsSession {
+		session = enforce.GetOrCreateSession()
+		span.SetSessionLoaded(true)
+	}
 
 	switch input.ToolName {
 	case "Bash":
-		// Memory sync only (handled externally)
+		command := input.GetString("command")
+		if command != "" && stmlog.IsBashSignificant(command) {
+			stmlog.AppendEvent("", "bash", command, "")
+		}
 		hook.ExitSilent()
 
 	case "Read":
@@ -69,14 +87,20 @@ func runPostToolGate(cmd *cobra.Command, args []string) {
 
 	case "Task":
 		agentType := input.GetString("subagent_type")
+		desc := input.GetString("description")
 		if agentType != "" {
 			context.TrackAgentCompletion(agentType)
+			stmlog.AppendEvent("", "agent_"+agentType, desc, "")
 		}
 		hook.ExitSilent()
 
 	case "WebSearch", "WebFetch":
-		// Mark research done
-		session.MarkResearchDone()
+		topic := input.GetString("query") // WebSearch
+		if topic == "" {
+			topic = input.GetString("url") // WebFetch
+		}
+		session.MarkResearchDoneWithTopic(topic)
+		span.SetResult("research_marked")
 		hook.ExitSilent()
 
 	case "TaskCreate":

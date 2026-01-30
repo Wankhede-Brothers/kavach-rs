@@ -1,6 +1,7 @@
 // Package gates provides hook gates for Claude Code.
 // ceo.go: CEO orchestration gate with DACE skill injection.
-// NO HARDCODING - All patterns loaded from config/*.toon at runtime.
+// Deprecated: Use umbrella gates (pre-tool routes Task to preToolCEO).
+// Kept for direct CLI invocation only: kavach gates ceo --hook < input.json
 package gates
 
 import (
@@ -13,6 +14,7 @@ import (
 	"github.com/claude/shared/pkg/dag"
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +40,11 @@ func runCEOGate(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	span := telemetry.StartSpan("ceo")
+	defer span.End()
+
 	input := hook.MustReadHookInput()
+	span.SetTool("Task")
 
 	if input.ToolName != "Task" {
 		hook.ExitSilent()

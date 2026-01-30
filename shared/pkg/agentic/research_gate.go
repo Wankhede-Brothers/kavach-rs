@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/claude/shared/pkg/config"
 )
 
 // ResearchRequirement defines what research is needed.
@@ -47,13 +49,8 @@ func (g *ResearchGate) Year() string {
 func (g *ResearchGate) RequireResearch(task string) *ResearchRequirement {
 	taskLower := strings.ToLower(task)
 
-	// Framework/library tasks ALWAYS need research
-	frameworkPatterns := []string{
-		"axum", "tonic", "tokio", "react", "vue", "angular",
-		"dioxus", "leptos", "yew", "astro", "tauri",
-		"postgres", "sqlx", "diesel", "prisma",
-		"terraform", "kubernetes", "docker",
-	}
+	// Framework/library tasks ALWAYS need research (loaded from frameworks.toon)
+	frameworkPatterns := loadAllFrameworkPatterns()
 
 	for _, fw := range frameworkPatterns {
 		if strings.Contains(taskLower, fw) {
@@ -132,7 +129,15 @@ func (g *ResearchGate) CheckForForbiddenPhrases(text string) []string {
 
 // ExtractFrameworkFromTask identifies frameworks mentioned in a task.
 func ExtractFrameworkFromTask(task string) []string {
-	patterns := regexp.MustCompile(`(?i)(axum|tonic|react|vue|angular|dioxus|leptos|yew|astro|postgres|sqlx|terraform|kubernetes|docker|prisma)`)
+	fwPatterns := loadAllFrameworkPatterns()
+	if len(fwPatterns) == 0 {
+		return nil
+	}
+	escaped := make([]string, len(fwPatterns))
+	for i, p := range fwPatterns {
+		escaped[i] = regexp.QuoteMeta(p)
+	}
+	patterns := regexp.MustCompile(`(?i)(` + strings.Join(escaped, "|") + `)`)
 	matches := patterns.FindAllString(task, -1)
 
 	// Deduplicate
@@ -146,6 +151,28 @@ func ExtractFrameworkFromTask(task string) []string {
 		}
 	}
 	return unique
+}
+
+// defaultFrameworkPatterns is the fallback when frameworks.toon is not available.
+var defaultFrameworkPatterns = []string{
+	"axum", "tonic", "tokio", "react", "vue", "angular",
+	"dioxus", "leptos", "yew", "astro", "tauri",
+	"postgres", "sqlx", "diesel", "prisma",
+	"terraform", "kubernetes", "docker",
+}
+
+// loadAllFrameworkPatterns flattens all sections from frameworks.toon into a single slice.
+// Falls back to built-in defaults if config is empty.
+func loadAllFrameworkPatterns() []string {
+	sections := config.GetFrameworkPatterns()
+	var all []string
+	for _, items := range sections {
+		all = append(all, items...)
+	}
+	if len(all) == 0 {
+		return defaultFrameworkPatterns
+	}
+	return all
 }
 
 // Helper: check if string contains any of the patterns

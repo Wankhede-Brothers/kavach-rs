@@ -64,6 +64,9 @@ func writeSessionBlock(f *os.File, s *SessionState) {
 func writeStateBlock(f *os.File, s *SessionState) {
 	fmt.Fprintln(f, "[STATE]")
 	fmt.Fprintf(f, "research_done: %s\n", boolStr(s.ResearchDone))
+	if len(s.ResearchTopics) > 0 {
+		fmt.Fprintf(f, "research_topics: %s\n", joinCSV(s.ResearchTopics))
+	}
 	fmt.Fprintf(f, "memory: %s\n", boolStr(s.MemoryQueried))
 	fmt.Fprintf(f, "ceo: %s\n", boolStr(s.CEOInvoked))
 	fmt.Fprintf(f, "nlu: %s\n", boolStr(s.NLUParsed))

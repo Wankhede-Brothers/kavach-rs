@@ -13,6 +13,8 @@ import (
 	"github.com/claude/shared/pkg/enforce"
 	"github.com/claude/shared/pkg/hook"
 	"github.com/claude/shared/pkg/patterns"
+	"github.com/claude/shared/pkg/stmlog"
+	"github.com/claude/shared/pkg/telemetry"
 	"github.com/claude/shared/pkg/util"
 	"github.com/claude/shared/pkg/validate"
 	"github.com/spf13/cobra"
@@ -36,8 +38,13 @@ func runPostWriteGate(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	span := telemetry.StartSpan("post-write")
+	defer span.End()
+
 	input := hook.MustReadHookInput()
+	span.SetTool(input.ToolName)
 	session := enforce.GetOrCreateSession()
+	span.SetSessionLoaded(true)
 
 	filePath := input.GetString("file_path")
 	content := input.GetString("content")
@@ -71,8 +78,11 @@ func runPostWriteGate(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	// L2: MEMORY — sync is handled by the memory sync hook separately
-	// (kavach memory sync --hook is called as a separate process for isolation)
+	// L2: MEMORY — inline STM sync (previously separate kavach memory sync --hook)
+	if filePath != "" {
+		session.AddFileModified(filePath)
+		stmlog.AppendEvent("", "file_"+input.ToolName, filePath, "")
+	}
 
 	hook.ExitSilent()
 }

@@ -25,7 +25,7 @@ var aegisCmd = &cobra.Command{
 	Short: "Aegis Guardian verification (Level 2)",
 	Long: `[AEGIS]
 desc: Two-stage verification before production
-hook: PostToolUse:TodoWrite (when task marked complete)
+hook: PostToolUse:TaskUpdate (when task marked complete)
 purpose: Ensure quality, security, and correctness
 
 [VERIFICATION_STAGES]

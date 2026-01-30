@@ -1,7 +1,7 @@
 // Package gates provides hook gates for Claude Code.
 // enforcer.go: Main enforcer gate - DACE silent-pass mode.
-// DACE: Uses shared/pkg/patterns for dynamic patterns.
-// DACE: Uses shared/pkg/agentic for research gate enforcement.
+// Deprecated: Use umbrella gates (pre-write, post-write, pre-tool, post-tool).
+// Kept for direct CLI invocation only: kavach gates enforcer --hook < input.json
 package gates
 
 import (
@@ -104,18 +104,9 @@ func handleTask(input *hook.Input, session *enforce.SessionState) {
 }
 
 // isEngineerAgent returns true for agents that implement code.
-// P1 FIX: These agents ALWAYS require research before delegation.
+// Phase 9a: Uses config.IsEngineer() — reads from agent-mappings.toon.
 func isEngineerAgent(agent string) bool {
-	engineers := []string{
-		"backend-engineer", "frontend-engineer", "database-engineer",
-		"devops-engineer", "security-engineer",
-	}
-	for _, e := range engineers {
-		if agent == e {
-			return true
-		}
-	}
-	return false
+	return config.IsEngineer(agent)
 }
 
 func handleWrite(input *hook.Input, session *enforce.SessionState) {
