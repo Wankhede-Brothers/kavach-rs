@@ -158,6 +158,30 @@
         ]
       }
     ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kavach gates subagent --hook",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kavach gates subagent --hook",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "matcher": "",
