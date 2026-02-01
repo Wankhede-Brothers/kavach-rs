@@ -65,6 +65,16 @@ uninstall:
 	done
 	@echo "[COMPLETE]"
 
+## build-rust: Build the Rust kavach binary and install to ~/.local/bin/kavach
+build-rust:
+	@echo "[BUILD:RUST]"
+	@mkdir -p $(BIN_DIR)
+	@cd crates/kavach-cli && cargo build --release
+	@cp crates/kavach-cli/target/release/kavach "$(BIN_DIR)/$(BINARY)"
+	@echo "  size: $$(du -h $(BIN_DIR)/$(BINARY) | cut -f1)"
+	@echo "  path: $(BIN_DIR)/$(BINARY)"
+	@echo "[COMPLETE]"
+
 ## clean: Remove build artifacts
 clean:
 	@echo "[CLEAN]"
