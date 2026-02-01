@@ -2,6 +2,7 @@ pub mod init;
 pub mod end;
 pub mod compact;
 pub mod validate;
+pub mod resume;
 
 use clap::Subcommand;
 use super::cli_print_fmt;
@@ -24,7 +25,7 @@ pub fn dispatch(cmd: SessionCommand) -> anyhow::Result<()> {
         SessionCommand::Validate => validate::run(),
         SessionCommand::End => end::run(),
         SessionCommand::Compact => compact::run(),
-        SessionCommand::Resume => { cli_print_fmt("[STUB] session resume".into()); Ok(()) }
+        SessionCommand::Resume => resume::run(),
         SessionCommand::Land => { cli_print_fmt("[STUB] session land".into()); Ok(()) }
         SessionCommand::EndHook => { cli_print_fmt("[STUB] session end-hook".into()); Ok(()) }
     }
