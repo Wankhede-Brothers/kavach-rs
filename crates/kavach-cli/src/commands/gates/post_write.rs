@@ -239,7 +239,14 @@ fn is_non_config_file(path: &str) -> bool {
         "config", ".env", "astro.config", "vite.config", "next.config",
         "wrangler.toml", "docker-compose", ".toml", "constants",
     ];
-    !config_patterns.iter().any(|pat| p.contains(pat))
+    let non_code_exts = [".md", ".txt", ".json", ".yaml", ".yml", ".csv", ".xml", ".html"];
+    if config_patterns.iter().any(|pat| p.contains(pat)) {
+        return false;
+    }
+    if non_code_exts.iter().any(|ext| p.ends_with(ext)) {
+        return false;
+    }
+    true
 }
 
 fn is_dockerfile(path: &str) -> bool {
