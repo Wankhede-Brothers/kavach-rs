@@ -16,67 +16,72 @@ permissions:
 
 env:
   BINARY_NAME: kavach
-  GO_VERSION: '1.25'
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-          - goos: linux
-            goarch: amd64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: kavach-linux-amd64
             suffix: ''
-          - goos: linux
-            goarch: arm64
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            artifact: kavach-linux-arm64
             suffix: ''
-          - goos: darwin
-            goarch: amd64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: kavach-darwin-amd64
             suffix: ''
-          - goos: darwin
-            goarch: arm64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: kavach-darwin-arm64
             suffix: ''
-          - goos: windows
-            goarch: amd64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: kavach-windows-amd64
             suffix: '.exe'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
+          targets: ${{ matrix.target }}
 
-      - name: Initialize Go workspace
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
         run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
 
-      - name: Download dependencies
-        run: |
-          cd cmd/kavach && go mod download
-          cd ../../shared && go mod download
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/kavach-cli
 
       - name: Build binary
+        run: |
+          cd crates/kavach-cli
+          cargo build --release --target ${{ matrix.target }}
         env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Prepare artifact
+        shell: bash
         run: |
           mkdir -p dist
-          BINARY="${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.suffix }}"
-          echo "Building $BINARY"
-          cd cmd/kavach && go build -ldflags "-s -w -X main.version=${{ github.ref_name }}" -o "../../dist/$BINARY" .
-          ls -lh ../../dist/
+          cp "crates/kavach-cli/target/${{ matrix.target }}/release/kavach${{ matrix.suffix }}" "dist/${{ matrix.artifact }}${{ matrix.suffix }}"
+          ls -lh dist/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: dist/${{ env.BINARY_NAME }}-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.suffix }}
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}${{ matrix.suffix }}
 
   release:
     needs: build
@@ -102,10 +107,8 @@ jobs:
           cd release
           for binary in kavach-*; do
             if [[ "$binary" == *.exe ]]; then
-              # Windows: zip
               zip "${binary%.exe}.zip" "$binary"
             else
-              # Unix: tar.gz
               tar czf "${binary}.tar.gz" "$binary"
             fi
           done
@@ -127,29 +130,3 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # Optional: Test build on PR
-  test:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Initialize workspace
-        run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
-
-      - name: Build
-        run: cd cmd/kavach && go build -o kavach .
-
-      - name: Test
-        run: |
-          cd cmd/kavach && go test ./...
-          cd ../../shared && go test ./...

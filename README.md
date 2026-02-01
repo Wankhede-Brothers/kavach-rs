@@ -5,7 +5,7 @@
 Part of the **Brahmastra Stack**: Kavach CLI + Sutra Protocol (SP/1.0) + TOON Format + DACE
 
 [![Claude Code 2.1.19](https://img.shields.io/badge/Claude%20Code-2.1.19-blue)](https://github.com/anthropics/claude-code)
-[![Go 1.25+](https://img.shields.io/badge/Go-1.25+-00ADD8)](https://go.dev/)
+[![Rust](https://img.shields.io/badge/Rust-stable-orange)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -44,7 +44,7 @@ step: 5/6 - Pushing to remote (MANDATORY)...
 
 ## What is Kavach?
 
-Kavach (Sanskrit: कवच, "armor/shield") is a Go binary that enforces best practices for AI coding assistants through hook-based gates.
+Kavach (Sanskrit: कवच, "armor/shield") is a Rust binary that enforces best practices for AI coding assistants through hook-based gates.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -133,12 +133,12 @@ echo, printf, cd, pwd, mkdir, rm, cp, mv, chmod, chown, touch, which, env, expor
 
 **Linux/macOS:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 ```
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.ps1 | iex
 ```
 
 **With options:**
@@ -152,10 +152,10 @@ curl -fsSL .../install.sh | bash -s -- --cli opencode
 
 **Build from source:**
 ```bash
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
-go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
+cd crates/kavach-cli && cargo build --release
+cp target/release/kavach ~/.local/bin/
 ```
 
 ---
@@ -620,7 +620,7 @@ kavach session land
 # 6-step process:
 # 1. Check session state (open tasks)
 # 2. Sync Memory Bank to git
-# 3. Run quality gates (go vet)
+# 3. Run quality gates (cargo clippy)
 # 4. Git commit
 # 5. Git push (MANDATORY - not landed until pushed)
 # 6. Generate handoff prompt for next session
@@ -789,8 +789,8 @@ We welcome contributions! The CI/CD pipeline handles validation autonomously.
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/YOUR_USERNAME/kavach-go.git
-cd kavach-go
+git clone https://github.com/YOUR_USERNAME/kavach-rs.git
+cd kavach-rs
 
 # 2. Create feature branch
 git checkout -b feature/my-feature
@@ -798,8 +798,8 @@ git checkout -b feature/my-feature
 # 3. Make changes (follow DACE: max 100 lines per file)
 
 # 4. Test locally
-go build -o kavach ./cmd/kavach
-go test ./...
+just build
+just test
 
 # 5. Submit PR
 git push origin feature/my-feature
@@ -817,9 +817,9 @@ When you submit a PR, GitHub Actions runs automatically:
 │  ┌──────────────────────────────────────────────────────────────────────┐  │
 │  │                      CI PIPELINE (ci.yml)                             │  │
 │  ├──────────────────────────────────────────────────────────────────────┤  │
-│  │  ✓ Build        │  go build ./cmd/kavach                             │  │
-│  │  ✓ Test         │  go test ./... (cmd + shared)                      │  │
-│  │  ✓ Lint         │  go vet + gofmt check                              │  │
+│  │  ✓ Build        │  cargo build --release                              │  │
+│  │  ✓ Test         │  cargo test                                        │  │
+│  │  ✓ Lint         │  cargo clippy + cargo fmt --check                  │  │
 │  │  ✓ Cross-compile│  linux/darwin/windows (amd64 + arm64)              │  │
 │  └──────────────────────────────────────────────────────────────────────┘  │
 │                            │                                                │
@@ -870,8 +870,8 @@ This triggers the release pipeline:
 
 ### PR Checklist
 
-- [ ] `go test ./...` passes
-- [ ] `go fmt ./...` applied
+- [ ] `just test` passes
+- [ ] `just fmt` applied
 - [ ] Max 100 lines per file (DACE)
 - [ ] Tests added for new functionality
 - [ ] README updated if adding new command

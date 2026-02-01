@@ -1,7 +1,7 @@
 #!/bin/bash
 # Memory Bank Initialization Script
 # Part of Kavach - Brahmastra Stack
-# https://github.com/Wankhede-Brothers/kavach-go
+# https://github.com/Wankhede-Brothers/kavach-rs
 
 set -e
 
@@ -25,7 +25,7 @@ echo ""
 # Check if kavach binary exists
 if ! command -v kavach &> /dev/null; then
     echo -e "${RED}Error: kavach binary not found${NC}"
-    echo -e "${YELLOW}Install: curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash${NC}"
+    echo -e "${YELLOW}Install: curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash${NC}"
     exit 1
 fi
 

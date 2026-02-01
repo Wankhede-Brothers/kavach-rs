@@ -1,4 +1,4 @@
-# kavach-go — Project-Specific Rules (Rust-only CLI)
+# kavach-rs — Project-Specific Rules (Rust-only CLI)
 # Behavioral rules (sparring, zero-stale, memory bank, etc.) loaded from ~/.claude/CLAUDE.md
 
 PROJECT:META

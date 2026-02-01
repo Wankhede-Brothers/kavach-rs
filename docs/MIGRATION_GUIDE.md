@@ -10,13 +10,13 @@ This guide helps you migrate to Kavach from previous setups or configure existin
 
 ```bash
 # Linux/macOS - One-line install
-curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 
 # Or build from source
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
-go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
+cd crates/kavach-cli && cargo build --release
+cp target/release/kavach ~/.local/bin/
 ```
 
 ---
@@ -70,7 +70,7 @@ If you were using the old `claude-gate` binary:
 
 2. **Install kavach:**
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
    ```
 
 3. **Update settings.json:** Replace all `claude-gate` references with `kavach`
@@ -239,5 +239,5 @@ cp ~/.claude/settings.json.backup ~/.claude/settings.json
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-go/issues)
+- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-rs/issues)
 - Documentation: [docs/](../docs/)

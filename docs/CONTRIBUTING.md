@@ -6,24 +6,24 @@ Thank you for your interest in contributing to Kavach!
 
 ```bash
 # Clone repository
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
 
 # Build locally
-go build -o kavach ./cmd/kavach
+just build
 
 # Run tests
-go test ./...
+just test
 
 # Install
-cp kavach ~/.local/bin/
+just install
 ```
 
 ## Code Style
 
-- **Go:** Standard `go fmt` formatting
-- **Comments:** Exported functions must have godoc comments
-- **Errors:** Always wrap errors with context: `fmt.Errorf("...: %w", err)`
+- **Rust:** Standard `cargo fmt` formatting
+- **Linting:** Code must pass `cargo clippy`
+- **Errors:** Use `anyhow` for error handling with context
 - **Logging:** Use stderr for debug output, stdout for decision JSON
 - **DACE:** Max 100 lines per file, single responsibility
 
@@ -53,38 +53,11 @@ kavach/
 
 ## Adding a New Gate
 
-1. Create gate file in `cmd/kavach/internal/commands/gates/`:
-   ```bash
-   touch cmd/kavach/internal/commands/gates/my-gate.go
-   ```
+1. Create gate file in `crates/kavach-cli/src/commands/gates/`
 
-2. Implement gate:
-   ```go
-   package gates
+2. Implement the gate command using clap `Args` and the `hook` module
 
-   import (
-       "github.com/Wankhede-Brothers/kavach-go/shared/pkg/hook"
-       "github.com/spf13/cobra"
-   )
-
-   var myGateCmd = &cobra.Command{
-       Use:   "my-gate",
-       Short: "My custom gate",
-       RunE: func(cmd *cobra.Command, args []string) error {
-           input, err := hook.ReadInput()
-           if err != nil {
-               return hook.Block("Failed to read input")
-           }
-           // Gate logic here
-           return hook.Approve()
-       },
-   }
-   ```
-
-3. Register in `register.go`:
-   ```go
-   gatesCmd.AddCommand(myGateCmd)
-   ```
+3. Register in `mod.rs`
 
 ## Adding a New Skill
 
@@ -120,16 +93,10 @@ kavach/
 
 ```bash
 # Run all tests
-go test ./...
-
-# Run specific package tests
-go test ./cmd/kavach/internal/commands/gates/...
+just test
 
 # Run with verbose output
-go test -v ./...
-
-# Test coverage
-go test -cover ./...
+cd crates/kavach-cli && cargo test -- --nocapture
 ```
 
 ## Manual Testing
@@ -151,13 +118,13 @@ kavach memory bank
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes
 4. Add tests for new functionality
-5. Run `go fmt ./...` to format code
+5. Run `just fmt` to format code
 6. Submit a pull request
 
 ## Pull Request Checklist
 
-- [ ] Tests pass (`go test ./...`)
-- [ ] Code is formatted (`go fmt ./...`)
+- [ ] Tests pass (`just test`)
+- [ ] Code is formatted (`just fmt`)
 - [ ] Documentation updated if needed
 - [ ] README updated if adding new command
 - [ ] Follows DACE principles (max 100 lines per file)
@@ -173,5 +140,5 @@ Releases are automated via GitHub Actions:
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-go/issues)
+- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-rs/issues)
 - Documentation: [docs/](../docs/)

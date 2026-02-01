@@ -1,13 +1,13 @@
 #!/bin/bash
 # Kavach Installer - Brahmastra Stack
-# Usage: curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 # Or: curl ... | bash -s -- --cli opencode --rust-cli
 # DACE: Single responsibility - kavach installation
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REMOTE_BASE="https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install"
+REMOTE_BASE="https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install"
 INSTALL_RUST_CLI=false
 
 # Source libraries (local or remote)

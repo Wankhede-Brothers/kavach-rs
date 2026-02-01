@@ -14,7 +14,7 @@ Be respectful and constructive. We welcome contributors of all experience levels
 
 | Tool | Version | Purpose |
 |------|---------|---------|
-| Go | 1.25+ | Build and test |
+| Rust | stable | Build and test |
 | Git | 2.0+ | Version control |
 
 #### Rust CLI Tools (Required)
@@ -47,21 +47,21 @@ scoop install bat eza fd ripgrep
 # 1. Fork the repository on GitHub
 
 # 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/kavach-go.git
-cd kavach-go
+git clone https://github.com/YOUR_USERNAME/kavach-rs.git
+cd kavach-rs
 
 # 3. Add upstream remote
-git remote add upstream https://github.com/Wankhede-Brothers/kavach-go.git
+git remote add upstream https://github.com/Wankhede-Brothers/kavach-rs.git
 
 # 4. Create a feature branch
 git checkout -b feature/my-feature
 
 # 5. Build and test
-go build -o kavach ./cmd/kavach
-go test ./...
+just build
+just test
 
 # 6. Verify binary works
-./kavach status
+./target/release/kavach status
 ```
 
 ## Project Structure
@@ -90,12 +90,11 @@ kavach/
 
 ## Code Style
 
-### Go Standards
+### Rust Standards
 
-- **Formatting**: Run `go fmt ./...` before committing
-- **Linting**: Code must pass `go vet ./...`
-- **Comments**: Exported functions require godoc comments
-- **Errors**: Wrap errors with context: `fmt.Errorf("operation failed: %w", err)`
+- **Formatting**: Run `just fmt` before committing
+- **Linting**: Code must pass `just lint` (cargo clippy)
+- **Errors**: Use `anyhow` for error handling with context
 
 ### DACE Principles
 
@@ -110,41 +109,11 @@ Kavach follows **Dynamic Agentic Context Engineering (DACE)**:
 
 ### Adding a New Gate
 
-1. Create gate file in `cmd/kavach/internal/commands/gates/`:
+1. Create gate file in `crates/kavach-cli/src/commands/gates/`:
 
-```go
-// cmd/kavach/internal/commands/gates/my-gate.go
-package gates
+2. Implement the gate command using clap `Args` and the `hook` module
 
-import (
-    "github.com/Wankhede-Brothers/kavach-go/shared/pkg/hook"
-    "github.com/spf13/cobra"
-)
-
-var myGateCmd = &cobra.Command{
-    Use:   "my-gate",
-    Short: "Description of my gate",
-    RunE: func(cmd *cobra.Command, args []string) error {
-        input, err := hook.ReadInput()
-        if err != nil {
-            return hook.Block("Failed to read input")
-        }
-
-        // Gate logic here
-
-        return hook.Approve()
-    },
-}
-
-func init() {
-    myGateCmd.Flags().Bool("hook", false, "Run in hook mode")
-}
-```
-
-2. Register in `register.go`:
-```go
-gatesCmd.AddCommand(myGateCmd)
-```
+3. Register in `mod.rs`
 
 ### Adding a New Skill
 
@@ -202,16 +171,10 @@ AGENT:my-agent
 
 ```bash
 # All tests
-go test ./...
-
-# Specific package
-go test ./cmd/kavach/internal/commands/gates/...
+just test
 
 # With verbose output
-go test -v ./...
-
-# With coverage
-go test -cover ./...
+cd crates/kavach-cli && cargo test -- --nocapture
 ```
 
 ### Manual Testing
@@ -258,9 +221,9 @@ kavach memory bank
 
 Before submitting, ensure:
 
-- [ ] `go test ./...` passes
-- [ ] `go fmt ./...` applied
-- [ ] `go vet ./...` passes
+- [ ] `just test` passes
+- [ ] `just fmt` applied
+- [ ] `just lint` passes
 - [ ] Max 100 lines per file (DACE compliance)
 - [ ] Tests added for new functionality
 - [ ] Documentation updated if needed
@@ -305,7 +268,7 @@ Releases are automated via GitHub Actions:
 
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-go/issues)
+- **Issues**: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-rs/issues)
 - **Documentation**: [docs/](docs/) or [Website](https://wankhedebrothers.com/docs/kavach/)
 
 ## License

@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  GO_VERSION: '1.25'
+  RUST_VERSION: 'stable'
 
 jobs:
   build:
@@ -15,116 +15,50 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
         with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Initialize workspace
-        run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
-
-      - name: Download dependencies
-        run: |
-          cd cmd/kavach && go mod download
-          cd ../../shared && go mod download
+          workspaces: crates/kavach-cli
 
       - name: Build
-        run: |
-          cd cmd/kavach && go build -o kavach .
-          ls -lh kavach
+        run: cd crates/kavach-cli && cargo build --release
 
       - name: Verify binary
-        run: |
-          cd cmd/kavach && ./kavach --help || true
+        run: crates/kavach-cli/target/release/kavach --help || true
 
   test:
     runs-on: ubuntu-latest
-    continue-on-error: true  # Pre-existing test failures in shared/pkg/agentic
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
 
-      - name: Initialize workspace
-        run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/kavach-cli
 
       - name: Run tests
-        run: |
-          cd cmd/kavach && go test -v ./...
-          cd ../../shared && go test -v ./...
+        run: cd crates/kavach-cli && cargo test
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
+          components: clippy, rustfmt
 
-      - name: Initialize workspace
-        run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: crates/kavach-cli
 
-      - name: Run go vet
-        run: |
-          cd cmd/kavach && go vet ./...
-          cd ../../shared && go vet ./...
+      - name: Run clippy
+        run: cd crates/kavach-cli && cargo clippy -- -D warnings
 
       - name: Check formatting
-        run: |
-          cd cmd/kavach && test -z "$(gofmt -l .)"
-          cd ../../shared && test -z "$(gofmt -l .)"
-
-  cross-compile:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - goos: linux
-            goarch: amd64
-          - goos: darwin
-            goarch: amd64
-          - goos: darwin
-            goarch: arm64
-          - goos: windows
-            goarch: amd64
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-
-      - name: Initialize workspace
-        run: |
-          go work init ./cmd/kavach ./shared 2>/dev/null || true
-          go work sync
-
-      - name: Cross-compile
-        env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 0
-        run: |
-          cd cmd/kavach
-          SUFFIX=""
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            SUFFIX=".exe"
-          fi
-          go build -ldflags "-s -w" -o "kavach-${{ matrix.goos }}-${{ matrix.goarch }}${SUFFIX}" .
-          ls -lh kavach-*
+        run: cd crates/kavach-cli && cargo fmt -- --check

@@ -217,10 +217,9 @@ Level 2: Aegis Guardian (opus)
 
 ```bash
 # 1. Install kavach
-go install github.com/claude/cmd/kavach@latest
-# OR build from source
-cd kavach-go && go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
+# Build from source
+cd kavach-rs && just build
+just install
 
 # 2. Copy modules (Lost-in-Middle mitigation)
 mkdir -p ~/.claude/modules

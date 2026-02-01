@@ -20,15 +20,15 @@
 
 <!-- Describe how you tested your changes -->
 
-- [ ] `go test ./...` passes
+- [ ] `just test` passes
 - [ ] Manual testing performed
 - [ ] New tests added (if applicable)
 
 ## Checklist
 
 - [ ] Code follows DACE principles (max 100 lines per file)
-- [ ] `go fmt ./...` applied
-- [ ] `go vet ./...` passes
+- [ ] `just fmt` applied
+- [ ] `just lint` passes
 - [ ] Documentation updated (if needed)
 - [ ] README updated (if adding new command)
 

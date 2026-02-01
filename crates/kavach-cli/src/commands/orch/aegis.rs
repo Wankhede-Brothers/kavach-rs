@@ -138,7 +138,7 @@ fn count_lint_issues(work_dir: &Path) -> Result<i32, String> {
     }
 
     if work_dir.join("Cargo.toml").exists() {
-        let output = Command::new("cargo").args(["clippy", "--message-format=short"])
+        let output = Command::new("cargo").args(["clippy", "--message-format=short", "--", "-D", "warnings"])
             .current_dir(work_dir).output()
             .map_err(|e| format!("cargo clippy failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
@@ -152,7 +152,7 @@ fn count_warnings(work_dir: &Path) -> Result<i32, String> {
     if work_dir.join("go.mod").exists() {
         let output = Command::new("go").args(["build", "-v", "./..."])
             .current_dir(work_dir).output()
-            .map_err(|e| format!("go build failed: {e}"))?;
+            .map_err(|e| format!("go build -v failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.matches("warning").count() as i32);
     }
@@ -203,7 +203,7 @@ fn has_dead_code(work_dir: &Path) -> Result<bool, String> {
     if work_dir.join("go.mod").exists() {
         let output = Command::new("go").args(["vet", "./..."])
             .current_dir(work_dir).output()
-            .map_err(|e| format!("go vet failed: {e}"))?;
+            .map_err(|e| format!("go vet ./... failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.contains("unused"));
     }
