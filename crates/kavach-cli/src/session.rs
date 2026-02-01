@@ -27,6 +27,12 @@ pub struct SessionState {
     pub intent_domain: String,
     pub intent_sub_agents: Vec<String>,
     pub intent_skills: Vec<String>,
+    pub task_status: String,
+    pub research_topic: String,
+    pub files_modified: Vec<String>,
+    pub aegis_verified: bool,
+    pub tasks_created: i32,
+    pub tasks_completed: i32,
 }
 
 impl Default for SessionState {
@@ -57,6 +63,12 @@ impl Default for SessionState {
             intent_domain: String::new(),
             intent_sub_agents: Vec::new(),
             intent_skills: Vec::new(),
+            task_status: String::new(),
+            research_topic: String::new(),
+            files_modified: Vec::new(),
+            aegis_verified: false,
+            tasks_created: 0,
+            tasks_completed: 0,
         }
     }
 }
@@ -139,6 +151,11 @@ pub fn load_session_state() -> Option<SessionState> {
     if let Some(v) = fields.get("skills") {
         state.intent_skills = split_csv(v);
     }
+    if let Some(v) = fields.get("task_status") { state.task_status = v.clone(); }
+    if let Some(v) = fields.get("research_topic") { state.research_topic = v.clone(); }
+    if let Some(v) = fields.get("aegis") { state.aegis_verified = v == "true"; }
+    if let Some(v) = fields.get("tasks_created") { state.tasks_created = v.parse().unwrap_or(0); }
+    if let Some(v) = fields.get("tasks_completed") { state.tasks_completed = v.parse().unwrap_or(0); }
 
     if state.today != today {
         return None;
@@ -185,8 +202,14 @@ impl SessionState {
         writeln!(f, "post_compact: {}", self.post_compact)?;
         writeln!(f, "compact_count: {}", self.compact_count)?;
         writeln!(f)?;
+        writeln!(f, "aegis: {}", self.aegis_verified)?;
+        writeln!(f, "tasks_created: {}", self.tasks_created)?;
+        writeln!(f, "tasks_completed: {}", self.tasks_completed)?;
+        writeln!(f, "research_topic: {}", self.research_topic)?;
+        writeln!(f)?;
         writeln!(f, "[TASK]")?;
         writeln!(f, "task: {}", self.current_task)?;
+        writeln!(f, "task_status: {}", self.task_status)?;
         writeln!(f)?;
         if !self.intent_type.is_empty() {
             writeln!(f, "[INTENT_BRIDGE]")?;
@@ -267,6 +290,48 @@ impl SessionState {
         self.intent_sub_agents = sub_agents.to_vec();
         self.intent_skills = skills.to_vec();
         let _ = self.save();
+    }
+
+    pub fn mark_post_compact(&mut self) {
+        self.post_compact = true;
+        self.compact_count += 1;
+        let _ = self.save();
+    }
+
+    pub fn mark_memory_queried(&mut self) {
+        self.memory_queried = true;
+        let _ = self.save();
+    }
+
+    pub fn mark_research_done(&mut self) {
+        self.research_done = true;
+        let _ = self.save();
+    }
+
+    pub fn mark_research_done_with_topic(&mut self, topic: &str) {
+        self.research_done = true;
+        if !topic.is_empty() {
+            self.research_topic = topic.into();
+        }
+        let _ = self.save();
+    }
+
+    pub fn set_current_task(&mut self, task: &str) {
+        self.current_task = task.into();
+        self.task_status = "in_progress".into();
+        let _ = self.save();
+    }
+
+    pub fn clear_task(&mut self) {
+        self.current_task.clear();
+        self.task_status.clear();
+        let _ = self.save();
+    }
+
+    pub fn add_file_modified(&mut self, path: &str) {
+        if !self.files_modified.contains(&path.to_string()) {
+            self.files_modified.push(path.into());
+        }
     }
 }
 
