@@ -82,6 +82,15 @@ func runPreWriteGate(cmd *cobra.Command, args []string) {
 		hook.ExitBlockTOON("ENFORCER", "Write:blocked_path:"+filePath)
 	}
 
+	// SDD: inject matching specs as advisory TOON context
+	specContent := specsDrivenGate(input, session)
+	if specContent != "" {
+		hook.ExitModifyTOONWithModule("SDD_SPEC", map[string]string{
+			"gate":   "specs_driven_development",
+			"status": "specs_injected",
+		}, specContent)
+	}
+
 	hook.ExitSilent()
 }
 

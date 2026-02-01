@@ -47,4 +47,7 @@ type SessionState struct {
 	IntentDomain    string   // e.g., "security", "frontend", "database"
 	IntentSubAgents []string // e.g., ["research-director", "backend-engineer"]
 	IntentSkills    []string // e.g., ["/security", "/rust"]
+
+	// SDD: tracks which spec files were already injected this session
+	SpecsInjected []string
 }

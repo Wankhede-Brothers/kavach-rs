@@ -209,6 +209,13 @@ func preToolCEO(input *hook.Input) {
 			runDAGSchedule(session, prompt, breakdown, agents, orchDirective)
 		}
 
+		// SDD: inject matching specs as TOON context
+		specContent := specsDrivenGate(input, session)
+		if specContent != "" {
+			session.MarkCEOInvoked()
+			hook.ExitModifyTOONWithModule("CEO_ORCHESTRATION", orchDirective, specContent)
+		}
+
 		session.MarkCEOInvoked()
 		hook.ExitModifyTOON("CEO_ORCHESTRATION", orchDirective)
 	}

@@ -112,6 +112,27 @@ func (s *SessionState) SetCurrentTask(task string) {
 	}
 }
 
+// MarkSpecInjected records that a spec file was injected this session.
+func (s *SessionState) MarkSpecInjected(name string) {
+	for _, n := range s.SpecsInjected {
+		if n == name {
+			return
+		}
+	}
+	s.SpecsInjected = append(s.SpecsInjected, name)
+	s.Save()
+}
+
+// WasSpecInjected returns true if the named spec was already injected.
+func (s *SessionState) WasSpecInjected(name string) bool {
+	for _, n := range s.SpecsInjected {
+		if n == name {
+			return true
+		}
+	}
+	return false
+}
+
 // StoreIntent persists intent classification for the CEO gate to read.
 func (s *SessionState) StoreIntent(intentType, domain string, subAgents, skills []string) {
 	s.IntentType = intentType
