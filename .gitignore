@@ -12,8 +12,7 @@ bin/
 # Rust
 target/
 
-# Go
-*.test
+# Test/Coverage
 *.out
 coverage.txt
 coverage.html

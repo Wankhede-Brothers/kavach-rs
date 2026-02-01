@@ -35,3 +35,10 @@ DACE:RULES
   max_lines: 100
   mode: lazy_load,skill_first
   modules: ~/.claude/modules/
+
+DACE:PROJECT_PROFILE
+  lang: rust
+  test: just test
+  build: just build
+  lint: just lint
+  fmt: just fmt
