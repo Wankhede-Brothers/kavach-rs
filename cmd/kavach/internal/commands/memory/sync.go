@@ -100,7 +100,7 @@ func syncTaskCreate(input *hook.Input, project, today string) {
 	if subject == "" {
 		return
 	}
-	stmlog.AppendEvent(project,"task_created", subject, description)
+	stmlog.AppendEvent(project, "task_created", subject, description)
 }
 
 func syncTaskUpdate(input *hook.Input, project, today string) {
@@ -110,7 +110,7 @@ func syncTaskUpdate(input *hook.Input, project, today string) {
 		return
 	}
 	subject := input.GetString("subject")
-	stmlog.AppendEvent(project,"task_"+status, subject, taskID)
+	stmlog.AppendEvent(project, "task_"+status, subject, taskID)
 
 	// Update scratchpad and kanban on completion
 	if status == "completed" && subject != "" {
@@ -131,7 +131,7 @@ func syncFileChange(input *hook.Input, project, today string) {
 	session := enforce.GetOrCreateSession()
 	session.AddFileModified(filePath)
 
-	stmlog.AppendEvent(project,"file_"+input.ToolName, filePath, "")
+	stmlog.AppendEvent(project, "file_"+input.ToolName, filePath, "")
 }
 
 func syncBashResult(input *hook.Input, project, today string) {
@@ -142,7 +142,7 @@ func syncBashResult(input *hook.Input, project, today string) {
 	// Phase 7b: Only log significant commands (builds, tests, deploys, git)
 	for _, sig := range []string{"build", "test", "deploy", "cargo", "go ", "bun ", "npm ", "git commit", "git push", "git merge"} {
 		if containsStr(command, sig) {
-			stmlog.AppendEvent(project,"bash_"+sig, command, "")
+			stmlog.AppendEvent(project, "bash_"+sig, command, "")
 			return
 		}
 	}
@@ -155,7 +155,7 @@ func syncAgentResult(input *hook.Input, project, today string) {
 	if desc == "" {
 		return
 	}
-	stmlog.AppendEvent(project,"agent_"+agentType, desc, "")
+	stmlog.AppendEvent(project, "agent_"+agentType, desc, "")
 }
 
 func containsStr(s, sub string) bool {

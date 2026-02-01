@@ -13,12 +13,12 @@ import (
 
 // Report holds aggregated telemetry data.
 type Report struct {
-	TotalSpans    int              `json:"total_spans"`
-	TotalDuration int64            `json:"total_duration_ms"`
-	ByHook        map[string]*Agg  `json:"by_hook"`
-	ByResult      map[string]int   `json:"by_result"`
-	ByTool        map[string]*Agg  `json:"by_tool"`
-	Slowest       []Span           `json:"slowest"`
+	TotalSpans    int             `json:"total_spans"`
+	TotalDuration int64           `json:"total_duration_ms"`
+	ByHook        map[string]*Agg `json:"by_hook"`
+	ByResult      map[string]int  `json:"by_result"`
+	ByTool        map[string]*Agg `json:"by_tool"`
+	Slowest       []Span          `json:"slowest"`
 }
 
 // Agg holds per-hook or per-tool aggregated metrics.

@@ -241,9 +241,9 @@ func warnResearchTopicMismatch(filePath string, session *enforce.SessionState) {
 	for _, fw := range frameworks {
 		if !strings.Contains(topicsJoined, fw) {
 			hook.ExitModifyTOON("RESEARCH_TOPIC_WARN", map[string]string{
-				"warning":            "File references '" + fw + "' but no matching research topic found",
-				"suggest":            "WebSearch " + fw + " before writing to " + filePath,
-				"researched_topics":  topicsJoined,
+				"warning":           "File references '" + fw + "' but no matching research topic found",
+				"suggest":           "WebSearch " + fw + " before writing to " + filePath,
+				"researched_topics": topicsJoined,
 			})
 		}
 	}

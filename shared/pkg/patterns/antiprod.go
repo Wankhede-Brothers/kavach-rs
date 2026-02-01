@@ -31,17 +31,17 @@ type AntiProdResult struct {
 // === JS/TS patterns ===
 
 var (
-	reConsoleLog   = regexp.MustCompile(`\bconsole\.(log|debug|info|warn|error)\s*\(`)
-	reTodoComment  = regexp.MustCompile(`(?i)\b(TODO|FIXME|HACK|XXX)\b`)
-	reLocalhost    = regexp.MustCompile(`https?://localhost\b`)
-	reProcessEnv   = regexp.MustCompile(`process\.env\.\w+`)
-	reEmptyCatch   = regexp.MustCompile(`\.catch\s*\(\s*(?:\(\s*\)|_)\s*=>\s*\{\s*\}\s*\)`)
+	reConsoleLog    = regexp.MustCompile(`\bconsole\.(log|debug|info|warn|error)\s*\(`)
+	reTodoComment   = regexp.MustCompile(`(?i)\b(TODO|FIXME|HACK|XXX)\b`)
+	reLocalhost     = regexp.MustCompile(`https?://localhost\b`)
+	reProcessEnv    = regexp.MustCompile(`process\.env\.\w+`)
+	reEmptyCatch    = regexp.MustCompile(`\.catch\s*\(\s*(?:\(\s*\)|_)\s*=>\s*\{\s*\}\s*\)`)
 	reNonNullAssert = regexp.MustCompile(`[a-zA-Z_]\w*!\.[a-zA-Z_]`)
 	reFetchNoError  = regexp.MustCompile(`fetch\s*\([^)\n]+\)\s*(?:\.then|;)`)
-	reAsAny        = regexp.MustCompile(`\bas\s+any\b`)
-	reTsIgnore     = regexp.MustCompile(`@ts-ignore|@ts-expect-error`)
-	reEslintDis    = regexp.MustCompile(`eslint-disable(?:-next-line)?`)
-	reTsNoCheck    = regexp.MustCompile(`@ts-nocheck`)
+	reAsAny         = regexp.MustCompile(`\bas\s+any\b`)
+	reTsIgnore      = regexp.MustCompile(`@ts-ignore|@ts-expect-error`)
+	reEslintDis     = regexp.MustCompile(`eslint-disable(?:-next-line)?`)
+	reTsNoCheck     = regexp.MustCompile(`@ts-nocheck`)
 	// P1: XSS via set:html in Astro
 	reAstroSetHtml = regexp.MustCompile(`set:html\s*=`)
 	// P1: XSS via dangerouslySetInnerHTML
@@ -178,9 +178,9 @@ var (
 // === Java/Kotlin patterns ===
 
 var (
-	reJavaSysOut      = regexp.MustCompile(`System\.out\.print`)
-	reJavaEmptyCatch  = regexp.MustCompile(`catch\s*\([^)]*\)\s*\{\s*\}`)
-	reJavaSuppress    = regexp.MustCompile(`@SuppressWarnings`)
+	reJavaSysOut     = regexp.MustCompile(`System\.out\.print`)
+	reJavaEmptyCatch = regexp.MustCompile(`catch\s*\([^)]*\)\s*\{\s*\}`)
+	reJavaSuppress   = regexp.MustCompile(`@SuppressWarnings`)
 )
 
 // === Docker/Infra patterns ===

@@ -19,10 +19,10 @@ func setupTestSpecs(t *testing.T) string {
 	}
 	// Write test spec files
 	files := map[string]string{
-		"security.toon":            "[SPEC:security]\nconstraint: use constant-time comparison",
-		"implement.toon":           "[SPEC:implement]\nconstraint: read before modify",
-		"security-implement.toon":  "[SPEC:security-implement]\nconstraint: OWASP review required",
-		"default.toon":             "[SPEC:default]\nconstraint: follow conventions",
+		"security.toon":           "[SPEC:security]\nconstraint: use constant-time comparison",
+		"implement.toon":          "[SPEC:implement]\nconstraint: read before modify",
+		"security-implement.toon": "[SPEC:security-implement]\nconstraint: OWASP review required",
+		"default.toon":            "[SPEC:default]\nconstraint: follow conventions",
 	}
 	for name, content := range files {
 		if err := os.WriteFile(filepath.Join(specsDir, name), []byte(content), 0o644); err != nil {

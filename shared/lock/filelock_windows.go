@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// DefaultTimeout is the default lock acquisition timeout for hook gates.
+const DefaultTimeout = 2 * time.Second
+
 type FileLock struct {
 	file *os.File
 	path string
