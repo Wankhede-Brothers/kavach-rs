@@ -9,6 +9,9 @@ bin/
 *.so
 *.dylib
 
+# Rust
+target/
+
 # Go
 *.test
 *.out
