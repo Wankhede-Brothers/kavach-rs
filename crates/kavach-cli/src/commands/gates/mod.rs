@@ -73,12 +73,6 @@ pub fn dispatch(cmd: GatesCommand) -> anyhow::Result<()> {
     }
 }
 
-pub fn read_hook_stdin() -> anyhow::Result<serde_json::Value> {
-    let stdin = std::io::stdin();
-    let input: serde_json::Value = serde_json::from_reader(stdin.lock())?;
-    Ok(input)
-}
-
 fn hook_run<F>(name: &str, hook_mode: bool, f: F) -> anyhow::Result<()>
 where
     F: FnOnce(&HookInput) -> anyhow::Result<()>,

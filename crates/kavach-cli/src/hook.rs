@@ -175,25 +175,6 @@ pub fn exit_modify_toon(gate: &str, kvs: &mut HashMap<String, String>) -> anyhow
     Err(HookExit.into())
 }
 
-pub fn exit_modify_toon_with_module(
-    gate: &str,
-    kvs: &mut HashMap<String, String>,
-    module_content: &str,
-) -> anyhow::Result<()> {
-    kvs.insert("date".into(), today());
-    let mut ctx = toon_block(gate, kvs);
-    if !module_content.is_empty() {
-        ctx += &format!("\n[MODULE:LAZY_LOADED]\n{module_content}");
-    }
-    cli_write_json(&HookResponse {
-        decision: Some("approve".into()),
-        reason: Some(gate.into()),
-        additional_context: Some(ctx),
-        hook_specific_output: None,
-    });
-    Err(HookExit.into())
-}
-
 pub fn exit_user_prompt_submit_silent() -> anyhow::Result<()> {
     cli_write_json(&UserPromptSubmitResponse {
         hook_event_name: "UserPromptSubmit".into(),

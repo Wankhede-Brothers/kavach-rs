@@ -303,11 +303,6 @@ impl SessionState {
         let _ = self.save();
     }
 
-    pub fn mark_research_done(&mut self) {
-        self.research_done = true;
-        let _ = self.save();
-    }
-
     pub fn mark_research_done_with_topic(&mut self, topic: &str) {
         self.research_done = true;
         if !topic.is_empty() {

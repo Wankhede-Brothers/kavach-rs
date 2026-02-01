@@ -92,7 +92,3 @@ pub fn cli_print(msg: &str) {
     let mut handle = stdout.lock();
     let _ = writeln!(handle, "{}", msg);
 }
-
-pub fn cli_print_fmt(msg: String) {
-    cli_print(&msg);
-}
