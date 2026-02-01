@@ -3,9 +3,10 @@ pub mod end;
 pub mod compact;
 pub mod validate;
 pub mod resume;
+pub mod land;
+pub mod end_hook;
 
 use clap::Subcommand;
-use super::cli_print_fmt;
 
 #[derive(Subcommand)]
 pub enum SessionCommand {
@@ -26,7 +27,7 @@ pub fn dispatch(cmd: SessionCommand) -> anyhow::Result<()> {
         SessionCommand::End => end::run(),
         SessionCommand::Compact => compact::run(),
         SessionCommand::Resume => resume::run(),
-        SessionCommand::Land => { cli_print_fmt("[STUB] session land".into()); Ok(()) }
-        SessionCommand::EndHook => { cli_print_fmt("[STUB] session end-hook".into()); Ok(()) }
+        SessionCommand::Land => land::run(),
+        SessionCommand::EndHook => end_hook::run(),
     }
 }
