@@ -1,12 +1,12 @@
 pub mod bank;
-pub mod write;
-pub mod rpc;
-pub mod stm;
+pub mod inject;
 pub mod kanban;
+pub mod rpc;
+pub mod spec;
+pub mod stm;
 pub mod sync;
 pub mod view;
-pub mod inject;
-pub mod spec;
+pub mod write;
 
 use clap::Subcommand;
 

@@ -1,7 +1,7 @@
 pub mod aegis;
 pub mod dag;
-pub mod verify;
 pub mod task_health;
+pub mod verify;
 
 use clap::Subcommand;
 

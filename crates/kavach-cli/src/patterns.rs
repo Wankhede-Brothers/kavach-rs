@@ -26,7 +26,7 @@ fn blocked_patterns() -> Vec<String> {
         "|sh".into(),
         "| /bin/bash".into(),
         "| /bin/sh".into(),
-        ":()" .into(),
+        ":()".into(),
         ":(){".into(),
         "chown -r".into(),
         "nc -e".into(),
@@ -65,10 +65,29 @@ const LEGACY_COMMANDS: &[(&str, &str, &str)] = &[
 
 /// Allowed commands that skip legacy detection.
 const LEGACY_ALLOWED: &[&str] = &[
-    "eza", "bat", "fd", "rg", "dust", "btm", "procs", "sd",
-    "cargo", "go", "git", "npm", "node", "python", "python3",
-    "rustc", "rustup", "make", "cmake", "docker", "kubectl",
-    "gofmt", "golangci-lint",
+    "eza",
+    "bat",
+    "fd",
+    "rg",
+    "dust",
+    "btm",
+    "procs",
+    "sd",
+    "cargo",
+    "go",
+    "git",
+    "npm",
+    "node",
+    "python",
+    "python3",
+    "rustc",
+    "rustup",
+    "make",
+    "cmake",
+    "docker",
+    "kubectl",
+    "gofmt",
+    "golangci-lint",
 ];
 
 pub fn is_blocked(command: &str) -> bool {
@@ -100,7 +119,7 @@ pub fn detect_legacy_command(command: &str) -> Option<(String, String, String)> 
     let full_cmd = parts[0];
     let cmd_name = full_cmd.rsplit('/').next().unwrap_or(full_cmd);
 
-    if LEGACY_ALLOWED.iter().any(|a| cmd_name == *a) {
+    if LEGACY_ALLOWED.contains(&cmd_name) {
         return None;
     }
 
@@ -131,5 +150,5 @@ const VALID_AGENTS: &[&str] = &[
 ];
 
 pub fn is_valid_agent(agent: &str) -> bool {
-    VALID_AGENTS.iter().any(|a| *a == agent)
+    VALID_AGENTS.contains(&agent)
 }

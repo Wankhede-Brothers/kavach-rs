@@ -27,7 +27,9 @@ struct QualityResult {
 
 pub fn run(args: QualityArgs) -> anyhow::Result<()> {
     if args.paths.is_empty() {
-        crate::commands::cli_print("Usage: kavach quality [--verbose] [--format=toon|json] <file|dir>...");
+        crate::commands::cli_print(
+            "Usage: kavach quality [--verbose] [--format=toon|json] <file|dir>...",
+        );
         return Ok(());
     }
 
@@ -88,8 +90,12 @@ fn analyze_file(path: &Path) -> QualityResult {
         Ok(c) => c,
         Err(_) => {
             return QualityResult {
-                file: file_str, lines: 0, functions: 0,
-                imports: 0, dace_score: 0, complexity: "unknown".into(),
+                file: file_str,
+                lines: 0,
+                functions: 0,
+                imports: 0,
+                dace_score: 0,
+                complexity: "unknown".into(),
             };
         }
     };
@@ -118,7 +124,9 @@ fn analyze_file(path: &Path) -> QualityResult {
         let deduct = ((result.functions - 10) * 2).min(20) as i32;
         result.dace_score -= deduct;
     }
-    if result.dace_score < 0 { result.dace_score = 0; }
+    if result.dace_score < 0 {
+        result.dace_score = 0;
+    }
 
     // Complexity
     result.complexity = if result.lines <= 50 && result.functions <= 5 {
@@ -138,18 +146,27 @@ fn count_functions(lines: &[&str], ext: &str) -> usize {
         let trimmed = line.trim();
         match ext {
             "go" => {
-                if trimmed.starts_with("func ") { count += 1; }
+                if trimmed.starts_with("func ") {
+                    count += 1;
+                }
             }
             "rs" => {
-                if trimmed.starts_with("fn ") || trimmed.starts_with("pub fn ") { count += 1; }
+                if trimmed.starts_with("fn ") || trimmed.starts_with("pub fn ") {
+                    count += 1;
+                }
             }
             "ts" | "tsx" | "js" | "jsx" => {
-                if trimmed.contains("function ") || trimmed.contains("=> {") || trimmed.contains("async ") {
+                if trimmed.contains("function ")
+                    || trimmed.contains("=> {")
+                    || trimmed.contains("async ")
+                {
                     count += 1;
                 }
             }
             "py" => {
-                if trimmed.starts_with("def ") || trimmed.starts_with("async def ") { count += 1; }
+                if trimmed.starts_with("def ") || trimmed.starts_with("async def ") {
+                    count += 1;
+                }
             }
             _ => {}
         }
@@ -163,17 +180,27 @@ fn count_imports(lines: &[&str], ext: &str) -> usize {
         let trimmed = line.trim();
         match ext {
             "go" => {
-                if trimmed.starts_with("import ") || trimmed == "import (" { count += 1; }
-                if trimmed.starts_with('"') && trimmed.ends_with('"') { count += 1; }
+                if trimmed.starts_with("import ") || trimmed == "import (" {
+                    count += 1;
+                }
+                if trimmed.starts_with('"') && trimmed.ends_with('"') {
+                    count += 1;
+                }
             }
             "rs" => {
-                if trimmed.starts_with("use ") { count += 1; }
+                if trimmed.starts_with("use ") {
+                    count += 1;
+                }
             }
             "ts" | "tsx" | "js" | "jsx" => {
-                if trimmed.starts_with("import ") || trimmed.starts_with("require(") { count += 1; }
+                if trimmed.starts_with("import ") || trimmed.starts_with("require(") {
+                    count += 1;
+                }
             }
             "py" => {
-                if trimmed.starts_with("import ") || trimmed.starts_with("from ") { count += 1; }
+                if trimmed.starts_with("import ") || trimmed.starts_with("from ") {
+                    count += 1;
+                }
             }
             _ => {}
         }
@@ -187,7 +214,9 @@ fn output_toon(results: &[QualityResult], verbose: bool) -> anyhow::Result<()> {
 
     let total_lines: usize = results.iter().map(|r| r.lines).sum();
     let total_functions: usize = results.iter().map(|r| r.functions).sum();
-    let avg_dace = if results.is_empty() { 0 } else {
+    let avg_dace = if results.is_empty() {
+        0
+    } else {
         results.iter().map(|r| r.dace_score).sum::<i32>() / results.len() as i32
     };
 
@@ -220,8 +249,11 @@ fn output_json(results: &[QualityResult]) -> anyhow::Result<()> {
     writeln!(w, "[")?;
     for (i, r) in results.iter().enumerate() {
         let comma = if i < results.len() - 1 { "," } else { "" };
-        writeln!(w, "  {{\"file\": {:?}, \"lines\": {}, \"dace_score\": {}, \"complexity\": {:?}}}{comma}",
-            r.file, r.lines, r.dace_score, r.complexity)?;
+        writeln!(
+            w,
+            "  {{\"file\": {:?}, \"lines\": {}, \"dace_score\": {}, \"complexity\": {:?}}}{comma}",
+            r.file, r.lines, r.dace_score, r.complexity
+        )?;
     }
     writeln!(w, "]")?;
 

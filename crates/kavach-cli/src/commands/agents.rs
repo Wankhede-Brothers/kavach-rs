@@ -86,10 +86,18 @@ fn output_toon_list(agents: &[Agent]) -> anyhow::Result<()> {
     writeln!(w, "date: {today}")?;
     writeln!(w)?;
 
-    let levels = [LEVEL_NLU, LEVEL_CEO, LEVEL_ENGINEER, LEVEL_REVIEW, LEVEL_AEGIS];
+    let levels = [
+        LEVEL_NLU,
+        LEVEL_CEO,
+        LEVEL_ENGINEER,
+        LEVEL_REVIEW,
+        LEVEL_AEGIS,
+    ];
     for lvl in &levels {
         let list: Vec<&Agent> = agents.iter().filter(|a| a.level == *lvl).collect();
-        if list.is_empty() { continue; }
+        if list.is_empty() {
+            continue;
+        }
         writeln!(w, "[{}]", level_name(*lvl))?;
         for a in &list {
             writeln!(w, "{}: {} ({})", a.name, a.description, a.model)?;
@@ -99,7 +107,10 @@ fn output_toon_list(agents: &[Agent]) -> anyhow::Result<()> {
 
     writeln!(w, "[MODELS]")?;
     writeln!(w, "opus: ceo,research-director,aegis-guardian")?;
-    writeln!(w, "sonnet: backend,frontend,devops,security,qa,code-reviewer")?;
+    writeln!(
+        w,
+        "sonnet: backend,frontend,devops,security,qa,code-reviewer"
+    )?;
     writeln!(w, "haiku: nlu-intent-analyzer")?;
 
     Ok(())
@@ -121,7 +132,9 @@ fn output_toon_single(a: &Agent) -> anyhow::Result<()> {
 
     if !a.triggers.is_empty() {
         writeln!(w, "[TRIGGERS]")?;
-        for t in &a.triggers { writeln!(w, "- {t}")?; }
+        for t in &a.triggers {
+            writeln!(w, "- {t}")?;
+        }
         writeln!(w)?;
     }
 
@@ -133,13 +146,17 @@ fn output_toon_single(a: &Agent) -> anyhow::Result<()> {
 
     if !a.research.is_empty() {
         writeln!(w, "[RESEARCH_CONTEXT]")?;
-        for r in &a.research { writeln!(w, "- {r}")?; }
+        for r in &a.research {
+            writeln!(w, "- {r}")?;
+        }
         writeln!(w)?;
     }
 
     if !a.patterns.is_empty() {
         writeln!(w, "[PATTERNS]")?;
-        for p in &a.patterns { writeln!(w, "- {p}")?; }
+        for p in &a.patterns {
+            writeln!(w, "- {p}")?;
+        }
     }
 
     Ok(())
@@ -273,11 +290,7 @@ fn parse_agent_file(path: &Path) -> Option<Agent> {
 
     for line in content.lines() {
         if line == "---" {
-            if !in_frontmatter {
-                in_frontmatter = true;
-            } else {
-                in_frontmatter = false;
-            }
+            in_frontmatter = !in_frontmatter;
             continue;
         }
 
@@ -333,14 +346,28 @@ fn inject_context(agent: &mut Agent) {
     let mem_dir = memory_dir();
     let project = detect_project();
 
-    let research_path = mem_dir.join("research").join(&project).join("research.toon");
+    let research_path = mem_dir
+        .join("research")
+        .join(&project)
+        .join("research.toon");
     if research_path.exists() {
-        agent.research = load_entries(&research_path, &agent.name, &["verified:", "finding:", "fact:"]);
+        agent.research = load_entries(
+            &research_path,
+            &agent.name,
+            &["verified:", "finding:", "fact:"],
+        );
     }
 
-    let patterns_path = mem_dir.join("patterns").join(&project).join("patterns.toon");
+    let patterns_path = mem_dir
+        .join("patterns")
+        .join(&project)
+        .join("patterns.toon");
     if patterns_path.exists() {
-        agent.patterns = load_entries(&patterns_path, &agent.name, &["pattern:", "solution:", "template:"]);
+        agent.patterns = load_entries(
+            &patterns_path,
+            &agent.name,
+            &["pattern:", "solution:", "template:"],
+        );
     }
 }
 
@@ -351,7 +378,8 @@ fn load_entries(path: &Path, agent_name: &str, markers: &[&str]) -> Vec<String> 
     };
 
     let lower_agent = agent_name.to_lowercase();
-    content.lines()
+    content
+        .lines()
         .map(|l| l.trim())
         .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .filter(|l| {
@@ -366,26 +394,152 @@ fn load_entries(path: &Path, agent_name: &str, markers: &[&str]) -> Vec<String> 
 
 fn builtin_agents() -> Vec<Agent> {
     vec![
-        Agent { name: "nlu-intent-analyzer".into(), level: LEVEL_NLU, model: "haiku".into(), description: "Fast intent parsing - routes to CEO".into(), triggers: vec!["user_prompt".into()], tools: vec!["Read".into(), "Grep".into(), "Glob".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "ceo".into(), level: LEVEL_CEO, model: "opus".into(), description: "Orchestrator - delegates, never writes code".into(), triggers: vec!["task_delegation".into(), "complex_request".into()], tools: vec!["Task".into(), "Read".into(), "Grep".into(), "Glob".into(), "WebSearch".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "research-director".into(), level: LEVEL_CEO, model: "opus".into(), description: "Evidence-based research findings".into(), triggers: vec!["research_needed".into(), "verify_facts".into()], tools: vec!["WebSearch".into(), "WebFetch".into(), "Read".into(), "Grep".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "backend-engineer".into(), level: LEVEL_ENGINEER, model: "sonnet".into(), description: "Rust backend - Axum, Tonic, Zig".into(), triggers: vec!["backend_task".into(), "api_implementation".into()], tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into(), "Grep".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "frontend-engineer".into(), level: LEVEL_ENGINEER, model: "sonnet".into(), description: "TypeScript + React frontend".into(), triggers: vec!["frontend_task".into(), "ui_implementation".into()], tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into(), "Grep".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "devops-engineer".into(), level: LEVEL_ENGINEER, model: "sonnet".into(), description: "Docker, K8s, CI/CD pipelines".into(), triggers: vec!["devops_task".into(), "deployment".into()], tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "security-engineer".into(), level: LEVEL_ENGINEER, model: "sonnet".into(), description: "Security analysis, OWASP compliance".into(), triggers: vec!["security_review".into(), "vulnerability_check".into()], tools: vec!["Read".into(), "Grep".into(), "WebSearch".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "qa-lead".into(), level: LEVEL_ENGINEER, model: "sonnet".into(), description: "Test strategy and coverage".into(), triggers: vec!["testing_task".into(), "coverage_analysis".into()], tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "code-reviewer".into(), level: LEVEL_REVIEW, model: "sonnet".into(), description: "Post-implementation code review".into(), triggers: vec!["code_review".into(), "pr_review".into()], tools: vec!["Read".into(), "Grep".into(), "Bash".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
-        Agent { name: "aegis-guardian".into(), level: LEVEL_AEGIS, model: "opus".into(), description: "Verification Guardian - Quality, Security, Testing".into(), triggers: vec!["final_verification".into(), "quality_gate".into()], tools: vec!["Read".into(), "Grep".into(), "Bash".into()], path: String::new(), research: Vec::new(), patterns: Vec::new() },
+        Agent {
+            name: "nlu-intent-analyzer".into(),
+            level: LEVEL_NLU,
+            model: "haiku".into(),
+            description: "Fast intent parsing - routes to CEO".into(),
+            triggers: vec!["user_prompt".into()],
+            tools: vec!["Read".into(), "Grep".into(), "Glob".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "ceo".into(),
+            level: LEVEL_CEO,
+            model: "opus".into(),
+            description: "Orchestrator - delegates, never writes code".into(),
+            triggers: vec!["task_delegation".into(), "complex_request".into()],
+            tools: vec![
+                "Task".into(),
+                "Read".into(),
+                "Grep".into(),
+                "Glob".into(),
+                "WebSearch".into(),
+            ],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "research-director".into(),
+            level: LEVEL_CEO,
+            model: "opus".into(),
+            description: "Evidence-based research findings".into(),
+            triggers: vec!["research_needed".into(), "verify_facts".into()],
+            tools: vec![
+                "WebSearch".into(),
+                "WebFetch".into(),
+                "Read".into(),
+                "Grep".into(),
+            ],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "backend-engineer".into(),
+            level: LEVEL_ENGINEER,
+            model: "sonnet".into(),
+            description: "Rust backend - Axum, Tonic, Zig".into(),
+            triggers: vec!["backend_task".into(), "api_implementation".into()],
+            tools: vec![
+                "Read".into(),
+                "Edit".into(),
+                "Write".into(),
+                "Bash".into(),
+                "Grep".into(),
+            ],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "frontend-engineer".into(),
+            level: LEVEL_ENGINEER,
+            model: "sonnet".into(),
+            description: "TypeScript + React frontend".into(),
+            triggers: vec!["frontend_task".into(), "ui_implementation".into()],
+            tools: vec![
+                "Read".into(),
+                "Edit".into(),
+                "Write".into(),
+                "Bash".into(),
+                "Grep".into(),
+            ],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "devops-engineer".into(),
+            level: LEVEL_ENGINEER,
+            model: "sonnet".into(),
+            description: "Docker, K8s, CI/CD pipelines".into(),
+            triggers: vec!["devops_task".into(), "deployment".into()],
+            tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "security-engineer".into(),
+            level: LEVEL_ENGINEER,
+            model: "sonnet".into(),
+            description: "Security analysis, OWASP compliance".into(),
+            triggers: vec!["security_review".into(), "vulnerability_check".into()],
+            tools: vec!["Read".into(), "Grep".into(), "WebSearch".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "qa-lead".into(),
+            level: LEVEL_ENGINEER,
+            model: "sonnet".into(),
+            description: "Test strategy and coverage".into(),
+            triggers: vec!["testing_task".into(), "coverage_analysis".into()],
+            tools: vec!["Read".into(), "Edit".into(), "Write".into(), "Bash".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "code-reviewer".into(),
+            level: LEVEL_REVIEW,
+            model: "sonnet".into(),
+            description: "Post-implementation code review".into(),
+            triggers: vec!["code_review".into(), "pr_review".into()],
+            tools: vec!["Read".into(), "Grep".into(), "Bash".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
+        Agent {
+            name: "aegis-guardian".into(),
+            level: LEVEL_AEGIS,
+            model: "opus".into(),
+            description: "Verification Guardian - Quality, Security, Testing".into(),
+            triggers: vec!["final_verification".into(), "quality_gate".into()],
+            tools: vec!["Read".into(), "Grep".into(), "Bash".into()],
+            path: String::new(),
+            research: Vec::new(),
+            patterns: Vec::new(),
+        },
     ]
 }
 
 fn detect_project() -> String {
     if let Ok(val) = std::env::var("KAVACH_PROJECT") {
-        if !val.is_empty() { return val; }
+        if !val.is_empty() {
+            return val;
+        }
     }
     if let Ok(wd) = std::env::current_dir() {
         if wd.join(".git").exists() {
-            return wd.file_name()
+            return wd
+                .file_name()
                 .map(|n| n.to_string_lossy().to_string())
                 .unwrap_or_else(|| "global".into());
         }
@@ -395,5 +549,8 @@ fn detect_project() -> String {
 
 fn memory_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_default();
-    home.join(".local").join("shared").join("shared-ai").join("memory")
+    home.join(".local")
+        .join("shared")
+        .join("shared-ai")
+        .join("memory")
 }

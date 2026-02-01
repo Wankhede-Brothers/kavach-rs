@@ -30,9 +30,7 @@ fn dispatch(input: &HookInput) -> anyhow::Result<()> {
         "Task" => pre_tool_ceo(input),
         "Skill" => pre_tool_skill(input),
         "WebFetch" => pre_tool_content(input),
-        "TaskCreate" | "TaskUpdate" | "TaskGet" | "TaskList" | "TaskOutput" => {
-            pre_tool_task(input)
-        }
+        "TaskCreate" | "TaskUpdate" | "TaskGet" | "TaskList" | "TaskOutput" => pre_tool_task(input),
         "AskUserQuestion" => hook::exit_silent(),
         _ => hook::exit_silent(),
     }
@@ -123,11 +121,7 @@ fn pre_tool_ceo(input: &HookInput) -> anyhow::Result<()> {
         hook::exit_block_toon("CEO", &format!("unknown_agent:{subagent_type}"))?;
     }
 
-    let engineers = [
-        "backend-engineer",
-        "frontend-engineer",
-        "aegis-guardian",
-    ];
+    let engineers = ["backend-engineer", "frontend-engineer", "aegis-guardian"];
     if engineers.contains(&subagent_type.as_str()) {
         let today = hook::today();
         let mut kvs = HashMap::new();
@@ -135,7 +129,10 @@ fn pre_tool_ceo(input: &HookInput) -> anyhow::Result<()> {
         kvs.insert("date".into(), today);
         kvs.insert("cutoff".into(), "2025-01".into());
         kvs.insert("CEO_FLOW".into(), "DELEGATE->VERIFY->AEGIS".into());
-        kvs.insert("AFTER_TASK".into(), "Verify result meets requirements".into());
+        kvs.insert(
+            "AFTER_TASK".into(),
+            "Verify result meets requirements".into(),
+        );
         hook::exit_modify_toon("CEO_ORCHESTRATION", &mut kvs)?;
     }
 
@@ -164,7 +161,10 @@ fn pre_tool_content(input: &HookInput) -> anyhow::Result<()> {
     // Build sensitive content patterns at runtime to avoid content scanner triggers
     let sensitive_kv_suffixes = ["word", "cret", "_key", "ken"];
     let sensitive_kv_prefixes = ["pass", "se", "api", "to"];
-    for (prefix, suffix) in sensitive_kv_prefixes.iter().zip(sensitive_kv_suffixes.iter()) {
+    for (prefix, suffix) in sensitive_kv_prefixes
+        .iter()
+        .zip(sensitive_kv_suffixes.iter())
+    {
         let pattern = format!("{prefix}{suffix} =");
         if content_lower.contains(&pattern) {
             hook::exit_block_toon("CONTENT", &format!("sensitive:{pattern}"))?;

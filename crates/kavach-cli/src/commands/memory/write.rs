@@ -53,11 +53,24 @@ pub fn run(args: WriteArgs) -> anyhow::Result<()> {
     let project = args.project.unwrap_or_else(detect_project);
 
     // Valid categories
-    let valid = ["decisions", "graph", "kanban", "patterns", "proposals", "research", "roadmaps"];
+    let valid = [
+        "decisions",
+        "graph",
+        "kanban",
+        "patterns",
+        "proposals",
+        "research",
+        "roadmaps",
+    ];
     if !valid.contains(&category.as_str()) {
         let stderr = io::stderr();
         let mut h = stderr.lock();
-        let _ = writeln!(h, "Error: invalid category '{}'. Valid: {}", category, valid.join(", "));
+        let _ = writeln!(
+            h,
+            "Error: invalid category '{}'. Valid: {}",
+            category,
+            valid.join(", ")
+        );
         return Ok(());
     }
 

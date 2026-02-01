@@ -26,19 +26,32 @@ pub fn run() -> anyhow::Result<()> {
     writeln!(w)?;
 
     writeln!(w, "[STATE]")?;
-    writeln!(w, "research_done: {} | memory: {} | ceo: {}",
-        bool_str(sess.research_done), bool_str(sess.memory_queried), bool_str(sess.ceo_invoked))?;
+    writeln!(
+        w,
+        "research_done: {} | memory: {} | ceo: {}",
+        bool_str(sess.research_done),
+        bool_str(sess.memory_queried),
+        bool_str(sess.ceo_invoked)
+    )?;
     writeln!(w)?;
 
     writeln!(w, "[ENFORCE]")?;
-    writeln!(w, "TABULA_RASA: cutoff={} | WebSearch BEFORE code", sess.training_cutoff)?;
+    writeln!(
+        w,
+        "TABULA_RASA: cutoff={} | WebSearch BEFORE code",
+        sess.training_cutoff
+    )?;
     writeln!(w, "NO_AMNESIA: query memory bank")?;
     writeln!(w)?;
 
     // Check for task to continue
     let mut task_found = false;
     if !sess.current_task.is_empty() {
-        writeln!(w, "[TASK] {} | status: {}", sess.current_task, sess.task_status)?;
+        writeln!(
+            w,
+            "[TASK] {} | status: {}",
+            sess.current_task, sess.task_status
+        )?;
         writeln!(w)?;
         task_found = true;
     } else {
@@ -94,23 +107,37 @@ fn load_scratchpad_task(project: &str) -> Option<(String, String)> {
 }
 
 fn bool_str(b: bool) -> &'static str {
-    if b { "done" } else { "pending" }
+    if b {
+        "done"
+    } else {
+        "pending"
+    }
 }
 
 fn memory_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_default();
-    home.join(".local").join("shared").join("shared-ai").join("memory")
+    home.join(".local")
+        .join("shared")
+        .join("shared-ai")
+        .join("memory")
 }
 
 fn stm_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_default();
-    home.join(".local").join("shared").join("shared-ai").join("stm")
+    home.join(".local")
+        .join("shared")
+        .join("shared-ai")
+        .join("stm")
 }
 
 fn count_toon_recursive(dir: &std::path::Path) -> usize {
-    if !dir.exists() { return 0; }
+    if !dir.exists() {
+        return 0;
+    }
     let mut count = 0;
-    let Ok(entries) = std::fs::read_dir(dir) else { return 0; };
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return 0;
+    };
     for entry in entries.flatten() {
         let path = entry.path();
         if path.is_dir() {

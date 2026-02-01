@@ -35,7 +35,10 @@ pub fn run() -> anyhow::Result<()> {
     }
 
     // Inject project patterns
-    let patterns_path = mem_dir.join("patterns").join(&project).join("patterns.toon");
+    let patterns_path = mem_dir
+        .join("patterns")
+        .join(&project)
+        .join("patterns.toon");
     if patterns_path.exists() {
         if let Ok(content) = std::fs::read_to_string(&patterns_path) {
             injected.push(format!("[PATTERNS]\n{content}"));

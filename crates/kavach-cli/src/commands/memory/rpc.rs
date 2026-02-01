@@ -15,10 +15,7 @@ pub fn run() -> anyhow::Result<()> {
         }
     };
 
-    let method = req
-        .get("method")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
+    let method = req.get("method").and_then(|v| v.as_str()).unwrap_or("");
     let id = req.get("id").cloned();
 
     match method {

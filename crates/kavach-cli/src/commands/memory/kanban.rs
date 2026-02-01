@@ -45,7 +45,9 @@ const COL_DONE: &str = "done";
 
 pub fn run(args: KanbanArgs) -> anyhow::Result<()> {
     let kanban_dir = memory_dir().join("kanban");
-    let project = args.project.unwrap_or_else(|| detect_kanban_project(&kanban_dir));
+    let project = args
+        .project
+        .unwrap_or_else(|| detect_kanban_project(&kanban_dir));
     let board = load_kanban_toon(&kanban_dir, &project);
 
     if args.sutra {
@@ -105,14 +107,21 @@ fn output_sutra(board: &KanbanBoard) -> anyhow::Result<()> {
         writeln!(w, "action: REPORT_TO_CEO")?;
         writeln!(w, "result: LOOP_CONTINUES")?;
         for t in &failed {
-            writeln!(w, "failed: {},{},lint:{},warn:{},bugs:{}",
-                t.id, t.title, t.lint_issues, t.warnings, t.core_bugs)?;
+            writeln!(
+                w,
+                "failed: {},{},lint:{},warn:{},bugs:{}",
+                t.id, t.title, t.lint_issues, t.warnings, t.core_bugs
+            )?;
         }
         writeln!(w)?;
     }
 
     let total = counts.0 + counts.1 + counts.2 + counts.3 + counts.4;
-    let progress = if total > 0 { (counts.4 * 100) / total } else { 0 };
+    let progress = if total > 0 {
+        (counts.4 * 100) / total
+    } else {
+        0
+    };
 
     writeln!(w, "[PROMISE]")?;
     if progress == 100 && failed.is_empty() {
@@ -133,7 +142,11 @@ fn output_toon_status(board: &KanbanBoard) -> anyhow::Result<()> {
     let counts = count_by_column(board);
     let priorities = count_by_priority(board);
     let total = counts.0 + counts.1 + counts.2 + counts.3 + counts.4;
-    let progress = if total > 0 { (counts.4 * 100) / total } else { 0 };
+    let progress = if total > 0 {
+        (counts.4 * 100) / total
+    } else {
+        0
+    };
 
     writeln!(w, "[KANBAN]")?;
     writeln!(w, "project: {}", board.project)?;
@@ -159,7 +172,15 @@ fn output_toon_status(board: &KanbanBoard) -> anyhow::Result<()> {
     writeln!(w, "[AEGIS]")?;
     let failed_count = failed_tasks(board).len();
     writeln!(w, "failed: {failed_count}")?;
-    writeln!(w, "action: {}", if failed_count > 0 { "REPORT_TO_CEO" } else { "CONTINUE" })?;
+    writeln!(
+        w,
+        "action: {}",
+        if failed_count > 0 {
+            "REPORT_TO_CEO"
+        } else {
+            "CONTINUE"
+        }
+    )?;
     writeln!(w)?;
 
     writeln!(w, "[PROGRESS]")?;
@@ -174,33 +195,66 @@ fn output_visual(board: &KanbanBoard) -> anyhow::Result<()> {
     let mut w = out.lock();
     let counts = count_by_column(board);
     let total = counts.0 + counts.1 + counts.2 + counts.3 + counts.4;
-    let progress = if total > 0 { (counts.4 * 100) / total } else { 0 };
+    let progress = if total > 0 {
+        (counts.4 * 100) / total
+    } else {
+        0
+    };
     let sep = "=".repeat(79);
     let dash = "-".repeat(79);
 
     writeln!(w, "+{sep}+")?;
-    writeln!(w, "|                    KANBAN DASHBOARD: {:<38} |", board.project)?;
+    writeln!(
+        w,
+        "|                    KANBAN DASHBOARD: {:<38} |",
+        board.project
+    )?;
     writeln!(w, "+{sep}+")?;
-    writeln!(w, "|  Updated: {:<20}  Loop Count: {:<5}  Progress: {:>3}%        |",
-        board.updated, board.loop_count, progress)?;
+    writeln!(
+        w,
+        "|  Updated: {:<20}  Loop Count: {:<5}  Progress: {:>3}%        |",
+        board.updated, board.loop_count, progress
+    )?;
     writeln!(w, "+{sep}+")?;
     writeln!(w)?;
 
     writeln!(w, "+{dash}+")?;
-    writeln!(w, "|                           PRODUCTION PIPELINE                                 |")?;
-    writeln!(w, "+----------+-----------+-----------+-----------+-----------+-------------------+")?;
-    writeln!(w, "| BACKLOG  |IN_PROGRESS|  TESTING  | VERIFIED  |   DONE    |      STATUS       |")?;
-    writeln!(w, "+----------+-----------+-----------+-----------+-----------+-------------------+")?;
+    writeln!(
+        w,
+        "|                           PRODUCTION PIPELINE                                 |"
+    )?;
+    writeln!(
+        w,
+        "+----------+-----------+-----------+-----------+-----------+-------------------+"
+    )?;
+    writeln!(
+        w,
+        "| BACKLOG  |IN_PROGRESS|  TESTING  | VERIFIED  |   DONE    |      STATUS       |"
+    )?;
+    writeln!(
+        w,
+        "+----------+-----------+-----------+-----------+-----------+-------------------+"
+    )?;
 
     let icon = status_icon(progress as usize);
-    writeln!(w, "|   {:>3}    |    {:>3}    |    {:>3}    |    {:>3}    |    {:>3}    | {} |",
-        counts.0, counts.1, counts.2, counts.3, counts.4, icon)?;
-    writeln!(w, "+----------+-----------+-----------+-----------+-----------+-------------------+")?;
+    writeln!(
+        w,
+        "|   {:>3}    |    {:>3}    |    {:>3}    |    {:>3}    |    {:>3}    | {} |",
+        counts.0, counts.1, counts.2, counts.3, counts.4, icon
+    )?;
+    writeln!(
+        w,
+        "+----------+-----------+-----------+-----------+-----------+-------------------+"
+    )?;
     writeln!(w)?;
 
     writeln!(w, "+{dash}+")?;
     let bar = progress_bar(progress as usize, 40);
-    writeln!(w, "|  Progress: {bar} {:>3}%                            |", progress)?;
+    writeln!(
+        w,
+        "|  Progress: {bar} {:>3}%                            |",
+        progress
+    )?;
     writeln!(w, "+{dash}+")?;
     writeln!(w)?;
 
@@ -209,28 +263,48 @@ fn output_visual(board: &KanbanBoard) -> anyhow::Result<()> {
     let verified = tasks_by_column(board, COL_VERIFIED);
 
     writeln!(w, "+{dash}+")?;
-    writeln!(w, "|                           AEGIS-GUARD STATUS                                  |")?;
+    writeln!(
+        w,
+        "|                           AEGIS-GUARD STATUS                                  |"
+    )?;
     writeln!(w, "+{dash}+")?;
 
     if !testing.is_empty() {
-        writeln!(w, "|  TESTING STAGE (Lint, Warnings, Core Bugs):                                  |")?;
+        writeln!(
+            w,
+            "|  TESTING STAGE (Lint, Warnings, Core Bugs):                                  |"
+        )?;
         for t in &testing {
             let ic = aegis_icon(&t.aegis_status);
-            writeln!(w, "|    {ic} {:<50} [{:<7}]        |",
-                truncate(&t.title, 50), t.aegis_status)?;
+            writeln!(
+                w,
+                "|    {ic} {:<50} [{:<7}]        |",
+                truncate(&t.title, 50),
+                t.aegis_status
+            )?;
         }
     }
     if !verified.is_empty() {
-        writeln!(w, "|  VERIFIED STAGE (Algorithm, Dead Code, Suppressed):                          |")?;
+        writeln!(
+            w,
+            "|  VERIFIED STAGE (Algorithm, Dead Code, Suppressed):                          |"
+        )?;
         for t in &verified {
             let ic = aegis_icon(&t.aegis_status);
-            writeln!(w, "|    {ic} {:<50} [{:<7}]        |",
-                truncate(&t.title, 50), t.aegis_status)?;
+            writeln!(
+                w,
+                "|    {ic} {:<50} [{:<7}]        |",
+                truncate(&t.title, 50),
+                t.aegis_status
+            )?;
         }
     }
     if !failed.is_empty() {
         writeln!(w, "+{dash}+")?;
-        writeln!(w, "|  FAILURES REPORTED TO CEO - LOOP CONTINUES                                   |")?;
+        writeln!(
+            w,
+            "|  FAILURES REPORTED TO CEO - LOOP CONTINUES                                   |"
+        )?;
         for t in &failed {
             writeln!(w, "|    X {:<60}          |", truncate(&t.title, 60))?;
         }
@@ -240,9 +314,15 @@ fn output_visual(board: &KanbanBoard) -> anyhow::Result<()> {
 
     writeln!(w, "+{dash}+")?;
     if progress == 100 && failed.is_empty() {
-        writeln!(w, "|                    [OK] PROMISE: PRODUCTION_READY                            |")?;
+        writeln!(
+            w,
+            "|                    [OK] PROMISE: PRODUCTION_READY                            |"
+        )?;
     } else {
-        writeln!(w, "|                    [..] PROMISE: IN_PROGRESS (LOOP CONTINUES)                |")?;
+        writeln!(
+            w,
+            "|                    [..] PROMISE: IN_PROGRESS (LOOP CONTINUES)                |"
+        )?;
     }
     writeln!(w, "+{dash}+")?;
 
@@ -283,14 +363,18 @@ fn count_by_priority(board: &KanbanBoard) -> (i32, i32, i32, i32) {
 }
 
 fn tasks_by_column<'a>(board: &'a KanbanBoard, col: &str) -> Vec<&'a KanbanCard> {
-    board.phases.iter()
+    board
+        .phases
+        .iter()
         .flat_map(|p| p.iter())
         .filter(|c| c.column == col)
         .collect()
 }
 
 fn failed_tasks(board: &KanbanBoard) -> Vec<&KanbanCard> {
-    board.phases.iter()
+    board
+        .phases
+        .iter()
         .flat_map(|p| p.iter())
         .filter(|c| c.aegis_status == "failed")
         .collect()
@@ -303,10 +387,15 @@ fn progress_bar(percent: usize, width: usize) -> String {
 }
 
 fn status_icon(progress: usize) -> &'static str {
-    if progress == 100 { "[OK] PRODUCTION " }
-    else if progress >= 75 { "[..] ALMOST READY" }
-    else if progress >= 50 { "[..] IN PROGRESS " }
-    else { "[  ] EARLY STAGE " }
+    if progress == 100 {
+        "[OK] PRODUCTION "
+    } else if progress >= 75 {
+        "[..] ALMOST READY"
+    } else if progress >= 50 {
+        "[..] IN PROGRESS "
+    } else {
+        "[  ] EARLY STAGE "
+    }
 }
 
 fn aegis_icon(status: &str) -> &'static str {
@@ -319,8 +408,11 @@ fn aegis_icon(status: &str) -> &'static str {
 }
 
 fn truncate(s: &str, max: usize) -> String {
-    if s.len() <= max { s.to_string() }
-    else { format!("{}...", &s[..max.saturating_sub(3)]) }
+    if s.len() <= max {
+        s.to_string()
+    } else {
+        format!("{}...", &s[..max.saturating_sub(3)])
+    }
 }
 
 fn load_kanban_toon(kanban_dir: &Path, project: &str) -> KanbanBoard {
@@ -391,10 +483,18 @@ fn parse_card_line(line: &str) -> Option<KanbanCard> {
         core_bugs: 0,
     };
 
-    if parts.len() >= 6 { card.aegis_status = parts[5].trim().to_string(); }
-    if parts.len() >= 7 { card.lint_issues = parts[6].trim().parse().unwrap_or(0); }
-    if parts.len() >= 8 { card.warnings = parts[7].trim().parse().unwrap_or(0); }
-    if parts.len() >= 9 { card.core_bugs = parts[8].trim().parse().unwrap_or(0); }
+    if parts.len() >= 6 {
+        card.aegis_status = parts[5].trim().to_string();
+    }
+    if parts.len() >= 7 {
+        card.lint_issues = parts[6].trim().parse().unwrap_or(0);
+    }
+    if parts.len() >= 8 {
+        card.warnings = parts[7].trim().parse().unwrap_or(0);
+    }
+    if parts.len() >= 9 {
+        card.core_bugs = parts[8].trim().parse().unwrap_or(0);
+    }
 
     Some(card)
 }
@@ -419,11 +519,14 @@ fn detect_kanban_project(kanban_dir: &Path) -> String {
 
 fn detect_project() -> String {
     if let Ok(val) = std::env::var("KAVACH_PROJECT") {
-        if !val.is_empty() { return val; }
+        if !val.is_empty() {
+            return val;
+        }
     }
     if let Ok(wd) = std::env::current_dir() {
         if wd.join(".git").exists() {
-            return wd.file_name()
+            return wd
+                .file_name()
                 .map(|n| n.to_string_lossy().to_string())
                 .unwrap_or_else(|| "global".into());
         }
@@ -433,5 +536,8 @@ fn detect_project() -> String {
 
 fn memory_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_default();
-    home.join(".local").join("shared").join("shared-ai").join("memory")
+    home.join(".local")
+        .join("shared")
+        .join("shared-ai")
+        .join("memory")
 }

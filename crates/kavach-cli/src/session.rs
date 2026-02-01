@@ -125,37 +125,81 @@ pub fn load_session_state() -> Option<SessionState> {
         }
     }
 
-    if let Some(v) = fields.get("id") { state.id = v.clone(); }
-    if let Some(v) = fields.get("today") { state.today = v.clone(); }
-    if let Some(v) = fields.get("project") { state.project = v.clone(); }
-    if let Some(v) = fields.get("workdir") { state.work_dir = v.clone(); }
+    if let Some(v) = fields.get("id") {
+        state.id = v.clone();
+    }
+    if let Some(v) = fields.get("today") {
+        state.today = v.clone();
+    }
+    if let Some(v) = fields.get("project") {
+        state.project = v.clone();
+    }
+    if let Some(v) = fields.get("workdir") {
+        state.work_dir = v.clone();
+    }
     if let Some(v) = fields.get("research_done").or(fields.get("research")) {
         state.research_done = v == "true";
     }
-    if let Some(v) = fields.get("memory") { state.memory_queried = v == "true"; }
-    if let Some(v) = fields.get("ceo") { state.ceo_invoked = v == "true"; }
-    if let Some(v) = fields.get("nlu") { state.nlu_parsed = v == "true"; }
-    if let Some(v) = fields.get("cutoff") { state.training_cutoff = v.clone(); }
-    if let Some(v) = fields.get("post_compact") { state.post_compact = v == "true"; }
-    if let Some(v) = fields.get("compact_count") { state.compact_count = v.parse().unwrap_or(0); }
-    if let Some(v) = fields.get("turn_count") { state.turn_count = v.parse().unwrap_or(0); }
-    if let Some(v) = fields.get("last_reinforce_turn") { state.last_reinforce_turn = v.parse().unwrap_or(0); }
-    if let Some(v) = fields.get("reinforce_every_n") { state.reinforce_every_n = v.parse().unwrap_or(15); }
-    if let Some(v) = fields.get("session_id") { state.session_id = v.clone(); }
-    if let Some(v) = fields.get("task") { state.current_task = v.clone(); }
-    if let Some(v) = fields.get("type") { state.intent_type = v.clone(); }
-    if let Some(v) = fields.get("domain") { state.intent_domain = v.clone(); }
+    if let Some(v) = fields.get("memory") {
+        state.memory_queried = v == "true";
+    }
+    if let Some(v) = fields.get("ceo") {
+        state.ceo_invoked = v == "true";
+    }
+    if let Some(v) = fields.get("nlu") {
+        state.nlu_parsed = v == "true";
+    }
+    if let Some(v) = fields.get("cutoff") {
+        state.training_cutoff = v.clone();
+    }
+    if let Some(v) = fields.get("post_compact") {
+        state.post_compact = v == "true";
+    }
+    if let Some(v) = fields.get("compact_count") {
+        state.compact_count = v.parse().unwrap_or(0);
+    }
+    if let Some(v) = fields.get("turn_count") {
+        state.turn_count = v.parse().unwrap_or(0);
+    }
+    if let Some(v) = fields.get("last_reinforce_turn") {
+        state.last_reinforce_turn = v.parse().unwrap_or(0);
+    }
+    if let Some(v) = fields.get("reinforce_every_n") {
+        state.reinforce_every_n = v.parse().unwrap_or(15);
+    }
+    if let Some(v) = fields.get("session_id") {
+        state.session_id = v.clone();
+    }
+    if let Some(v) = fields.get("task") {
+        state.current_task = v.clone();
+    }
+    if let Some(v) = fields.get("type") {
+        state.intent_type = v.clone();
+    }
+    if let Some(v) = fields.get("domain") {
+        state.intent_domain = v.clone();
+    }
     if let Some(v) = fields.get("subagents") {
         state.intent_sub_agents = split_csv(v);
     }
     if let Some(v) = fields.get("skills") {
         state.intent_skills = split_csv(v);
     }
-    if let Some(v) = fields.get("task_status") { state.task_status = v.clone(); }
-    if let Some(v) = fields.get("research_topic") { state.research_topic = v.clone(); }
-    if let Some(v) = fields.get("aegis") { state.aegis_verified = v == "true"; }
-    if let Some(v) = fields.get("tasks_created") { state.tasks_created = v.parse().unwrap_or(0); }
-    if let Some(v) = fields.get("tasks_completed") { state.tasks_completed = v.parse().unwrap_or(0); }
+    if let Some(v) = fields.get("task_status") {
+        state.task_status = v.clone();
+    }
+    if let Some(v) = fields.get("research_topic") {
+        state.research_topic = v.clone();
+    }
+    if let Some(v) = fields.get("aegis") {
+        state.aegis_verified = v == "true";
+    }
+    if let Some(v) = fields.get("tasks_created") {
+        state.tasks_created = v.parse().unwrap_or(0);
+    }
+    if let Some(v) = fields.get("tasks_completed") {
+        state.tasks_completed = v.parse().unwrap_or(0);
+    }
 
     if state.today != today {
         return None;

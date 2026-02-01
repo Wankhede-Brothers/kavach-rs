@@ -180,8 +180,7 @@ kavach/
 │   ├── API.md                     # Command reference
 │   └── INSTALLATION.md            # Install guide
 │
-├── go.work                        # Go workspace
-├── Makefile                       # Build system
+├── justfile                       # Build system
 ├── README.md                      # Project overview
 ├── CLAUDE.md                      # Project instructions
 └── LICENSE
@@ -193,7 +192,7 @@ kavach/
 
 | Category | Directories | Purpose |
 |----------|-------------|---------|
-| **SOURCE** | `cmd/`, `shared/` | Go source code |
+| **SOURCE** | `crates/` | Rust source code |
 | **EXAMPLES** | `examples/agents/`, `examples/skills/` | Reference implementations |
 | **SETUP** | `configs/`, `install/`, `templates/` | Installation & configuration |
 | **DOCS** | `docs/` | Documentation |
@@ -258,17 +257,16 @@ skills/
 
 ```bash
 # Build
-make build              # Build kavach binary
-make install            # Build + install to ~/.local/bin
-make release            # Cross-platform release
+just build              # Build kavach binary
+just install            # Build + install to ~/.local/bin
 
 # Development
-make workspace          # Initialize go.work
-make test               # Run tests
-make lint               # Run linter
+just test               # Run tests
+just lint               # Run clippy
+just fmt                # Format code
 
 # Cleanup
-make clean              # Remove build artifacts
+just clean              # Remove build artifacts
 ```
 
 ---
@@ -277,18 +275,18 @@ make clean              # Remove build artifacts
 
 ### Linux/macOS
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.ps1 | iex
 ```
 
 ### From Source
 ```bash
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
 make install
 ```
 

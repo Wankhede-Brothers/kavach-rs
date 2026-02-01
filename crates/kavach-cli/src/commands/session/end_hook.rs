@@ -22,7 +22,11 @@ pub fn run() -> anyhow::Result<()> {
     if sess.has_task() {
         writeln!(w, "[TASK_WARNING]")?;
         writeln!(w, "task: {}", sess.current_task)?;
-        writeln!(w, "status: {} (not completed before session end)", sess.task_status)?;
+        writeln!(
+            w,
+            "status: {} (not completed before session end)",
+            sess.task_status
+        )?;
         writeln!(w)?;
     }
 

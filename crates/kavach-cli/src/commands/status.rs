@@ -38,5 +38,9 @@ pub fn run() -> anyhow::Result<()> {
 }
 
 fn bool_state(b: bool) -> &'static str {
-    if b { "done" } else { "pending" }
+    if b {
+        "done"
+    } else {
+        "pending"
+    }
 }

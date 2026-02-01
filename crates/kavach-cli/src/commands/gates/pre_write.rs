@@ -67,7 +67,10 @@ fn run_content_check(input: &HookInput) -> anyhow::Result<()> {
     // Build sensitive patterns at runtime to avoid content scanner
     let sensitive_kv_suffixes = ["word", "cret", "_key", "ken"];
     let sensitive_kv_prefixes = ["pass", "se", "api", "to"];
-    for (prefix, suffix) in sensitive_kv_prefixes.iter().zip(sensitive_kv_suffixes.iter()) {
+    for (prefix, suffix) in sensitive_kv_prefixes
+        .iter()
+        .zip(sensitive_kv_suffixes.iter())
+    {
         let pattern = format!("{prefix}{suffix} =");
         if content_lower.contains(&pattern) {
             hook::exit_block_toon("CONTENT", &format!("sensitive:{pattern}"))?;
@@ -120,13 +123,14 @@ fn run_code_guard_check(input: &HookInput) -> anyhow::Result<()> {
     }
 
     // Stub removal without implementation
-    if contains_stub_patterns(&old_string) && !contains_stub_patterns(&new_string) {
-        if new_string.len() <= old_string.len() {
-            hook::exit_block_toon(
-                "CODE_GUARD",
-                &format!("BLOCK_REMOVAL:stub_removed_without_implementation:file:{file_path}:REASON:stub removed but code not expanded."),
-            )?;
-        }
+    if contains_stub_patterns(&old_string)
+        && !contains_stub_patterns(&new_string)
+        && new_string.len() <= old_string.len()
+    {
+        hook::exit_block_toon(
+            "CODE_GUARD",
+            &format!("BLOCK_REMOVAL:stub_removed_without_implementation:file:{file_path}:REASON:stub removed but code not expanded."),
+        )?;
     }
 
     // Rust impl block removal
@@ -161,7 +165,10 @@ fn run_pre_write_antiprod(input: &HookInput) -> anyhow::Result<()> {
             // Build pattern at runtime to avoid self-triggering
             let print_macro = ["print", "ln!", "("].concat();
             if content.contains(&print_macro) {
-                hook::exit_block_toon("ANTIPROD", &format!("PROD_LEAK:{print_macro}:Use std::io::Write to stdout handle instead"))?;
+                hook::exit_block_toon(
+                    "ANTIPROD",
+                    &format!("PROD_LEAK:{print_macro}:Use std::io::Write to stdout handle instead"),
+                )?;
             }
         }
     }
@@ -196,20 +203,29 @@ fn is_rust_file(path: &str) -> bool {
 
 fn contains_stub_patterns(s: &str) -> bool {
     let lower = s.to_lowercase();
-    lower.contains("todo") || lower.contains("fixme") || lower.contains("unimplemented")
-        || lower.contains("stub") || lower.contains("placeholder")
+    lower.contains("todo")
+        || lower.contains("fixme")
+        || lower.contains("unimplemented")
+        || lower.contains("stub")
+        || lower.contains("placeholder")
 }
 
 fn detect_function_removal(old: &str, new: &str) -> Vec<String> {
     let mut removed = Vec::new();
     for line in old.lines() {
         let trimmed = line.trim();
-        if (trimmed.starts_with("fn ") || trimmed.starts_with("pub fn ") || trimmed.starts_with("async fn "))
+        if (trimmed.starts_with("fn ")
+            || trimmed.starts_with("pub fn ")
+            || trimmed.starts_with("async fn "))
             && trimmed.contains('(')
         {
             let name = trimmed
-                .split('(').next().unwrap_or("")
-                .split_whitespace().last().unwrap_or("");
+                .split('(')
+                .next()
+                .unwrap_or("")
+                .split_whitespace()
+                .last()
+                .unwrap_or("");
             if !name.is_empty() && !new.contains(name) {
                 removed.push(name.to_string());
             }

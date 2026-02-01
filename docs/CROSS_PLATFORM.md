@@ -37,12 +37,12 @@ Kavach supports **Linux**, **macOS**, and **Windows** with automatic path detect
 
 ```bash
 # One-line install
-curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 
 # Or from source
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
-go build -o kavach ./cmd/kavach
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
+just build && cp crates/kavach-cli/target/release/kavach .
 cp kavach ~/.local/bin/
 
 # Add to PATH (add to ~/.bashrc, ~/.zshrc, etc.)
@@ -53,13 +53,13 @@ export PATH="$HOME/.local/bin:$PATH"
 
 ```powershell
 # One-line install
-irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.ps1 | iex
 
 # Or from source
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
-go build -o kavach.exe .\cmd\kavach
-Copy-Item kavach.exe "$env:USERPROFILE\.local\bin\"
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
+cd crates\kavach-cli && cargo build --release
+Copy-Item target\release\kavach.exe "$env:USERPROFILE\.local\bin\"
 
 # Add to PATH (run in PowerShell as Admin)
 [Environment]::SetEnvironmentVariable(
@@ -73,11 +73,11 @@ Copy-Item kavach.exe "$env:USERPROFILE\.local\bin\"
 
 ```cmd
 REM Clone repository
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
 
 REM Build
-go build -o kavach.exe .\cmd\kavach
+cd crates\kavach-cli && cargo build --release
 
 REM Add to PATH (requires restart)
 setx PATH "%PATH%;%USERPROFILE%\.local\bin"
@@ -235,14 +235,14 @@ GitHub Actions builds for all platforms:
 strategy:
   matrix:
     include:
-      - goos: linux
-        goarch: amd64
-      - goos: darwin
-        goarch: amd64
-      - goos: darwin
-        goarch: arm64
-      - goos: windows
-        goarch: amd64
+      - os: ubuntu-latest
+        target: x86_64-unknown-linux-gnu
+      - os: macos-latest
+        target: x86_64-apple-darwin
+      - os: macos-latest
+        target: aarch64-apple-darwin
+      - os: windows-latest
+        target: x86_64-pc-windows-msvc
 ```
 
 See `.github/workflows/release.yml` for details.

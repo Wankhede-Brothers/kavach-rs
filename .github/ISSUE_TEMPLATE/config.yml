@@ -4,5 +4,5 @@ contact_links:
     url: https://wankhedebrothers.com/docs/kavach/
     about: Check the documentation before opening an issue
   - name: Discussions
-    url: https://github.com/Wankhede-Brothers/kavach-go/discussions
+    url: https://github.com/Wankhede-Brothers/kavach-rs/discussions
     about: Ask questions and discuss ideas

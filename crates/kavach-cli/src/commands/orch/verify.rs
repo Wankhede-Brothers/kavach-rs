@@ -21,21 +21,37 @@ pub fn run() -> anyhow::Result<()> {
 
     // Research done?
     let research_ok = sess.research_done;
-    writeln!(w, "  research: {}", if research_ok { "PASS" } else { "FAIL" })?;
-    if !research_ok { pass = false; }
+    writeln!(
+        w,
+        "  research: {}",
+        if research_ok { "PASS" } else { "FAIL" }
+    )?;
+    if !research_ok {
+        pass = false;
+    }
 
     // Aegis verified?
     let aegis_ok = sess.aegis_verified;
     writeln!(w, "  aegis: {}", if aegis_ok { "PASS" } else { "PENDING" })?;
-    if !aegis_ok { pass = false; }
+    if !aegis_ok {
+        pass = false;
+    }
 
     // Task status
     let task_ok = sess.task_status == "completed" || sess.task_status == "landing";
-    writeln!(w, "  task: {}", if sess.has_task() {
-        if task_ok { "PASS" } else { "IN_PROGRESS" }
-    } else {
-        "N/A"
-    })?;
+    writeln!(
+        w,
+        "  task: {}",
+        if sess.has_task() {
+            if task_ok {
+                "PASS"
+            } else {
+                "IN_PROGRESS"
+            }
+        } else {
+            "N/A"
+        }
+    )?;
 
     // Files modified
     writeln!(w, "  files_modified: {}", sess.files_modified.len())?;

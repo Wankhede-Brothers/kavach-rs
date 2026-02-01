@@ -70,7 +70,10 @@ fn run_antiprod_check(file_path: &str, content: &str) -> anyhow::Result<()> {
         let unimpl_macro = ["unimp", "lemented!", "("].concat();
         let panic_macro = ["pan", "ic!", "("].concat();
         if content.contains(&dbg_macro) {
-            let msg = format!("PROD_LEAK:{}:Remove -- runs in release builds. Use tracing.", dbg_macro);
+            let msg = format!(
+                "PROD_LEAK:{}:Remove -- runs in release builds. Use tracing.",
+                dbg_macro
+            );
             hook::exit_block_toon("ANTIPROD", &msg)?;
         }
         if content.contains(&todo_macro) || content.contains(&unimpl_macro) {
@@ -81,23 +84,35 @@ fn run_antiprod_check(file_path: &str, content: &str) -> anyhow::Result<()> {
         }
         // unsafe without SAFETY comment
         if content.contains("unsafe {") && !content.contains("// SAFETY:") {
-            hook::exit_block_toon("ANTIPROD", "PROD_LEAK:unsafe block:Justify with // SAFETY: comment or remove.")?;
+            hook::exit_block_toon(
+                "ANTIPROD",
+                "PROD_LEAK:unsafe block:Justify with // SAFETY: comment or remove.",
+            )?;
         }
         // #[allow(dead_code)] suppression
         if content.contains("#[allow(dead_code)]") {
-            hook::exit_block_toon("ANTIPROD", "TYPE_LOOSE:#[allow(dead_code)]:Remove dead code instead of suppressing.")?;
+            hook::exit_block_toon(
+                "ANTIPROD",
+                "TYPE_LOOSE:#[allow(dead_code)]:Remove dead code instead of suppressing.",
+            )?;
         }
         // #[allow(unused suppression
         if content.contains("#[allow(unused") {
-            hook::exit_block_toon("ANTIPROD", "TYPE_LOOSE:#[allow(unused)]:Remove unused code instead of suppressing.")?;
+            hook::exit_block_toon(
+                "ANTIPROD",
+                "TYPE_LOOSE:#[allow(unused)]:Remove unused code instead of suppressing.",
+            )?;
         }
     }
 
     // P1: JS/TS console.log
-    if is_frontend_file(file_path) {
-        if content.contains("console.log(") || content.contains("console.debug(") {
-            hook::exit_block_toon("ANTIPROD", "PROD_LEAK:console.log:Remove debug output or use structured logger.")?;
-        }
+    if is_frontend_file(file_path)
+        && (content.contains("console.log(") || content.contains("console.debug("))
+    {
+        hook::exit_block_toon(
+            "ANTIPROD",
+            "PROD_LEAK:console.log:Remove debug output or use structured logger.",
+        )?;
     }
 
     // P1: TODO/FIXME (universal, build at runtime)
@@ -108,22 +123,33 @@ fn run_antiprod_check(file_path: &str, content: &str) -> anyhow::Result<()> {
         // Check it's actually a comment pattern, not a variable name
         for line in content.lines() {
             let trimmed = line.trim().to_uppercase();
-            if trimmed.contains(&format!("// {todo_upper}")) || trimmed.contains(&format!("# {todo_upper}"))
-                || trimmed.contains(&format!("// {fixme_upper}")) || trimmed.contains(&format!("# {fixme_upper}"))
+            if trimmed.contains(&format!("// {todo_upper}"))
+                || trimmed.contains(&format!("# {todo_upper}"))
+                || trimmed.contains(&format!("// {fixme_upper}"))
+                || trimmed.contains(&format!("# {fixme_upper}"))
             {
-                hook::exit_block_toon("ANTIPROD", &format!("PROD_LEAK:{todo_upper}/{fixme_upper}:Implement or create ticket."))?;
+                hook::exit_block_toon(
+                    "ANTIPROD",
+                    &format!("PROD_LEAK:{todo_upper}/{fixme_upper}:Implement or create ticket."),
+                )?;
             }
         }
     }
 
     // P1: localhost in non-config files
     if is_non_config_file(file_path) && content.contains("://localhost") {
-        hook::exit_block_toon("ANTIPROD", "PROD_LEAK:localhost:Use config/environment variable for URLs.")?;
+        hook::exit_block_toon(
+            "ANTIPROD",
+            "PROD_LEAK:localhost:Use config/environment variable for URLs.",
+        )?;
     }
 
     // P2: .unwrap() in Rust handler files
     if ext == ".rs" && is_handler_file(file_path) && content.contains(".unwrap()") {
-        hook::exit_block_toon("ANTIPROD", "ERROR_BLIND:.unwrap():Use ? operator instead of .unwrap() in handlers.")?;
+        hook::exit_block_toon(
+            "ANTIPROD",
+            "ERROR_BLIND:.unwrap():Use ? operator instead of .unwrap() in handlers.",
+        )?;
     }
 
     // P2: empty catch in JS/TS
@@ -147,16 +173,17 @@ fn run_antiprod_check(file_path: &str, content: &str) -> anyhow::Result<()> {
     }
 
     // Docker checks
-    if is_dockerfile(file_path) {
-        if content.contains("FROM ") && content.contains(":latest") {
-            hook::exit_block_toon("ANTIPROD", "PROD_LEAK:FROM :latest:Pin image version.")?;
-        }
+    if is_dockerfile(file_path) && content.contains("FROM ") && content.contains(":latest") {
+        hook::exit_block_toon("ANTIPROD", "PROD_LEAK:FROM :latest:Pin image version.")?;
     }
 
     // chmod 777 (build at runtime)
     let chmod_pattern = format!("chmod {}", "777");
     if content.contains(&chmod_pattern) {
-        hook::exit_block_toon("ANTIPROD", &format!("PROD_LEAK:{chmod_pattern}:Use least-privilege permissions."))?;
+        hook::exit_block_toon(
+            "ANTIPROD",
+            &format!("PROD_LEAK:{chmod_pattern}:Use least-privilege permissions."),
+        )?;
     }
 
     Ok(())
@@ -165,6 +192,7 @@ fn run_antiprod_check(file_path: &str, content: &str) -> anyhow::Result<()> {
 fn run_quality_check(file_path: &str, content: &str) -> anyhow::Result<()> {
     let ext = file_ext(file_path);
     let code_exts = [".go", ".rs", ".ts", ".tsx", ".js", ".jsx", ".py", ".astro"];
+    #[allow(clippy::manual_contains)]
     if !code_exts.iter().any(|e| ext == *e) {
         return Ok(());
     }
@@ -236,10 +264,19 @@ fn is_handler_file(path: &str) -> bool {
 fn is_non_config_file(path: &str) -> bool {
     let p = path.to_lowercase();
     let config_patterns = [
-        "config", ".env", "astro.config", "vite.config", "next.config",
-        "wrangler.toml", "docker-compose", ".toml", "constants",
+        "config",
+        ".env",
+        "astro.config",
+        "vite.config",
+        "next.config",
+        "wrangler.toml",
+        "docker-compose",
+        ".toml",
+        "constants",
     ];
-    let non_code_exts = [".md", ".txt", ".json", ".yaml", ".yml", ".csv", ".xml", ".html"];
+    let non_code_exts = [
+        ".md", ".txt", ".json", ".yaml", ".yml", ".csv", ".xml", ".html",
+    ];
     if config_patterns.iter().any(|pat| p.contains(pat)) {
         return false;
     }
@@ -256,6 +293,9 @@ fn is_dockerfile(path: &str) -> bool {
 
 fn is_allowlisted(path: &str) -> bool {
     let p = path.to_lowercase();
-    p.contains("test") || p.contains("spec") || p.contains("mock")
-        || p.contains("fixture") || p.contains("__test")
+    p.contains("test")
+        || p.contains("spec")
+        || p.contains("mock")
+        || p.contains("fixture")
+        || p.contains("__test")
 }

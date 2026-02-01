@@ -97,7 +97,16 @@ struct IntentClassification {
 
 fn is_simple_query(prompt: &str) -> bool {
     let simple = [
-        "hello", "hi", "hey", "thanks", "thank you", "bye", "yes", "no", "ok", "okay",
+        "hello",
+        "hi",
+        "hey",
+        "thanks",
+        "thank you",
+        "bye",
+        "yes",
+        "no",
+        "ok",
+        "okay",
     ];
     simple.contains(&prompt)
 }
@@ -114,8 +123,17 @@ fn is_status_query(prompt: &str) -> bool {
 }
 
 fn is_implementation_intent(t: &str) -> bool {
-    ["implement", "debug", "refactor", "optimize", "fix", "audit", "docs", "unclassified"]
-        .contains(&t)
+    [
+        "implement",
+        "debug",
+        "refactor",
+        "optimize",
+        "fix",
+        "audit",
+        "docs",
+        "unclassified",
+    ]
+    .contains(&t)
 }
 
 fn is_delegation_required(t: &str) -> bool {
@@ -136,13 +154,28 @@ fn classify_intent(prompt: &str) -> IntentClassification {
     };
 
     // Intent type classification (priority order, first match wins)
-    let debug_words = ["fix", "bug", "error", "broken", "crash", "failing", "not working"];
+    let debug_words = [
+        "fix",
+        "bug",
+        "error",
+        "broken",
+        "crash",
+        "failing",
+        "not working",
+    ];
     let perf_words = ["optimize", "faster", "slow", "performance", "speed up"];
     let refactor_words = ["refactor", "restructure", "clean up", "technical debt"];
     let research_words = ["research", "explore", "explain", "how does", "what is"];
     let docs_words = ["document", "documentation", "readme", "api docs"];
     let audit_words = ["audit", "review", "vulnerability", "compliance"];
-    let implement_words = ["implement", "create", "build", "add", "develop", "new feature"];
+    let implement_words = [
+        "implement",
+        "create",
+        "build",
+        "add",
+        "develop",
+        "new feature",
+    ];
 
     if matches_any(prompt, &debug_words) {
         intent.intent_type = "debug".into();
@@ -194,19 +227,35 @@ fn classify_intent(prompt: &str) -> IntentClassification {
         append_unique(&mut intent.skills, "/frontend".into());
         append_unique(&mut intent.sub_agents, "frontend-engineer".into());
     }
-    if matches_any(prompt, &["database", "sql", "query", "migration", "postgres"]) {
+    if matches_any(
+        prompt,
+        &["database", "sql", "query", "migration", "postgres"],
+    ) {
         if intent.domain.is_empty() {
             intent.domain = "database".into();
         }
         append_unique(&mut intent.skills, "/sql".into());
     }
-    if matches_any(prompt, &["deploy", "docker", "kubernetes", "k8s", "terraform", "infra"]) {
+    if matches_any(
+        prompt,
+        &[
+            "deploy",
+            "docker",
+            "kubernetes",
+            "k8s",
+            "terraform",
+            "infra",
+        ],
+    ) {
         if intent.domain.is_empty() {
             intent.domain = "infrastructure".into();
         }
         append_unique(&mut intent.skills, "/cloud-infrastructure-mastery".into());
     }
-    if matches_any(prompt, &["test", "testing", "unit test", "integration test"]) {
+    if matches_any(
+        prompt,
+        &["test", "testing", "unit test", "integration test"],
+    ) {
         if intent.domain.is_empty() {
             intent.domain = "testing".into();
         }

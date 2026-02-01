@@ -43,8 +43,24 @@ fn run_report() -> anyhow::Result<()> {
     writeln!(w)?;
 
     writeln!(w, "[INTENT]")?;
-    writeln!(w, "type: {}", if sess.intent_type.is_empty() { "none" } else { &sess.intent_type })?;
-    writeln!(w, "domain: {}", if sess.intent_domain.is_empty() { "none" } else { &sess.intent_domain })?;
+    writeln!(
+        w,
+        "type: {}",
+        if sess.intent_type.is_empty() {
+            "none"
+        } else {
+            &sess.intent_type
+        }
+    )?;
+    writeln!(
+        w,
+        "domain: {}",
+        if sess.intent_domain.is_empty() {
+            "none"
+        } else {
+            &sess.intent_domain
+        }
+    )?;
 
     Ok(())
 }

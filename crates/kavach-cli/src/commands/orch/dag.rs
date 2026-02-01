@@ -12,8 +12,14 @@ pub fn run() -> anyhow::Result<()> {
     writeln!(w, "[PRE_WRITE_CHAIN]")?;
     writeln!(w, "  1. security.content -> detect secrets/credentials")?;
     writeln!(w, "  2. guard.code-guard -> prevent premature code removal")?;
-    writeln!(w, "  3. antiprod.pre-write -> block production anti-patterns")?;
-    writeln!(w, "  4. research.tabula-rasa -> enforce WebSearch before code")?;
+    writeln!(
+        w,
+        "  3. antiprod.pre-write -> block production anti-patterns"
+    )?;
+    writeln!(
+        w,
+        "  4. research.tabula-rasa -> enforce WebSearch before code"
+    )?;
     writeln!(w, "  5. enforcer -> blocked write paths")?;
     writeln!(w)?;
     writeln!(w, "[POST_WRITE_CHAIN]")?;

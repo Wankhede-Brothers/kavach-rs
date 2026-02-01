@@ -29,7 +29,10 @@ pub fn run() -> anyhow::Result<()> {
     writeln!(w, "cutoff: {}", sess.training_cutoff)?;
     writeln!(w, "today: {}", sess.today)?;
     writeln!(w, "rule: WebSearch_BEFORE_code")?;
-    writeln!(w, "blocked: I_think,I_believe,I_recall,Based_on_my_knowledge")?;
+    writeln!(
+        w,
+        "blocked: I_think,I_believe,I_recall,Based_on_my_knowledge"
+    )?;
     writeln!(w)?;
 
     writeln!(w, "[NO_AMNESIA]")?;
@@ -75,14 +78,21 @@ fn run_post_compact(w: &mut impl Write, sess: &mut session::SessionState) -> any
     writeln!(w)?;
 
     if !sess.current_task.is_empty() {
-        writeln!(w, "[TASK:RESTORED] {} | status: {}", sess.current_task, sess.task_status)?;
+        writeln!(
+            w,
+            "[TASK:RESTORED] {} | status: {}",
+            sess.current_task, sess.task_status
+        )?;
         writeln!(w)?;
     }
 
     writeln!(w, "[MEMORY] total: 0 | query: kavach memory bank")?;
     writeln!(w)?;
 
-    writeln!(w, "[DACE] mode: lazy_load,skill_first,on_demand | CONTEXT_RESTORED")?;
+    writeln!(
+        w,
+        "[DACE] mode: lazy_load,skill_first,on_demand | CONTEXT_RESTORED"
+    )?;
 
     sess.mark_memory_queried();
 

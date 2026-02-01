@@ -18,8 +18,24 @@ pub fn run() -> anyhow::Result<()> {
     writeln!(w, "turns: {}", sess.turn_count)?;
     writeln!(w, "tasks_created: {}", sess.tasks_created)?;
     writeln!(w, "tasks_completed: {}", sess.tasks_completed)?;
-    writeln!(w, "current_task: {}", if sess.current_task.is_empty() { "none" } else { &sess.current_task })?;
-    writeln!(w, "task_status: {}", if sess.task_status.is_empty() { "idle" } else { &sess.task_status })?;
+    writeln!(
+        w,
+        "current_task: {}",
+        if sess.current_task.is_empty() {
+            "none"
+        } else {
+            &sess.current_task
+        }
+    )?;
+    writeln!(
+        w,
+        "task_status: {}",
+        if sess.task_status.is_empty() {
+            "idle"
+        } else {
+            &sess.task_status
+        }
+    )?;
     writeln!(w)?;
 
     let mut warnings = Vec::new();

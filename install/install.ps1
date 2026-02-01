@@ -1,9 +1,9 @@
 # Kavach Installation Script - Windows (Brahmastra Stack)
-# Usage: irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.ps1 | iex
 # Or: irm ... | iex -CLI opencode
 
 $ErrorActionPreference = "Stop"
-$Repo = "Wankhede-Brothers/kavach-go"
+$Repo = "Wankhede-Brothers/kavach-rs"
 
 function Write-Header {
     Write-Host "`n============================================" -ForegroundColor Blue
@@ -62,17 +62,17 @@ function Download-Binary {
 
 function Build-FromSource {
     Write-Host "[BUILD]"
-    if (!(Get-Command go -ErrorAction SilentlyContinue)) {
-        Write-Host "  error: Go not installed"; exit 1
+    if (!(Get-Command cargo -ErrorAction SilentlyContinue)) {
+        Write-Host "  error: Rust not installed (install via https://rustup.rs)"; exit 1
     }
     $tmp = Join-Path $env:TEMP "kavach-build"
     if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
     New-Item -ItemType Directory -Path $tmp | Out-Null
     Set-Location $tmp
     git clone --depth 1 "https://github.com/$Repo.git" .
-    go work sync
-    Set-Location "cmd\kavach"
-    go build -ldflags "-s -w" -o "$BinDir\kavach.exe" .
+    Set-Location "crates\kavach-cli"
+    cargo build --release
+    Copy-Item "target\release\kavach.exe" "$BinDir\kavach.exe"
     Set-Location $env:USERPROFILE
     Remove-Item $tmp -Recurse -Force
     Write-Host "  status: ok"

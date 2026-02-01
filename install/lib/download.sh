@@ -2,7 +2,7 @@
 # Binary download - Kavach/Brahmastra Stack
 # DACE: 60 lines
 
-REPO="Wankhede-Brothers/kavach-go"
+REPO="Wankhede-Brothers/kavach-rs"
 BINARY_NAME="kavach"
 
 get_latest_version() {
@@ -55,8 +55,8 @@ download_binary() {
 build_from_source() {
     echo "[BUILD]"
 
-    if ! command -v go &>/dev/null; then
-        echo "  error: Go not installed (requires Go 1.21+)"
+    if ! command -v cargo &>/dev/null; then
+        echo "  error: Rust not installed (install via https://rustup.rs)"
         return 1
     fi
 
@@ -64,9 +64,9 @@ build_from_source() {
     cd "$TEMP_DIR"
 
     git clone --depth 1 "https://github.com/$REPO.git" .
-    go work sync
-    cd cmd/kavach
-    go build -ldflags "-s -w" -o "$BIN_DIR/$BINARY_NAME" .
+    cd crates/kavach-cli
+    cargo build --release
+    cp target/release/"$BINARY_NAME" "$BIN_DIR/$BINARY_NAME"
 
     cd /
     rm -rf "$TEMP_DIR"

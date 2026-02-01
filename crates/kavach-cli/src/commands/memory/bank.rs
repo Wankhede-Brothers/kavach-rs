@@ -55,12 +55,23 @@ fn detect_project() -> String {
 }
 
 const CATEGORIES: &[&str] = &[
-    "decisions", "graph", "kanban", "patterns",
-    "proposals", "research", "roadmaps", "STM",
+    "decisions",
+    "graph",
+    "kanban",
+    "patterns",
+    "proposals",
+    "research",
+    "roadmaps",
+    "STM",
 ];
 
 const PROJECT_CATEGORIES: &[&str] = &[
-    "decisions", "kanban", "patterns", "proposals", "research", "roadmaps",
+    "decisions",
+    "kanban",
+    "patterns",
+    "proposals",
+    "research",
+    "roadmaps",
 ];
 
 fn show_memory_status() -> anyhow::Result<()> {
@@ -120,7 +131,10 @@ fn show_project_scoped() -> anyhow::Result<()> {
     writeln!(w, "[DETECTION]")?;
     if std::env::var("KAVACH_PROJECT").is_ok() {
         writeln!(w, "method: KAVACH_PROJECT env var")?;
-    } else if std::env::current_dir().map(|d| d.join(".git").exists()).unwrap_or(false) {
+    } else if std::env::current_dir()
+        .map(|d| d.join(".git").exists())
+        .unwrap_or(false)
+    {
         writeln!(w, "method: .git root detection")?;
     } else {
         writeln!(w, "method: fallback (global)")?;
@@ -169,7 +183,10 @@ fn show_project_scoped() -> anyhow::Result<()> {
     writeln!(w)?;
 
     let total = project_total + global_total + stm_count;
-    writeln!(w, "[TOTAL] {total} (project: {project_total}, global: {global_total}, stm: {stm_count})")?;
+    writeln!(
+        w,
+        "[TOTAL] {total} (project: {project_total}, global: {global_total}, stm: {stm_count})"
+    )?;
 
     Ok(())
 }

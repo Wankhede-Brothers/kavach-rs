@@ -1,10 +1,10 @@
-pub mod init;
-pub mod end;
 pub mod compact;
-pub mod validate;
-pub mod resume;
-pub mod land;
+pub mod end;
 pub mod end_hook;
+pub mod init;
+pub mod land;
+pub mod resume;
+pub mod validate;
 
 use clap::Subcommand;
 

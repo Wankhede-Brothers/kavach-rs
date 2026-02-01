@@ -44,11 +44,7 @@ fn dispatch(input: &HookInput) -> anyhow::Result<()> {
     let mut sess = session::get_or_create_session();
     sess.mark_ceo_invoked();
 
-    let engineers = [
-        "backend-engineer",
-        "frontend-engineer",
-        "aegis-guardian",
-    ];
+    let engineers = ["backend-engineer", "frontend-engineer", "aegis-guardian"];
     if engineers.contains(&subagent_type.as_str()) {
         let today = hook::today();
         let mut kvs = HashMap::new();

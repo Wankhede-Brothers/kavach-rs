@@ -37,29 +37,42 @@ pub fn run() -> anyhow::Result<()> {
 
 fn stm_base_dir() -> PathBuf {
     let home = dirs::home_dir().unwrap_or_default();
-    home.join(".local").join("shared").join("shared-ai").join("stm")
+    home.join(".local")
+        .join("shared")
+        .join("shared-ai")
+        .join("stm")
 }
 
-fn update_scratchpad(
-    path: &std::path::Path,
-    sess: &session::SessionState,
-) -> anyhow::Result<()> {
+fn update_scratchpad(path: &std::path::Path, sess: &session::SessionState) -> anyhow::Result<()> {
     let mut f = std::fs::File::create(path)?;
     writeln!(f, "# Scratchpad - {}", sess.today)?;
     writeln!(f, "session: {}", sess.id)?;
     writeln!(f, "project: {}", sess.project)?;
     writeln!(f)?;
-    writeln!(f, "intent: {}", if sess.current_task.is_empty() { "null" } else { &sess.current_task })?;
-    writeln!(f, "status: {}", if sess.task_status.is_empty() { "idle" } else { &sess.task_status })?;
+    writeln!(
+        f,
+        "intent: {}",
+        if sess.current_task.is_empty() {
+            "null"
+        } else {
+            &sess.current_task
+        }
+    )?;
+    writeln!(
+        f,
+        "status: {}",
+        if sess.task_status.is_empty() {
+            "idle"
+        } else {
+            &sess.task_status
+        }
+    )?;
     writeln!(f, "turn: {}", sess.turn_count)?;
     writeln!(f, "research: {}", sess.research_done)?;
     Ok(())
 }
 
-fn update_hot_context(
-    path: &std::path::Path,
-    sess: &session::SessionState,
-) -> anyhow::Result<()> {
+fn update_hot_context(path: &std::path::Path, sess: &session::SessionState) -> anyhow::Result<()> {
     let files: Vec<serde_json::Value> = sess
         .files_modified
         .iter()

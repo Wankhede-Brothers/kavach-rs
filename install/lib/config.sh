@@ -2,7 +2,7 @@
 # Configuration installation - Kavach/Brahmastra Stack
 # DACE: 85 lines
 
-REPO="Wankhede-Brothers/kavach-go"
+REPO="Wankhede-Brothers/kavach-rs"
 
 install_system_prompt() {
     echo "[PROMPT]"

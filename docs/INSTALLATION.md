@@ -9,13 +9,13 @@ Complete installation guide for Kavach across all platforms.
 ### Linux/macOS
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.sh | bash
 ```
 
 ### Windows (PowerShell Admin)
 
 ```powershell
-irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-go/main/install/install.ps1 | iex
+irm https://raw.githubusercontent.com/Wankhede-Brothers/kavach-rs/main/install/install.ps1 | iex
 ```
 
 ### With Options
@@ -39,7 +39,7 @@ curl -fsSL .../install.sh | bash -s -- --rust-cli
 
 | Dependency | Version | Purpose |
 |------------|---------|---------|
-| Go | 1.21+ | Compilation |
+| Rust | stable | Compilation |
 | Git | 2.0+ | Source download |
 | Make | 4.0+ | Build system (optional) |
 
@@ -47,15 +47,12 @@ curl -fsSL .../install.sh | bash -s -- --rust-cli
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/Wankhede-Brothers/kavach-go.git
-cd kavach-go
+git clone https://github.com/Wankhede-Brothers/kavach-rs.git
+cd kavach-rs
 
 # 2. Build and install
-go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
-
-# Or with Make
-make install
+just build
+just install
 
 # 3. Verify
 kavach status
@@ -303,8 +300,8 @@ Old binary version:
 ```bash
 # Update
 git pull origin main
-go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
+just build
+just install
 ```
 
 ### Hook Errors
@@ -343,12 +340,12 @@ Remove-Item -Recurse -Force "$env:APPDATA\shared-ai"  # Memory Bank (optional)
 
 ```bash
 # Pull latest
-cd kavach-go
+cd kavach-rs
 git pull origin main
 
 # Rebuild
-go build -o kavach ./cmd/kavach
-cp kavach ~/.local/bin/
+just build
+just install
 
 # Verify
 kavach status
@@ -379,6 +376,6 @@ Only tool-specific:
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-go/issues)
+- Issues: [GitHub Issues](https://github.com/Wankhede-Brothers/kavach-rs/issues)
 - Documentation: [docs/](../docs/)
 - Examples: [examples/](../examples/)

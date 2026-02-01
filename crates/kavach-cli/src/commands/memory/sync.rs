@@ -96,8 +96,16 @@ fn run_sync_hook(project: &str, today: &str) -> anyhow::Result<()> {
 
 fn is_significant_bash(cmd: &str) -> bool {
     let significant = [
-        "build", "test", "deploy", "cargo", "go ", "bun ",
-        "npm ", "git commit", "git push", "git merge",
+        "build",
+        "test",
+        "deploy",
+        "cargo",
+        "go ",
+        "bun ",
+        "npm ",
+        "git commit",
+        "git push",
+        "git merge",
     ];
     let lower = cmd.to_lowercase();
     significant.iter().any(|s| lower.contains(s))

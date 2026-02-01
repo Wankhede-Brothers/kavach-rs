@@ -88,13 +88,19 @@ fn run_verification() -> AegisResult {
     }
 
     if result.lint_issues > 0 {
-        result.fail_reasons.push(format!("lint_issues:{}", result.lint_issues));
+        result
+            .fail_reasons
+            .push(format!("lint_issues:{}", result.lint_issues));
     }
     if result.warnings > 0 {
-        result.fail_reasons.push(format!("warnings:{}", result.warnings));
+        result
+            .fail_reasons
+            .push(format!("warnings:{}", result.warnings));
     }
     if result.core_bugs > 0 {
-        result.fail_reasons.push(format!("core_bugs:{}", result.core_bugs));
+        result
+            .fail_reasons
+            .push(format!("core_bugs:{}", result.core_bugs));
     }
 
     if !result.fail_reasons.is_empty() {
@@ -130,16 +136,20 @@ fn run_verification() -> AegisResult {
 
 fn count_lint_issues(work_dir: &Path) -> Result<i32, String> {
     if work_dir.join("go.mod").exists() {
-        let output = Command::new("go").args(["vet", "./..."])
-            .current_dir(work_dir).output()
+        let output = Command::new("go")
+            .args(["vet", "./..."])
+            .current_dir(work_dir)
+            .output()
             .map_err(|e| format!("go vet failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.lines().filter(|l| !l.trim().is_empty()).count() as i32);
     }
 
     if work_dir.join("Cargo.toml").exists() {
-        let output = Command::new("cargo").args(["clippy", "--message-format=short"])
-            .current_dir(work_dir).output()
+        let output = Command::new("cargo")
+            .args(["clippy", "--message-format=short", "--", "-D", "warnings"])
+            .current_dir(work_dir)
+            .output()
             .map_err(|e| format!("cargo clippy failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.matches("warning:").count() as i32);
@@ -150,16 +160,20 @@ fn count_lint_issues(work_dir: &Path) -> Result<i32, String> {
 
 fn count_warnings(work_dir: &Path) -> Result<i32, String> {
     if work_dir.join("go.mod").exists() {
-        let output = Command::new("go").args(["build", "-v", "./..."])
-            .current_dir(work_dir).output()
-            .map_err(|e| format!("go build failed: {e}"))?;
+        let output = Command::new("go")
+            .args(["build", "-v", "./..."])
+            .current_dir(work_dir)
+            .output()
+            .map_err(|e| format!("go build -v failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.matches("warning").count() as i32);
     }
 
     if work_dir.join("Cargo.toml").exists() {
-        let output = Command::new("cargo").args(["check", "--message-format=short"])
-            .current_dir(work_dir).output()
+        let output = Command::new("cargo")
+            .args(["check", "--message-format=short"])
+            .current_dir(work_dir)
+            .output()
             .map_err(|e| format!("cargo check failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.matches("warning:").count() as i32);
@@ -173,7 +187,8 @@ fn count_core_bugs(work_dir: &Path) -> Result<i32, String> {
     let fixme_upper = ["FIX", "ME"].concat();
     let pattern = format!("{todo_upper}|{fixme_upper}|BUG|XXX");
 
-    let output = Command::new("rg").args(["-c", &pattern])
+    let output = Command::new("rg")
+        .args(["-c", &pattern])
         .arg(work_dir)
         .args(["--type", "go", "--type", "rust", "--type", "ts"])
         .output();
@@ -181,7 +196,8 @@ fn count_core_bugs(work_dir: &Path) -> Result<i32, String> {
     match output {
         Ok(o) => {
             let text = String::from_utf8_lossy(&o.stdout);
-            let count: i32 = text.lines()
+            let count: i32 = text
+                .lines()
                 .filter_map(|l| l.rsplit(':').next())
                 .filter_map(|n| n.parse::<i32>().ok())
                 .sum();
@@ -193,17 +209,21 @@ fn count_core_bugs(work_dir: &Path) -> Result<i32, String> {
 
 fn has_dead_code(work_dir: &Path) -> Result<bool, String> {
     if work_dir.join("Cargo.toml").exists() {
-        let output = Command::new("cargo").args(["check"])
-            .current_dir(work_dir).output()
+        let output = Command::new("cargo")
+            .args(["check"])
+            .current_dir(work_dir)
+            .output()
             .map_err(|e| format!("cargo check failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.contains("dead_code"));
     }
 
     if work_dir.join("go.mod").exists() {
-        let output = Command::new("go").args(["vet", "./..."])
-            .current_dir(work_dir).output()
-            .map_err(|e| format!("go vet failed: {e}"))?;
+        let output = Command::new("go")
+            .args(["vet", "./..."])
+            .current_dir(work_dir)
+            .output()
+            .map_err(|e| format!("go vet ./... failed: {e}"))?;
         let text = String::from_utf8_lossy(&output.stderr);
         return Ok(text.contains("unused"));
     }
@@ -213,8 +233,10 @@ fn has_dead_code(work_dir: &Path) -> Result<bool, String> {
 
 fn has_suppressed_elements(work_dir: &Path) -> Result<bool, String> {
     let suppress_pattern = ["@Suppress", "|#pragma|nolint|#\\[allow"].concat();
-    let output = Command::new("rg").args(["-l", &suppress_pattern])
-        .arg(work_dir).output();
+    let output = Command::new("rg")
+        .args(["-l", &suppress_pattern])
+        .arg(work_dir)
+        .output();
 
     match output {
         Ok(o) => {
@@ -243,9 +265,25 @@ fn output_aegis_result(project: &str, today: &str, result: &AegisResult) -> anyh
     writeln!(w)?;
 
     writeln!(w, "[VERIFIED_STAGE]")?;
-    writeln!(w, "dead_code: {}", if result.dead_code { "FOUND" } else { "CLEAN" })?;
-    writeln!(w, "suppressed: {}", if result.suppressed { "FOUND" } else { "CLEAN" })?;
-    writeln!(w, "algorithm: {}", if result.algo_ok { "VERIFIED" } else { "UNVERIFIED" })?;
+    writeln!(
+        w,
+        "dead_code: {}",
+        if result.dead_code { "FOUND" } else { "CLEAN" }
+    )?;
+    writeln!(
+        w,
+        "suppressed: {}",
+        if result.suppressed { "FOUND" } else { "CLEAN" }
+    )?;
+    writeln!(
+        w,
+        "algorithm: {}",
+        if result.algo_ok {
+            "VERIFIED"
+        } else {
+            "UNVERIFIED"
+        }
+    )?;
     writeln!(w)?;
 
     if !result.exec_errors.is_empty() {
@@ -275,11 +313,14 @@ fn output_aegis_result(project: &str, today: &str, result: &AegisResult) -> anyh
 
 fn detect_project() -> String {
     if let Ok(val) = std::env::var("KAVACH_PROJECT") {
-        if !val.is_empty() { return val; }
+        if !val.is_empty() {
+            return val;
+        }
     }
     if let Ok(wd) = std::env::current_dir() {
         if wd.join(".git").exists() {
-            return wd.file_name()
+            return wd
+                .file_name()
                 .map(|n| n.to_string_lossy().to_string())
                 .unwrap_or_else(|| "global".into());
         }

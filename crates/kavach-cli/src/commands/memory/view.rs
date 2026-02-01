@@ -30,9 +30,7 @@ pub fn run() -> anyhow::Result<()> {
             .strip_prefix(&mem_dir)
             .unwrap_or(file)
             .to_string_lossy();
-        let size = std::fs::metadata(file)
-            .map(|m| m.len())
-            .unwrap_or(0);
+        let size = std::fs::metadata(file).map(|m| m.len()).unwrap_or(0);
         writeln!(w, "  {rel} ({size}b)")?;
     }
 

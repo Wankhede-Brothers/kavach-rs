@@ -12,7 +12,10 @@ pub mod telemetry;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "kavach", about = "Brahmastra Stack - Universal AI CLI Enforcement")]
+#[command(
+    name = "kavach",
+    about = "Brahmastra Stack - Universal AI CLI Enforcement"
+)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Option<Command>,

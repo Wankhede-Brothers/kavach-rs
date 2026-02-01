@@ -87,7 +87,10 @@ fn walk_dir(dir: &Path, results: &mut Vec<LintResult>, fix: bool) {
 
 fn is_lintable(path: &Path) -> bool {
     let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
-    matches!(ext, "go" | "rs" | "ts" | "tsx" | "js" | "jsx" | "py" | "json" | "yaml" | "yml" | "toon" | "md")
+    matches!(
+        ext,
+        "go" | "rs" | "ts" | "tsx" | "js" | "jsx" | "py" | "json" | "yaml" | "yml" | "toon" | "md"
+    )
 }
 
 fn lint_file(path: &Path, fix: bool) -> LintResult {
@@ -102,7 +105,8 @@ fn lint_file(path: &Path, fix: bool) -> LintResult {
         Ok(c) => c,
         Err(e) => {
             result.issues.push(LintIssue {
-                line: 0, code: "E000".into(),
+                line: 0,
+                code: "E000".into(),
                 message: format!("cannot read file: {e}"),
             });
             return result;
@@ -116,7 +120,8 @@ fn lint_file(path: &Path, fix: bool) -> LintResult {
     for (i, line) in lines.iter().enumerate() {
         if line.ends_with(' ') || line.ends_with('\t') {
             result.issues.push(LintIssue {
-                line: i + 1, code: "W001".into(),
+                line: i + 1,
+                code: "W001".into(),
                 message: "trailing whitespace".into(),
             });
         }
@@ -126,7 +131,8 @@ fn lint_file(path: &Path, fix: bool) -> LintResult {
     for (i, line) in lines.iter().enumerate() {
         if line.len() > 120 {
             result.issues.push(LintIssue {
-                line: i + 1, code: "W002".into(),
+                line: i + 1,
+                code: "W002".into(),
                 message: format!("line too long ({} > 120)", line.len()),
             });
         }
@@ -137,7 +143,8 @@ fn lint_file(path: &Path, fix: bool) -> LintResult {
         for (i, line) in lines.iter().enumerate() {
             if line.starts_with("    ") && !line.starts_with('\t') {
                 result.issues.push(LintIssue {
-                    line: i + 1, code: "W003".into(),
+                    line: i + 1,
+                    code: "W003".into(),
                     message: "use tabs instead of spaces for Go indentation".into(),
                 });
             }
@@ -147,14 +154,16 @@ fn lint_file(path: &Path, fix: bool) -> LintResult {
     // D001: DACE line count
     if lines.len() > 100 {
         result.issues.push(LintIssue {
-            line: 1, code: "D001".into(),
+            line: 1,
+            code: "D001".into(),
             message: format!("DACE: file exceeds 100 lines ({} lines)", lines.len()),
         });
     }
 
     // Auto-fix trailing whitespace
     if fix && result.issues.iter().any(|i| i.code == "W001") {
-        let new_content: String = lines.iter()
+        let new_content: String = lines
+            .iter()
             .map(|l| l.trim_end())
             .collect::<Vec<&str>>()
             .join("\n");
@@ -180,7 +189,9 @@ fn output_toon(results: &[LintResult]) -> anyhow::Result<()> {
     writeln!(w)?;
 
     for r in results {
-        if r.issues.is_empty() { continue; }
+        if r.issues.is_empty() {
+            continue;
+        }
         writeln!(w, "[FILE:{}]", r.file)?;
         for issue in &r.issues {
             writeln!(w, "  {}: [{}] {}", issue.line, issue.code, issue.message)?;
@@ -201,7 +212,12 @@ fn output_json(results: &[LintResult]) -> anyhow::Result<()> {
     writeln!(w, "[")?;
     for (i, r) in results.iter().enumerate() {
         let comma = if i < results.len() - 1 { "," } else { "" };
-        writeln!(w, "  {{\"file\": {:?}, \"issues\": {}}}{comma}", r.file, r.issues.len())?;
+        writeln!(
+            w,
+            "  {{\"file\": {:?}, \"issues\": {}}}{comma}",
+            r.file,
+            r.issues.len()
+        )?;
     }
     writeln!(w, "]")?;
 

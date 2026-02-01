@@ -1,48 +1,117 @@
 pub mod intent;
-pub mod pre_write;
+pub mod post_tool;
 pub mod post_write;
 pub mod pre_tool;
-pub mod post_tool;
+pub mod pre_write;
 pub mod subagent;
 
 use std::collections::HashMap;
 
-use clap::Subcommand;
 use crate::config;
 use crate::hook::{self, HookInput};
 use crate::patterns;
 use crate::session;
+use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub enum GatesCommand {
     #[command(name = "pre-write")]
-    PreWrite { #[arg(long)] hook: bool },
+    PreWrite {
+        #[arg(long)]
+        hook: bool,
+    },
     #[command(name = "post-write")]
-    PostWrite { #[arg(long)] hook: bool },
+    PostWrite {
+        #[arg(long)]
+        hook: bool,
+    },
     #[command(name = "pre-tool")]
-    PreTool { #[arg(long)] hook: bool },
+    PreTool {
+        #[arg(long)]
+        hook: bool,
+    },
     #[command(name = "post-tool")]
-    PostTool { #[arg(long)] hook: bool },
-    Intent { #[arg(long)] hook: bool },
-    Ceo { #[arg(long)] hook: bool },
-    Ast { #[arg(long)] hook: bool },
-    Bash { #[arg(long)] hook: bool },
-    Read { #[arg(long)] hook: bool },
-    Skill { #[arg(long)] hook: bool },
-    Lint { #[arg(long)] hook: bool },
-    Research { #[arg(long)] hook: bool },
-    Content { #[arg(long)] hook: bool },
-    Quality { #[arg(long)] hook: bool },
-    Enforcer { #[arg(long)] hook: bool },
-    Context { #[arg(long)] hook: bool },
-    Dag { #[arg(long)] hook: bool },
-    Task { #[arg(long)] hook: bool },
+    PostTool {
+        #[arg(long)]
+        hook: bool,
+    },
+    Intent {
+        #[arg(long)]
+        hook: bool,
+    },
+    Ceo {
+        #[arg(long)]
+        hook: bool,
+    },
+    Ast {
+        #[arg(long)]
+        hook: bool,
+    },
+    Bash {
+        #[arg(long)]
+        hook: bool,
+    },
+    Read {
+        #[arg(long)]
+        hook: bool,
+    },
+    Skill {
+        #[arg(long)]
+        hook: bool,
+    },
+    Lint {
+        #[arg(long)]
+        hook: bool,
+    },
+    Research {
+        #[arg(long)]
+        hook: bool,
+    },
+    Content {
+        #[arg(long)]
+        hook: bool,
+    },
+    Quality {
+        #[arg(long)]
+        hook: bool,
+    },
+    Enforcer {
+        #[arg(long)]
+        hook: bool,
+    },
+    Context {
+        #[arg(long)]
+        hook: bool,
+    },
+    Dag {
+        #[arg(long)]
+        hook: bool,
+    },
+    Task {
+        #[arg(long)]
+        hook: bool,
+    },
     #[command(name = "code-guard")]
-    CodeGuard { #[arg(long)] hook: bool },
-    Chain { #[arg(long)] hook: bool },
-    Subagent { #[arg(long)] hook: bool },
-    Failure { #[arg(long)] hook: bool },
-    Mockdata { #[arg(long)] hook: bool },
+    CodeGuard {
+        #[arg(long)]
+        hook: bool,
+    },
+    Chain {
+        #[arg(long)]
+        hook: bool,
+    },
+    Subagent {
+        #[arg(long)]
+        hook: bool,
+    },
+    Failure {
+        #[arg(long)]
+        hook: bool,
+    },
+    Mockdata {
+        #[arg(long)]
+        hook: bool,
+    },
 }
 
 pub fn dispatch(cmd: GatesCommand) -> anyhow::Result<()> {
@@ -131,24 +200,34 @@ fn gate_ast(hook_mode: bool) -> anyhow::Result<()> {
         let mut depth: usize = 0;
         for line in &lines {
             for ch in line.chars() {
-                if ch == '{' { depth += 1; if depth > max_depth { max_depth = depth; } }
-                if ch == '}' { depth = depth.saturating_sub(1); }
+                if ch == '{' {
+                    depth += 1;
+                    if depth > max_depth {
+                        max_depth = depth;
+                    }
+                }
+                if ch == '}' {
+                    depth = depth.saturating_sub(1);
+                }
             }
         }
         if max_depth > 5 {
             warnings.push(format!("nesting_depth:{max_depth}"));
         }
         // Function count check
-        let fn_count = lines.iter().filter(|l| {
-            let t = l.trim();
-            match ext {
-                "rs" => t.starts_with("fn ") || t.starts_with("pub fn "),
-                "go" => t.starts_with("func "),
-                "ts" | "tsx" | "js" | "jsx" => t.contains("function ") || t.contains("=> {"),
-                "py" => t.starts_with("def ") || t.starts_with("async def "),
-                _ => false,
-            }
-        }).count();
+        let fn_count = lines
+            .iter()
+            .filter(|l| {
+                let t = l.trim();
+                match ext {
+                    "rs" => t.starts_with("fn ") || t.starts_with("pub fn "),
+                    "go" => t.starts_with("func "),
+                    "ts" | "tsx" | "js" | "jsx" => t.contains("function ") || t.contains("=> {"),
+                    "py" => t.starts_with("def ") || t.starts_with("async def "),
+                    _ => false,
+                }
+            })
+            .count();
         if fn_count > 10 {
             warnings.push(format!("functions:{fn_count}"));
         }
@@ -299,7 +378,10 @@ fn gate_content(hook_mode: bool) -> anyhow::Result<()> {
         let content_lower = content.to_lowercase();
         let sensitive_kv_suffixes = ["word", "cret", "_key", "ken"];
         let sensitive_kv_prefixes = ["pass", "se", "api", "to"];
-        for (prefix, suffix) in sensitive_kv_prefixes.iter().zip(sensitive_kv_suffixes.iter()) {
+        for (prefix, suffix) in sensitive_kv_prefixes
+            .iter()
+            .zip(sensitive_kv_suffixes.iter())
+        {
             let pattern = format!("{prefix}{suffix} =");
             if content_lower.contains(&pattern) {
                 hook::exit_block_toon("CONTENT", &format!("sensitive:{pattern}"))?;
@@ -462,7 +544,10 @@ fn gate_chain(hook_mode: bool) -> anyhow::Result<()> {
         let is_write = tool == "Write" || tool == "Edit" || tool == "NotebookEdit";
         let mut kvs = HashMap::new();
         if is_write {
-            kvs.insert("chain".into(), "security.content->guard.code-guard->antiprod->research".into());
+            kvs.insert(
+                "chain".into(),
+                "security.content->guard.code-guard->antiprod->research".into(),
+            );
         } else {
             kvs.insert("chain".into(), "bash|read|ceo|skill|content|task".into());
         }
@@ -515,8 +600,12 @@ fn gate_mockdata(hook_mode: bool) -> anyhow::Result<()> {
             }
         }
         let placeholder_patterns = [
-            "example.com", "foo@bar", "123-456-7890",
-            "john doe", "jane doe", "placeholder",
+            "example.com",
+            "foo@bar",
+            "123-456-7890",
+            "john doe",
+            "jane doe",
+            "placeholder",
         ];
         for pat in &placeholder_patterns {
             if content_lower.contains(pat) {

@@ -15,7 +15,10 @@ pub fn run() -> anyhow::Result<()> {
 
     if specs.is_empty() {
         writeln!(w, "status: no specs found")?;
-        writeln!(w, "hint: Create .spec.toon files in project root or specs/ directory")?;
+        writeln!(
+            w,
+            "hint: Create .spec.toon files in project root or specs/ directory"
+        )?;
         return Ok(());
     }
 
@@ -64,7 +67,11 @@ fn scan_dir_for_specs(dir: &std::path::Path, specs: &mut Vec<(String, String)>) 
     };
     for entry in entries.flatten() {
         let path = entry.path();
-        let name = path.file_name().unwrap_or_default().to_string_lossy().to_string();
+        let name = path
+            .file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
         if name.ends_with(".spec.toon") || name.ends_with(".spec.md") {
             if let Ok(content) = std::fs::read_to_string(&path) {
                 let spec_name = name
