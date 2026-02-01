@@ -94,6 +94,26 @@
             "timeout": 2
           }
         ]
+      },
+      {
+        "matcher": "WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 2
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "kavach gates pre-tool --hook",
+            "timeout": 2
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -165,7 +185,7 @@
           {
             "type": "command",
             "command": "kavach gates subagent --hook",
-            "timeout": 3000
+            "timeout": 5
           }
         ]
       }
@@ -177,7 +197,7 @@
           {
             "type": "command",
             "command": "kavach gates subagent --hook",
-            "timeout": 3000
+            "timeout": 5
           }
         ]
       }
