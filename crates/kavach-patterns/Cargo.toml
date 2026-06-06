@@ -20,5 +20,10 @@ dirs = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
+[dev-dependencies]
+# Hermetic fixtures for skill_keyword_router tests: build routes from a tempdir
+# instead of the ambient ~/.claude/skills (absent on CI runners / clean machines).
+tempfile = { workspace = true }
+
 [lints]
 workspace = true

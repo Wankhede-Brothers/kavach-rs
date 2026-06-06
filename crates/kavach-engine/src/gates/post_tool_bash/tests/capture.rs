@@ -28,7 +28,11 @@ fn handle_appends_a_bash_event_to_the_session_tape() {
     std::fs::create_dir_all(&home).unwrap();
 
     let sid = "sess_capture_proof";
-    temp_env::with_var("HOME", Some(home.as_os_str()), || {
+    // Redirect via KAVACH_HOME, not HOME/USERPROFILE: `default_trajectory_path`
+    // resolves through `dirs::home_dir()`, which on Windows queries the OS and
+    // ignores env vars — so only the explicit KAVACH_HOME seam can relocate the
+    // tape into the tempdir on every platform.
+    temp_env::with_var("KAVACH_HOME", Some(home.as_os_str()), || {
         let mut session = kavach_session::SessionState::default();
         session.session_id = sid.to_owned();
 
@@ -67,7 +71,9 @@ fn empty_session_id_writes_no_tape() {
     // The no-op guard: a missing session id must not pollute a default path.
     let home = std::env::temp_dir().join(format!("kavach_capture_noid_{}", std::process::id()));
     std::fs::create_dir_all(&home).unwrap();
-    temp_env::with_var("HOME", Some(home.as_os_str()), || {
+    // Redirect via KAVACH_HOME (see the sibling test): `dirs::home_dir()` can't
+    // be overridden through HOME/USERPROFILE on Windows.
+    temp_env::with_var("KAVACH_HOME", Some(home.as_os_str()), || {
         let mut session = kavach_session::SessionState::default();
         session.session_id.clear();
         drop(handle(&bash_input("cargo check"), &mut session));

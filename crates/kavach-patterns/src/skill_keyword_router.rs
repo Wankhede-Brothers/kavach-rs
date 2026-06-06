@@ -123,8 +123,14 @@ fn load_skill_data(path: &std::path::Path) -> Option<(SkillMetadata, Vec<String>
 }
 
 fn build_routes() -> Vec<SkillRoute> {
-    let dir = skills_dir();
-    let Ok(entries) = std::fs::read_dir(&dir) else {
+    build_routes_from(&skills_dir())
+}
+
+/// Build skill routes from a specific directory. Factored out of `build_routes`
+/// so tests can point at a hermetic fixture dir instead of the ambient
+/// `~/.claude/skills`, which varies per machine and is absent on CI runners.
+fn build_routes_from(dir: &std::path::Path) -> Vec<SkillRoute> {
+    let Ok(entries) = std::fs::read_dir(dir) else {
         return Vec::new();
     };
 
@@ -243,12 +249,19 @@ fn routes() -> &'static Vec<SkillRoute> {
 /// Returns deduplicated skill names in match-priority order (first match wins).
 #[must_use]
 pub fn skills_from_keywords(text: &str) -> Vec<String> {
+    match_skills(routes(), text)
+}
+
+/// Match `text` against an explicit route set. Split from `skills_from_keywords`
+/// so tests can exercise the real matching logic against a fixture route set
+/// rather than the cached, filesystem-derived global `routes()`.
+fn match_skills(skill_routes: &[SkillRoute], text: &str) -> Vec<String> {
     if text.is_empty() {
         return Vec::new();
     }
     let lower = text.to_lowercase();
     let mut matched: Vec<String> = Vec::new();
-    for route in routes() {
+    for route in skill_routes {
         if route.ac.is_match(&lower) && !matched.iter().any(|s| s == &route.skill) {
             matched.push(route.skill.clone());
         }
@@ -305,38 +318,73 @@ mod tests {
         assert!(skills.is_empty());
     }
 
+    /// Build a hermetic route set from a tempdir of fixture skills, so the
+    /// keyword-matching tests don't depend on the ambient `~/.claude/skills`
+    /// (absent on CI runners and clean machines — the cause of the historical
+    /// flaky-by-environment failures). `build_routes_from` reads each `SKILL.md`
+    /// into an in-memory Aho-Corasick automaton, so the tempdir can be dropped
+    /// at the end of this function; the returned routes stay valid.
+    fn fixture_routes() -> Vec<SkillRoute> {
+        let tmp = tempfile::tempdir().unwrap();
+        let write_skill = |name: &str, triggers: &str| {
+            let dir = tmp.path().join(name);
+            std::fs::create_dir_all(&dir).unwrap();
+            std::fs::write(
+                dir.join("SKILL.md"),
+                format!("---\nname: {name}\ntriggers: [{triggers}]\n---\n# {name}\n"),
+            )
+            .unwrap();
+        };
+        write_skill(
+            "arch",
+            r#""architecture", "algorithm", "data structure", "scalability""#,
+        );
+        write_skill("data", r#""sqlx", "migration", "postgresql""#);
+        write_skill(
+            "error",
+            r#""Result", "Option", "unwrap", "expect", "panic", "thiserror""#,
+        );
+        build_routes_from(tmp.path())
+    }
+
     #[test]
     fn should_detect_architecture_keywords() {
-        // arch skill has triggers: ["architecture", "algorithm", "data structure", ...]
-        let skills = skills_from_keywords("system design architecture scalability");
+        let route_set = fixture_routes();
+        let skills = match_skills(&route_set, "system design architecture scalability");
         assert!(has_skill(&skills, "arch"), "Expected arch in {skills:?}");
     }
 
     #[test]
     fn should_detect_data_keywords() {
-        // data skill triggers on: sqlx, migration, postgresql
-        let skills = skills_from_keywords("add a migration for the users table with sqlx");
+        let route_set = fixture_routes();
+        let skills = match_skills(&route_set, "add a migration for the users table with sqlx");
         assert!(has_skill(&skills, "data"), "Expected data in {skills:?}");
     }
 
     #[test]
     fn should_detect_error_keywords() {
-        // error skill has triggers: ["Result", "Option", "unwrap", "expect", "panic", ...]
-        let skills = skills_from_keywords("fix the unwrap and expect calls with thiserror");
+        let route_set = fixture_routes();
+        let skills = match_skills(&route_set, "fix the unwrap and expect calls with thiserror");
         assert!(has_skill(&skills, "error"), "Expected error in {skills:?}");
     }
 
     #[test]
     fn should_be_case_insensitive() {
-        let skills = skills_from_keywords("ARCHITECTURE SYSTEM DESIGN");
+        let route_set = fixture_routes();
+        // Upper-case input must still match the lower-case triggers.
+        let skills = match_skills(&route_set, "ARCHITECTURE SYSTEM DESIGN");
         assert!(has_skill(&skills, "arch"), "Expected arch in {skills:?}");
     }
 
     #[test]
     fn should_load_skills_from_filesystem() {
-        // Verify that routes are loaded from ~/.claude/skills/
-        let loaded = routes();
-        assert!(!loaded.is_empty(), "No skills loaded from filesystem");
+        // `build_routes_from` reads SKILL.md files off a directory — proving the
+        // filesystem-loading path works, without coupling to ~/.claude/skills.
+        let route_set = fixture_routes();
+        assert!(
+            !route_set.is_empty(),
+            "fixture skills should load from the filesystem"
+        );
     }
 
     #[test]
