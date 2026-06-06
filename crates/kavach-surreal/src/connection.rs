@@ -186,7 +186,14 @@ pub async fn open_default() -> Result<Surreal<Db>> {
 /// the `SurrealDB` SDK error tree at this version.
 fn is_lock_error(e: &Error) -> bool {
     let msg = e.to_string();
-    msg.contains("Resource temporarily unavailable") && msg.contains("LOCK")
+    // The contending-open message differs by OS: Unix reports EAGAIN
+    // ("Resource temporarily unavailable"); Windows reports the file
+    // sharing-violation ("being used by another process"). Match either so the
+    // retry/backoff path engages on both — without this, every contended open
+    // on Windows fails immediately (no daemon there to serialize hook children).
+    msg.contains("LOCK")
+        && (msg.contains("Resource temporarily unavailable")
+            || msg.contains("being used by another process"))
 }
 
 /// Open the default-path store for a **long-lived daemon**, tolerating
