@@ -304,7 +304,7 @@ impl From<serde_json::Error> for EmitError {
 /// # Errors
 /// Returns `EmitError::Io` if the home directory is not found or directory creation fails.
 pub fn default_trajectory_path(session_id: &str) -> Result<std::path::PathBuf, EmitError> {
-    let home = dirs::home_dir().ok_or_else(|| {
+    let home = trajectory_home().ok_or_else(|| {
         EmitError::Io(std::io::Error::new(
             std::io::ErrorKind::NotFound,
             "no home dir",
@@ -313,6 +313,19 @@ pub fn default_trajectory_path(session_id: &str) -> Result<std::path::PathBuf, E
     let dir = home.join(".kavach").join("trajectories");
     std::fs::create_dir_all(&dir)?;
     Ok(dir.join(format!("{session_id}.jsonl")))
+}
+
+/// Resolve the Kavach home root for the trajectory store. Honors a `KAVACH_HOME`
+/// override (consistent with `KAVACH_CONFIG_DIR` and friends) before falling back
+/// to the OS home dir. The override is read explicitly because `dirs::home_dir()`
+/// queries the OS on Windows (`SHGetKnownFolderPath`) and ignores `%USERPROFILE%`/
+/// `$HOME`, so the home dir cannot otherwise be redirected from the environment —
+/// which both relocates the store for users and makes the capture path testable.
+fn trajectory_home() -> Option<std::path::PathBuf> {
+    if let Some(h) = std::env::var_os("KAVACH_HOME") {
+        return Some(std::path::PathBuf::from(h));
+    }
+    dirs::home_dir()
 }
 
 /// Append one event as a single JSONL line.

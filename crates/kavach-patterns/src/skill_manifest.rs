@@ -134,8 +134,14 @@ impl SkillManifest {
     /// Build manifest by scanning SKILL.md frontmatter only.
     #[must_use]
     pub fn build() -> Self {
-        let dir = Self::skills_dir();
-        let Ok(entries) = std::fs::read_dir(&dir) else {
+        Self::build_from(&Self::skills_dir())
+    }
+
+    /// Build a manifest from a specific skills directory. Factored out of
+    /// `build` so tests can scan a hermetic fixture dir instead of the ambient
+    /// `~/.claude/skills`, which is absent on CI runners and clean machines.
+    fn build_from(dir: &std::path::Path) -> Self {
+        let Ok(entries) = std::fs::read_dir(dir) else {
             return Self::default();
         };
 
@@ -285,10 +291,20 @@ mod tests {
 
     #[test]
     fn manifest_builds_without_panic() {
-        let m = SkillManifest::build();
+        // Hermetic: build from a tempdir fixture rather than the ambient
+        // ~/.claude/skills (absent on CI runners / clean machines).
+        let tmp = tempfile::tempdir().unwrap();
+        let dir = tmp.path().join("arch");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(
+            dir.join("SKILL.md"),
+            "---\nname: arch\ntriggers: [\"architecture\"]\n---\n# arch\n",
+        )
+        .unwrap();
+        let m = SkillManifest::build_from(tmp.path());
         assert!(
             !m.entries.is_empty(),
-            "Expected skills in ~/.claude/skills/"
+            "fixture skill should populate the manifest"
         );
     }
 
