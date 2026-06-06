@@ -10,13 +10,16 @@ if (-not (Test-Path $src)) {
     exit 1
 }
 
-$home = $env:USERPROFILE
-if ([string]::IsNullOrEmpty($home)) {
+# NOTE: do not name this `$home` — PowerShell variable names are case-insensitive,
+# so `$home` aliases the read-only automatic `$HOME` and assignment throws
+# "Cannot overwrite variable HOME because it is read-only or constant".
+$userHome = $env:USERPROFILE
+if ([string]::IsNullOrEmpty($userHome)) {
     Write-Error 'USERPROFILE is not set'
     exit 1
 }
 
-$destDir = Join-Path $home '.claude'
+$destDir = Join-Path $userHome '.claude'
 $dest = Join-Path $destDir 'CLAUDE.md'
 
 New-Item -ItemType Directory -Force -Path $destDir | Out-Null
