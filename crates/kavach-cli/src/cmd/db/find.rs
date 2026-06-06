@@ -1,7 +1,7 @@
 use crate::cmd::io_safe::{ewrite_or_exit, into_exit_code, print_or_exit};
 
 pub(super) fn run_project(abs_path: &str) -> i32 {
-    if !abs_path.starts_with('/') {
+    if !std::path::Path::new(abs_path).is_absolute() {
         let msg = format!("error: path must be absolute: {abs_path}");
         if let Err(e) = ewrite_or_exit(&msg) {
             return into_exit_code(e);
@@ -79,7 +79,7 @@ pub(super) fn run_project(abs_path: &str) -> i32 {
 }
 
 pub(super) fn run_part(abs_path: &str) -> i32 {
-    if !abs_path.starts_with('/') {
+    if !std::path::Path::new(abs_path).is_absolute() {
         let msg = format!("error: path must be absolute: {abs_path}");
         if let Err(e) = ewrite_or_exit(&msg) {
             return into_exit_code(e);

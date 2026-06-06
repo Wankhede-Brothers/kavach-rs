@@ -35,7 +35,7 @@ pub async fn register_part(
     ctx: &AppState,
     params: RegisterPartParams,
 ) -> Result<RegisterPartResult, ErrorObjectOwned> {
-    if !params.abs_path.starts_with('/') {
+    if !std::path::Path::new(&params.abs_path).is_absolute() {
         return Err(invalid_params(format!(
             "path must be absolute: {}",
             params.abs_path

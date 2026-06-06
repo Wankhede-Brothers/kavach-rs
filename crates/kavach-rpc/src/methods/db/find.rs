@@ -68,7 +68,7 @@ pub async fn find_part(ctx: &AppState, params: FindParams) -> Result<FindResult,
 }
 
 fn require_absolute(p: &str) -> Result<(), ErrorObjectOwned> {
-    if p.starts_with('/') {
+    if std::path::Path::new(p).is_absolute() {
         Ok(())
     } else {
         Err(invalid_params(format!("path must be absolute: {p}")))
