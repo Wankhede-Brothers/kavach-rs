@@ -17,6 +17,17 @@ mod tests;
 /// runaway log can never make the back-fill RPC unbounded.
 const BACKFILL_LIMIT: u32 = 512;
 
+/// E5: did this stop carry a real status transition (a card moved
+/// `todo`→`done`/`verified`), as opposed to an allow-stop SKIP? False on either
+/// skip reason — `user_focus` supremacy (the kanban was not drained) or a
+/// foreign-tree turn (every edit out-of-tree, so the project card cannot own the
+/// work). A leftover `goal_receipt_pass` from an unrelated earlier verify must
+/// NOT bank +1.0 for a non-transition — the bug this gate closes.
+fn transition_observed(session: &SessionState) -> bool {
+    use super::shared::{card_owns_any_turn_file, user_focus_supremacy_active};
+    !user_focus_supremacy_active(session) && card_owns_any_turn_file(session)
+}
+
 /// Grade this session's logged bandit decisions against its verify outcome.
 ///
 /// No-op on an empty `session_id` (nothing to join on). The reward signal is
@@ -28,6 +39,9 @@ const BACKFILL_LIMIT: u32 = 512;
 pub(super) fn backfill_session_rewards(session: &mut SessionState) {
     if session.session_id.is_empty() {
         return;
+    }
+    if !transition_observed(session) {
+        return; // E5: allow-stop skip — no status delta ⇒ no reward
     }
     let card = if session.current_kanban_card.is_empty() {
         "session".to_owned()

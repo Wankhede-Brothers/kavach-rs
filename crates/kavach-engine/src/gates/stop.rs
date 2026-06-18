@@ -75,7 +75,8 @@ pub(crate) fn run(input: &HookInput) -> Result<(), EngineError> {
     // Trajectory emitter (best-effort; a JSONL error must NOT block the gate).
     emit_trajectory(&session, &msg);
     // P3a reward back-fill: grade this session's logged bandit decisions against
-    // its 3-witness verify outcome. Fire-and-forget; never blocks the gate.
+    // its 3-witness verify outcome. Fire-and-forget; never blocks the gate. E5:
+    // rewards ONLY a real status transition, never an allow-stop skip.
     reward_backfill::backfill_session_rewards(&mut session);
     pattern_extract::trigger_on_verify(&session);
     // P6: learn from the freshly-graded rewards — fire db.policy_improve so the
